@@ -57,15 +57,15 @@ $rol = $_SESSION['rol'];
                         </a>
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="cotizacioneseguros.php">Maquinados</a>
-                                <a class="nav-link" href="clienteseguros.php">Diseño</a>
-                                <a class="nav-link" href="polizas.php">Control</a>
-                                <a class="nav-link" href="cotizacioneseguros.php">Ensamble</a>
-                                <a class="nav-link" href="clienteseguros.php">BOM Controles</a>
-                                <a class="nav-link" href="polizas.php">BOM Mecanico</a>
-                                <a class="nav-link" href="cotizacioneseguros.php">Estadisticas</a>
-                                <a class="nav-link" href="clienteseguros.php">Proyectos</a>
-                                <a class="nav-link" href="polizas.php">Quotes</a>
+                                <a class="nav-link" href="maquinados.php">Maquinados</a>
+                                <a class="nav-link" href="diseño.php">Diseño</a>
+                                <a class="nav-link" href="control.php">Control</a>
+                                <a class="nav-link" href="ensamble.php">Ensamble</a>
+                                <a class="nav-link" href="bomcontroles.php">BOM Controles</a>
+                                <a class="nav-link" href="bommecanico.php">BOM Mecanico</a>
+                                <a class="nav-link" href="estadisticas.php">Estadisticas</a>
+                                <a class="nav-link" href="proyectos.php">Proyectos</a>
+                                <a class="nav-link" href="quotes.php">Quotes</a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
