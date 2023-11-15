@@ -1,0 +1,16 @@
+label{
+    margin-left: 10px;
+}
+img{
+    width: 100%;
+}
+.loginform{
+    background-color: #e3e3e3;
+}
+.btnlogin{
+    width: 100%;
+    font-size: 30px;
+}
+.colbtnlogin{
+    margin: 10px;
+}
