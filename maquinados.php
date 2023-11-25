@@ -37,6 +37,7 @@ require 'dbcon.php';
     <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">
@@ -62,39 +63,35 @@ require 'dbcon.php';
                                             <th>Operadores asignados</th>
                                             <th>Número de piezas</th>
                                             <th>Nivel de pieza</th>
+                                            <th>Etapa</th>
                                             <th>Accion</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM plano ORDER BY id DESC";
+                                        $query = "SELECT proyecto.*, plano.*
+                                        FROM plano 
+                                        JOIN proyecto ON plano.idproyecto = proyecto.id 
+                                        ORDER BY plano.id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
-                                                    <td><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></td>
-                                                    <td><?= $registro['codigo']; ?></td>
+                                                    <td><?= $registro['nombre']; ?></td>
+                                                    <td><?= $registro['nombreplano']; ?></td>
+                                                    <td><?= $registro['medio']; ?></td>
+                                                    <td><?= $registro['piezas']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if ($registro['rol'] === '1') {
-                                                            echo "Administrador";
-                                                        } else if ($registro['rol'] === '2') {
-                                                            echo "Gerencia";
-                                                        } else if ($registro['rol'] === '3') {
-                                                            echo "Tecnico mecanico";
-                                                        } else if ($registro['rol'] === '4') {
-                                                            echo "Tecnico controles";
-                                                        } else if ($registro['rol'] === '5') {
-                                                            echo "Ing. Diseño";
-                                                        } else if ($registro['rol'] === '6') {
-                                                            echo "Compras";
-                                                        } else if ($registro['rol'] === '7') {
-                                                            echo "Almacenista";
-                                                        } else if ($registro['rol'] === '8') {
-                                                            echo "Operador";
-                                                        } else if ($registro['rol'] === '9') {
-                                                            echo "Ing. Control";
+                                                        if ($registro['nivel'] === '1') {
+                                                            echo "Nivel 1";
+                                                        } else if ($registro['nivel'] === '2') {
+                                                            echo "Nivel 2";
+                                                        } else if ($registro['nivel'] === '3') {
+                                                            echo "Nivel 3";
+                                                        } else if ($registro['nivel'] === '4') {
+                                                            echo "Nivel 4";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
@@ -102,10 +99,20 @@ require 'dbcon.php';
                                                     </td>
                                                     <td>
                                                         <?php
-                                                        if ($registro['estatus'] === '0') {
-                                                            echo "Inactivo";
-                                                        } else if ($registro['estatus'] === '1') {
-                                                            echo "Activo";
+                                                        if ($registro['etapa'] === '1') {
+                                                            echo "Diseño";
+                                                        } else if ($registro['etapa'] === '2') {
+                                                            echo "Revisión interna";
+                                                        } else if ($registro['etapa'] === '3') {
+                                                            echo "Revisión con cliente";
+                                                        } else if ($registro['etapa'] === '4') {
+                                                            echo "Planos";
+                                                        } else if ($registro['etapa'] === '5') {
+                                                            echo "Bom";
+                                                        } else if ($registro['etapa'] === '6') {
+                                                            echo "Remediación";
+                                                        } else if ($registro['etapa'] === '7') {
+                                                            echo "Documentación";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
@@ -114,15 +121,9 @@ require 'dbcon.php';
                                                     <td>
                                                         <a href="editarusuario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                        <?php
-                                                        if ($registro['id'] != 1) {
-                                                            echo '
                                                             <form action="codeusuarios.php" method="POST" class="d-inline">
                                                                 <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                            </form>';
-                                                        }
-                                                        ?>
-
+                                                            </form>
                                                     </td>
                                                 </tr>
                                         <?php
@@ -150,24 +151,49 @@ require 'dbcon.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codeusuarios.php" method="POST" class="row">
+                    <form action="codemaquinados.php" method="POST" class="row">
+                        <div class="form-floating col-12 mb-3">
+                            <select class="form-select" name="idproyecto" id="idproyecto">
+                                <option disabled selected>Seleccione un proyecto</option>
+                                <?php
+                                // Consulta a la base de datos para obtener los proyectos
+                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
+                                $result = mysqli_query($con, $query);
+
+                                // Verificar si hay resultados
+                                if (mysqli_num_rows($result) > 0) {
+                                    while ($proyecto = mysqli_fetch_assoc($result)) {
+                                        // Construir el texto de la opción con nombre del proyecto
+                                        $opcion = $proyecto['nombre'];
+                                        // Obtener el ID del usuario
+                                        $idProyecto = $proyecto['id'];
+                                        // Mostrar la opción con el valor igual al ID del proyecto
+                                        echo "<option value='$idProyecto' " . ($registro['id'] == $idProyecto ? 'selected' : '') . ">$opcion</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
+                            <label for="idproyecto">Proyecto asociado</label>
+                        </div>
+
                         <div class="form-floating col-12 mt-1">
-                            <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" autocomplete="off" required>
-                            <label for="nombre">Nombre del plano</label>
+                            <input type="text" class="form-control" name="nombreplano" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
+                            <label for="nombreplano">Nombre del plano</label>
                         </div>
 
-                        <div class="form-floating col-md-6 mt-3">
-                            <input type="file" class="form-control" name="medio" id="medio" placeholder="Plano paterno" autocomplete="off" required>
-                            <label for="medio">Plano PDF</label>
+                        <div class="mt-3">
+                            <label for="formFile" class="form-label">Plano PDF</label>
+                            <input class="form-control" type="file" id="formFile" name="medio">
                         </div>
 
-                        <div class="form-floating col-12 col-md-6 mt-3">
+
+                        <div class="form-floating col-12 col-md-5 mt-3">
                             <input type="text" class="form-control" name="piezas" id="piezas" placeholder="Piezas" autocomplete="off" required>
                             <label for="piezas">Número de piezas</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3">
-                            <select class="form-select" name="rol" id="rol" autocomplete="off" required>
+                        <div class="form-floating col-12 col-md-7 mt-3">
+                            <select class="form-select" name="nivel" id="nivel" autocomplete="off" required>
                                 <option selected disabled>Seleccione el nivel</option>
                                 <option value="1">Nivel 1</option>
                                 <option value="2">Nivel 2</option>
@@ -177,21 +203,40 @@ require 'dbcon.php';
                             <label for="nivel">Nivel de pieza</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3">
-                            <select class="form-select" name="rol" id="rol" autocomplete="off" required>
-                                <option selected disabled>Seleccione el rol</option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Gerencia</option>
-                                <option value="3">Tecnico mecanico</option>
-                                <option value="4">Tecnico controles</option>
-                                <option value="5">Ing. Diseño</option>
-                                <option value="6">Compras</option>
-                                <option value="7">Almacenista</option>
-                                <option value="8">Operador</option>
-                                <option value="9">Ing. Control</option>
+                        <div class="form-floating col-12 mt-3 mt-3">
+                            <select class="form-select" name="etapa" id="etapa" autocomplete="off" required>
+                                <option selected disabled>Seleccione la etapa</option>
+                                <option value="1">Diseño</option>
+                                <option value="2">Revisión interna</option>
+                                <option value="3">Revisión con cliente</option>
+                                <option value="4">Planos</option>
+                                <option value="5">Bom</option>
+                                <option value="6">Remediación</option>
+                                <option value="7">Documentación</option>
                             </select>
-                            <label for="rol">Rol</label>
+                            <label for="etapa">Etapa:</label>
                         </div>
+
+                        <div class="form-check col-12 mt-3 m-3">
+                            <?php
+                            // Consulta a la base de datos para obtener los usuarios con rol igual a 8
+                            $query = "SELECT * FROM usuarios WHERE rol = 8";
+                            $result = mysqli_query($con, $query);
+
+                            // Verificar si hay resultados
+                            if (mysqli_num_rows($result) > 0) {
+                                while ($usuario = mysqli_fetch_assoc($result)) {
+                                    $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
+                                    $idUsuario = $usuario['codigo'];
+                                    
+                                    // Cambio en el nombre del campo para que se envíen como un array
+                                    echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
+                                    echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
+                                }
+                            }
+                            ?>
+                        </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary" name="save">Guardar</button>

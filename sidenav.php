@@ -1,7 +1,6 @@
 <?php
 require 'dbcon.php';
-$username = $_SESSION['username'];
-$rol = $_SESSION['rol'];
+$username = $_SESSION['codigo'];
 ?>
 <link rel="stylesheet" href="css/sidenav.css">
 <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -39,15 +38,15 @@ $rol = $_SESSION['rol'];
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Principal</div>
-                            <a class="nav-link" href="dashboard.php">
+                        <a class="nav-link" href="dashboard.php">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Inicio
                         </a>
-                            
-                            <a class="nav-link" href="usuarios.php">
+
+                        <a class="nav-link" href="usuarios.php">
                             <div class="sb-nav-link-icon"><i class="bi bi-person-fill"></i></div>
                             Usuarios
-                            </a>
+                        </a>
 
                         <div class="sb-sidenav-menu-heading">Modulos</div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
@@ -57,7 +56,7 @@ $rol = $_SESSION['rol'];
                         </a>
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="maquinados.php">Maquinados</a>
+                                <a class="nav-link" id="maquinados" href="maquinados.php">Maquinados</a>
                                 <a class="nav-link" href="diseño.php">Diseño</a>
                                 <a class="nav-link" href="control.php">Control</a>
                                 <a class="nav-link" href="ensamble.php">Ensamble</a>
@@ -91,7 +90,21 @@ $rol = $_SESSION['rol'];
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as:</div>
-                    Miguel Villa
+                    <?php
+                    if (isset($_SESSION['codigo'])) {
+                        $registro_id = mysqli_real_escape_string($con, $_SESSION['codigo']);
+                        $query = "SELECT * FROM usuarios WHERE codigo='$registro_id' ";
+                        $query_run = mysqli_query($con, $query);
+                        if (mysqli_num_rows($query_run) > 0) {
+                            $registro = mysqli_fetch_array($query_run);
+                    ?>
+                            <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
+                    <?php
+                        } else {
+                            echo "<p>Error contacte a soporte</p>";
+                        }
+                    }
+                    ?>
                 </div>
             </nav>
         </div>

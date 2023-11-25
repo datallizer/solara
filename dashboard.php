@@ -2,27 +2,27 @@
 session_start();
 require 'dbcon.php';
 
-// // Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
-// if (isset($_SESSION['username'])) {
-//     $username = $_SESSION['username'];
+// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
+if (isset($_SESSION['codigo'])) {
+    $codigo = $_SESSION['codigo'];
 
-//     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-//     $query = "SELECT * FROM usuarios WHERE username = '$username'";
-//     $result = mysqli_query($con, $query);
+    // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $result = mysqli_query($con, $query);
 
-//     // Si se encuentra un registro coincidente, el usuario está autorizado
-//     if (mysqli_num_rows($result) > 0) {
-//         // El usuario está autorizado, se puede acceder al contenido
-//     } else {
-//         // Redirigir al usuario a una página de inicio de sesión
-//         header('Location: login.php');
-//         exit(); // Finalizar el script después de la redirección
-//     }
-// } else {
-//     // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
-//     header('Location: login.php');
-//     exit(); // Finalizar el script después de la redirección
-// }
+    // Si se encuentra un registro coincidente, el usuario está autorizado
+    if (mysqli_num_rows($result) > 0) {
+        // El usuario está autorizado, se puede acceder al contenido
+    } else {
+        // Redirigir al usuario a una página de inicio de sesión
+        header('Location: login.php');
+        exit(); // Finalizar el script después de la redirección
+    }
+} else {
+    // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
+    header('Location: login.php');
+    exit(); // Finalizar el script después de la redirección
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +45,7 @@ require 'dbcon.php';
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
-                <div class="row justify-content-md-center justify-content-start mb-5">
+                <div class="row justify-content-md-center justify-content-start mt-5 mb-5">
                     <div class="col-12">
                         <?php include 'message.php'; ?>
                         <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA</h2>
@@ -61,12 +61,36 @@ require 'dbcon.php';
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
+                                <?php
+                                $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
+          FROM historial h 
+          INNER JOIN usuarios u ON h.idcodigo = u.codigo 
+          ORDER BY h.id DESC";
+
+                                $query_run = mysqli_query($con, $query); 
+
+                                if (mysqli_num_rows($query_run) > 0) {
+                                    foreach ($query_run as $registro) {
+                                ?>
+                                        <tr>
+                                            <td><?= $registro['nombre'] . ' ' . $registro['apellidop'] . ' ' . $registro['apellidom']; ?></td>
+                                            <td>
+                                                <p><?= $registro['detalles']; ?></p>
+                                            </td>
+                                            <td>
+                                                <p><?= $registro['hora']; ?></p>
+                                            </td>
+                                            <td>
+                                                <p><?= $registro['fecha']; ?></p>
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='4'><p>No se encontró ningún registro</p></td></tr>";
+                                }
+                                ?>
+
                             </tbody>
                         </table>
                     </div>

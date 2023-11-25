@@ -1,0 +1,95 @@
+<?php
+require 'dbcon.php';
+
+if (isset($_POST['delete'])) {
+    $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
+
+    $query = "DELETE FROM plano WHERE id='$registro_id' ";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Plano eliminado exitosamente";
+        header("Location: proyectos.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al eliminar el plano, contácte a soporte";
+        header("Location: proyectos.php");
+        exit(0);
+    }
+}
+
+if (isset($_POST['update'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
+    $apellidop = mysqli_real_escape_string($con, $_POST['apellidop']);
+    $apellidom = mysqli_real_escape_string($con, $_POST['apellidom']);
+    $password = mysqli_real_escape_string($con, $_POST['password']);
+    $rol = mysqli_real_escape_string($con, $_POST['rol']);
+
+    // Encriptar la nueva contraseña
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    $query = "UPDATE `plano` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `password` = '$hashed_password', `rol` = '$rol' WHERE `plano`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Plano editado exitosamente";
+        header("Location: proyectos.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar el plano, contácte a soporte";
+        header("Location: proyectos.php");
+        exit(0);
+    }
+}
+
+if (isset($_POST['save'])) {
+    // Escape other non-array POST values
+    $idproyecto = isset($_POST['idproyecto']) ? mysqli_real_escape_string($con, $_POST['idproyecto']) : '';
+    $nombreplano = isset($_POST['nombreplano']) ? mysqli_real_escape_string($con, $_POST['nombreplano']) : '';
+    $medio = isset($_POST['medio']) ? mysqli_real_escape_string($con, $_POST['medio']) : '';
+    $nivel = isset($_POST['nivel']) ? mysqli_real_escape_string($con, $_POST['nivel']) : '';
+    $piezas = isset($_POST['piezas']) ? mysqli_real_escape_string($con, $_POST['piezas']) : '';
+    $etapa = isset($_POST['etapa']) ? mysqli_real_escape_string($con, $_POST['etapa']) : '';
+
+    // Verify if checkboxes are selected and process each value
+    if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
+        foreach ($_POST['codigooperador'] as $codigoOperador) {
+            // Insertar el registro en la tabla `plano`
+            $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, etapa) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($con, $query);
+
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 'isssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $etapa);
+                mysqli_stmt_execute($stmt);
+
+                // Obtener el ID del último registro insertado en la tabla `plano`
+                $idplano = mysqli_insert_id($con);
+
+                // Insertar en la tabla `asignacionplano` utilizando el ID obtenido anteriormente
+                $queryplano = "INSERT INTO asignacionplano (idplano, codigooperador) VALUES (?, ?)";
+                $stmtPlano = mysqli_prepare($con, $queryplano);
+
+                if ($stmtPlano) {
+                    mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
+                    mysqli_stmt_execute($stmtPlano);
+
+                    $_SESSION['message'] = "Plano creado exitosamente";
+                    header("Location: maquinados.php");
+                    exit(0);
+                } else {
+                    $_SESSION['message'] = "Error al crear el plano, contacte a soporte";
+                    header("Location: maquinados.php");
+                    exit(0);
+                }
+            } else {
+                $_SESSION['message'] = "Error al crear el plano, contacte a soporte";
+                header("Location: maquinados.php");
+                exit(0);
+            }
+        }
+    }
+}
+
+
+?>

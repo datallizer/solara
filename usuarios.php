@@ -173,7 +173,7 @@ require 'dbcon.php';
                             <label for="codigo">Codigo acceso</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3">
+                        <div class="form-floating col-12 mt-3 mb-3">
                             <select class="form-select" name="rol" id="rol" autocomplete="off" required>
                                 <option selected disabled>Seleccione el rol</option>
                                 <option value="1">Administrador</option>
