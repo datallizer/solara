@@ -9,11 +9,11 @@ if (isset($_POST['delete'])) {
 
     if ($query_run) {
         $_SESSION['message'] = "Plano eliminado exitosamente";
-        header("Location: proyectos.php");
+        header("Location: maquinados.php");
         exit(0);
     } else {
         $_SESSION['message'] = "Error al eliminar el plano, contácte a soporte";
-        header("Location: proyectos.php");
+        header("Location: maquinados.php");
         exit(0);
     }
 }
@@ -47,25 +47,24 @@ if (isset($_POST['save'])) {
     // Escape other non-array POST values
     $idproyecto = isset($_POST['idproyecto']) ? mysqli_real_escape_string($con, $_POST['idproyecto']) : '';
     $nombreplano = isset($_POST['nombreplano']) ? mysqli_real_escape_string($con, $_POST['nombreplano']) : '';
-    $medio = isset($_POST['medio']) ? mysqli_real_escape_string($con, $_POST['medio']) : '';
+    $medio = file_get_contents($_FILES['medio']['tmp_name']);
     $nivel = isset($_POST['nivel']) ? mysqli_real_escape_string($con, $_POST['nivel']) : '';
     $piezas = isset($_POST['piezas']) ? mysqli_real_escape_string($con, $_POST['piezas']) : '';
-    $etapa = isset($_POST['etapa']) ? mysqli_real_escape_string($con, $_POST['etapa']) : '';
 
     // Verify if checkboxes are selected and process each value
     if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
-        foreach ($_POST['codigooperador'] as $codigoOperador) {
-            // Insertar el registro en la tabla `plano`
-            $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, etapa) VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($con, $query);
+        // Insertar el registro en la tabla `plano` una sola vez fuera del bucle
+        $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas) VALUES (?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($con, $query);
 
-            if ($stmt) {
-                mysqli_stmt_bind_param($stmt, 'isssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $etapa);
-                mysqli_stmt_execute($stmt);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, 'ssssi', $idproyecto, $nombreplano, $medio, $nivel, $piezas);
+            mysqli_stmt_execute($stmt);
 
-                // Obtener el ID del último registro insertado en la tabla `plano`
-                $idplano = mysqli_insert_id($con);
+            // Obtener el ID del último registro insertado en la tabla `plano`
+            $idplano = mysqli_insert_id($con);
 
+            foreach ($_POST['codigooperador'] as $codigoOperador) {
                 // Insertar en la tabla `asignacionplano` utilizando el ID obtenido anteriormente
                 $queryplano = "INSERT INTO asignacionplano (idplano, codigooperador) VALUES (?, ?)";
                 $stmtPlano = mysqli_prepare($con, $queryplano);
@@ -73,23 +72,22 @@ if (isset($_POST['save'])) {
                 if ($stmtPlano) {
                     mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
                     mysqli_stmt_execute($stmtPlano);
-
-                    $_SESSION['message'] = "Plano creado exitosamente";
-                    header("Location: maquinados.php");
-                    exit(0);
                 } else {
                     $_SESSION['message'] = "Error al crear el plano, contacte a soporte";
                     header("Location: maquinados.php");
                     exit(0);
                 }
-            } else {
-                $_SESSION['message'] = "Error al crear el plano, contacte a soporte";
-                header("Location: maquinados.php");
-                exit(0);
             }
+
+            $_SESSION['message'] = "Plano(s) creado(s) exitosamente";
+            header("Location: maquinados.php");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al crear el plano, contacte a soporte";
+            header("Location: maquinados.php");
+            exit(0);
         }
     }
 }
-
 
 ?>

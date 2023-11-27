@@ -63,7 +63,6 @@ require 'dbcon.php';
                                             <th>Operadores asignados</th>
                                             <th>Número de piezas</th>
                                             <th>Nivel de pieza</th>
-                                            <th>Etapa</th>
                                             <th>Accion</th>
                                         </tr>
                                     </thead>
@@ -79,8 +78,40 @@ require 'dbcon.php';
                                         ?>
                                                 <tr>
                                                     <td><?= $registro['nombre']; ?></td>
-                                                    <td><?= $registro['nombreplano']; ?></td>
-                                                    <td><?= $registro['medio']; ?></td>
+                                                    <td>
+                                                        <p><?= $registro['nombreplano']; ?></p>
+                                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver PDF</button>
+                                                        <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><?php
+                                                        // Consulta para obtener los registros de asignacionplano con el nombre completo
+                                                        $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom
+                                    FROM asignacionplano
+                                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                                    WHERE asignacionplano.idplano = " . $registro['id'];
+
+                                                        $query_run_asignacion = mysqli_query($con, $queryAsignacion);
+
+                                                        if (mysqli_num_rows($query_run_asignacion) > 0) {
+                                                            foreach ($query_run_asignacion as $asignacion) {
+                                                                echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
+                                                            }
+                                                        } else {
+                                                            echo 'No asignado';
+                                                        }
+                                                        ?></td>
                                                     <td><?= $registro['piezas']; ?></td>
                                                     <td>
                                                         <?php
@@ -98,32 +129,11 @@ require 'dbcon.php';
                                                         ?>
                                                     </td>
                                                     <td>
-                                                        <?php
-                                                        if ($registro['etapa'] === '1') {
-                                                            echo "Diseño";
-                                                        } else if ($registro['etapa'] === '2') {
-                                                            echo "Revisión interna";
-                                                        } else if ($registro['etapa'] === '3') {
-                                                            echo "Revisión con cliente";
-                                                        } else if ($registro['etapa'] === '4') {
-                                                            echo "Planos";
-                                                        } else if ($registro['etapa'] === '5') {
-                                                            echo "Bom";
-                                                        } else if ($registro['etapa'] === '6') {
-                                                            echo "Remediación";
-                                                        } else if ($registro['etapa'] === '7') {
-                                                            echo "Documentación";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <a href="editarusuario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                        <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                            <form action="codeusuarios.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                            </form>
+                                                        <form action="codemaquinados.php" method="POST" class="d-inline">
+                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>"  class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                         <?php
@@ -151,7 +161,7 @@ require 'dbcon.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codemaquinados.php" method="POST" class="row">
+                    <form action="codemaquinados.php" method="POST" class="row" enctype="multipart/form-data">
                         <div class="form-floating col-12 mb-3">
                             <select class="form-select" name="idproyecto" id="idproyecto">
                                 <option disabled selected>Seleccione un proyecto</option>
@@ -182,8 +192,8 @@ require 'dbcon.php';
                         </div>
 
                         <div class="mt-3">
-                            <label for="formFile" class="form-label">Plano PDF</label>
-                            <input class="form-control" type="file" id="formFile" name="medio">
+                            <label for="medio" class="form-label">Plano PDF</label>
+                            <input class="form-control" type="file" id="medio" name="medio" max="100000">
                         </div>
 
 
@@ -203,20 +213,6 @@ require 'dbcon.php';
                             <label for="nivel">Nivel de pieza</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3 mt-3">
-                            <select class="form-select" name="etapa" id="etapa" autocomplete="off" required>
-                                <option selected disabled>Seleccione la etapa</option>
-                                <option value="1">Diseño</option>
-                                <option value="2">Revisión interna</option>
-                                <option value="3">Revisión con cliente</option>
-                                <option value="4">Planos</option>
-                                <option value="5">Bom</option>
-                                <option value="6">Remediación</option>
-                                <option value="7">Documentación</option>
-                            </select>
-                            <label for="etapa">Etapa:</label>
-                        </div>
-
                         <div class="form-check col-12 mt-3 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
@@ -228,7 +224,7 @@ require 'dbcon.php';
                                 while ($usuario = mysqli_fetch_assoc($result)) {
                                     $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
                                     $idUsuario = $usuario['codigo'];
-                                    
+
                                     // Cambio en el nombre del campo para que se envíen como un array
                                     echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
                                     echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
@@ -249,6 +245,57 @@ require 'dbcon.php';
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <!-- Incluir los archivos de PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+        // Función para cargar y mostrar el PDF en el iframe
+        function showPDF(pdfUrl, iframeId) {
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            loadingTask.promise.then(function(pdf) {
+                // Carga la página 1 del PDF
+                pdf.getPage(1).then(function(page) {
+                    const scale = 1.5;
+                    const viewport = page.getViewport({
+                        scale
+                    });
+
+                    // Preparar el canvas para renderizar la página PDF
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    // Renderizar la página PDF en el canvas
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    page.render(renderContext).promise.then(function() {
+                        // Agregar el canvas al iframe
+                        const iframe = document.getElementById(iframeId);
+                        iframe.src = canvas.toDataURL();
+                    });
+                });
+            }, function(error) {
+                console.error('Error al cargar el PDF:', error);
+            });
+        }
+
+        // Al mostrar el modal, cargar el PDF en el iframe correspondiente
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php foreach ($query_run as $registro) : ?>
+                const pdfUrl<?= $registro['id']; ?> = '<?= $registro['medio']; ?>';
+                const iframeId<?= $registro['id']; ?> = 'pdfViewer<?= $registro['id']; ?>';
+                const modal<?= $registro['id']; ?> = new bootstrap.Modal(document.getElementById('pdfModal<?= $registro['id']; ?>'));
+
+                modal<?= $registro['id']; ?>.addEventListener('shown.bs.modal', function() {
+                    showPDF(pdfUrl<?= $registro['id']; ?>, iframeId<?= $registro['id']; ?>);
+                });
+            <?php endforeach; ?>
+        });
+    </script>
+
+
 </body>
 
 </html>
