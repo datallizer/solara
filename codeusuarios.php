@@ -28,13 +28,13 @@ if(isset($_POST['update']))
     $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
     $apellidop = mysqli_real_escape_string($con, $_POST['apellidop']);
     $apellidom = mysqli_real_escape_string($con, $_POST['apellidom']);
-    $password = mysqli_real_escape_string($con, $_POST['password']);
+    $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
     $rol = mysqli_real_escape_string($con, $_POST['rol']);
 
     // Encriptar la nueva contraseña
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $query = "UPDATE `usuarios` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `password` = '$hashed_password', `rol` = '$rol' WHERE `usuarios`.`id` = '$id'";
+    $query = "UPDATE `usuarios` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `codigo` = '$codigo', `rol` = '$rol' WHERE `usuarios`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
     if($query_run)
