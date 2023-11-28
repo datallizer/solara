@@ -2,27 +2,27 @@
 session_start();
 require 'dbcon.php';
 
-// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
-// if (isset($_SESSION['username'])) {
-//     $username = $_SESSION['username'];
+//Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
+if (isset($_SESSION['codigo'])) {
+    $codigo = $_SESSION['codigo'];
 
-//     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-//     $query = "SELECT * FROM usuarios WHERE username = '$username'";
-//     $result = mysqli_query($con, $query);
+    // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $result = mysqli_query($con, $query);
 
-//     // Si se encuentra un registro coincidente, el usuario está autorizado
-//     if (mysqli_num_rows($result) > 0) {
-//         // El usuario está autorizado, se puede acceder al contenido
-//     } else {
-//         // Redirigir al usuario a una página de inicio de sesión
-//         header('Location: login.php');
-//         exit(); // Finalizar el script después de la redirección
-//     }
-// } else {
-//     // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
-//     header('Location: login.php');
-//     exit(); // Finalizar el script después de la redirección
-// }
+    // Si se encuentra un registro coincidente, el usuario está autorizado
+    if (mysqli_num_rows($result) > 0) {
+        // El usuario está autorizado, se puede acceder al contenido
+    } else {
+        // Redirigir al usuario a una página de inicio de sesión
+        header('Location: login.php');
+        exit(); // Finalizar el script después de la redirección
+    }
+} else {
+    // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
+    header('Location: login.php');
+    exit(); // Finalizar el script después de la redirección
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,7 +55,106 @@ require 'dbcon.php';
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
                                 <?php include('message.php'); ?>
-                                <table class="table table-bordered table-striped" style="width: 100%;">
+                                <?php
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                ?>
+                                    <table class="table table-bordered table-striped" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Proyecto</th>
+                                                <th>Planos asociados</th>
+                                                <th>Operadores asignados</th>
+                                                <th>Número de piezas</th>
+                                                <th>Nivel de pieza</th>
+                                                <th>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $query = "SELECT proyecto.*, plano.*
+                                            FROM plano 
+                                            JOIN proyecto ON plano.idproyecto = proyecto.id 
+                                            JOIN asignacionplano ON asignacionplano.idplano = plano.id 
+                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                                            WHERE asignacionplano.codigooperador = usuarios.codigo 
+                                            ORDER BY plano.id DESC";
+
+                                            $query_run = mysqli_query($con, $query);
+
+                                            if (mysqli_num_rows($query_run) > 0) {
+                                                foreach ($query_run as $registro) {
+                                            ?>
+                                                    <tr>
+                                                        <td><?= $registro['nombre']; ?></td>
+                                                        <td>
+                                                            <p><?= $registro['nombreplano']; ?></p>
+                                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver PDF</button>
+                                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <?php
+                                                            $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+                                                            FROM asignacionplano
+                                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                                                            WHERE asignacionplano.idplano = " . $registro['id'];
+                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
+
+                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
+                                                                foreach ($query_run_asignacion as $asignacion) {
+                                                                    echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
+                                                                }
+                                                            } else {
+                                                                echo 'No asignado';
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                        <td><?= $registro['piezas']; ?></td>
+                                                        <td>
+                                                            <?php
+                                                            if ($registro['nivel'] === '1') {
+                                                                echo "Nivel 1";
+                                                            } else if ($registro['nivel'] === '2') {
+                                                                echo "Nivel 2";
+                                                            } else if ($registro['nivel'] === '3') {
+                                                                echo "Nivel 3";
+                                                            } else if ($registro['nivel'] === '4') {
+                                                                echo "Nivel 4";
+                                                            } else {
+                                                                echo "Error, contacte a soporte";
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                        <td>
+                                                            <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                            <form action="codemaquinados.php" method="POST" class="d-inline">
+                                                                <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                            <?php
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='6'><p>No se encontró ningún registro</p></td></tr>";
+                                            }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                <?php
+                                } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                ?>
+                                    <table class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Proyecto</th>
@@ -144,6 +243,9 @@ require 'dbcon.php';
                                         ?>
                                     </tbody>
                                 </table>
+                                <?php
+                                }
+                                ?>
                             </div>
                         </div>
                     </div>

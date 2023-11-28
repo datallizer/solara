@@ -14,6 +14,7 @@ if (isset($_POST['codigo'])) {
         $apellidop = $row['apellidop'];
         $_SESSION['nombre'] = $nombre; // Asignar el nombre a la sesión
         $_SESSION['codigo'] = $row['codigo'];
+        $_SESSION['rol'] = $row['rol']; // Guardar el rol en la sesión
         $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop;
         header("Location: dashboard.php");
         exit();

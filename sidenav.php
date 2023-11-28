@@ -43,10 +43,17 @@ $username = $_SESSION['codigo'];
                             Inicio
                         </a>
 
-                        <a class="nav-link" href="usuarios.php">
+                        <?php
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                            // Mostrar el enlace HTML solo si la condición se cumple
+                            echo '<a class="nav-link" href="usuarios.php">
                             <div class="sb-nav-link-icon"><i class="bi bi-person-fill"></i></div>
                             Usuarios
-                        </a>
+                        </a>';
+                        }
+                        ?>
+
+
 
                         <div class="sb-sidenav-menu-heading">Modulos</div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
@@ -56,31 +63,69 @@ $username = $_SESSION['codigo'];
                         </a>
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" id="maquinados" href="maquinados.php">Maquinados</a>
-                                <a class="nav-link" href="diseño.php">Diseño</a>
-                                <a class="nav-link" href="control.php">Control</a>
-                                <a class="nav-link" href="ensamble.php">Ensamble</a>
-                                <a class="nav-link" href="bomcontroles.php">BOM Controles</a>
-                                <a class="nav-link" href="bommecanico.php">BOM Mecanico</a>
-                                <a class="nav-link" href="estadisticas.php">Estadisticas</a>
-                                <a class="nav-link" href="proyectos.php">Proyectos</a>
-                                <a class="nav-link" href="quotes.php">Quotes</a>
+                                <?php
+                                // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 8, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="maquinados.php">Maquinados</a>';
+                                }
+                                // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="diseño.php">Diseño</a>';
+                                }
+
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="control.php">Control</a>';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="ensamble.php">Ensamble</a>';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="bomcontroles.php">BOM Controles</a>';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="bommecanico.php">BOM Mecanico</a>';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="estadisticas.php">Estadisticas</a>';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="proyectos.php">Proyectos</a>';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="quotes.php">Quotes</a>';
+                                }
+                                ?>
                             </nav>
                         </div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                            Almacen
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                <a class="nav-link" href="#">Inventario</a>
-                                <a class="nav-link" href="#">Entradas</a>
-                                <a class="nav-link" href="#">Salidas</a>
-                                <a class="nav-link" href="#">Reorden</a>
-                                <a class="nav-link" href="#">Quotes</a>
-                            </nav>
-                        </div>
+                        <?php
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                    Almacen
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                        <a class="nav-link" href="#">Inventario</a>
+                                        <a class="nav-link" href="#">Entradas</a>
+                                        <a class="nav-link" href="#">Salidas</a>
+                                        <a class="nav-link" href="#">Reorden</a>
+                                        <a class="nav-link" href="#">Quotes</a>
+                                    </nav>
+                                </div>';
+                                }
+                                ?>
+                        
                         <div class="sb-sidenav-menu-heading">Panel de control</div>
                         <a class="nav-link" href="soporte.php">
                             <div class="sb-nav-link-icon"><i class="bi bi-headset"></i></div>
@@ -89,7 +134,7 @@ $username = $_SESSION['codigo'];
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as:</div>
+                    <div class="small">Usuario:</div>
                     <?php
                     if (isset($_SESSION['codigo'])) {
                         $registro_id = mysqli_real_escape_string($con, $_SESSION['codigo']);
