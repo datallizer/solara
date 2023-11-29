@@ -47,7 +47,14 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MAQUINADOS</h4>
+                                <h4>MAQUINADOS
+                                <?php
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])){
+                                    echo'<button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Nuevo plano
+                                </button>';}
+                                ?>
+                                </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
                                 <?php include('message.php'); ?>
@@ -148,94 +155,94 @@ if (isset($_SESSION['codigo'])) {
                                 } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                 ?>
                                     <table class="table table-bordered table-striped" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Proyecto</th>
-                                            <th>Planos asociados</th>
-                                            <th>Operadores asignados</th>
-                                            <th>Número de piezas</th>
-                                            <th>Nivel de pieza</th>
-                                            <th>Accion</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $query = "SELECT proyecto.*, plano.*
+                                        <thead>
+                                            <tr>
+                                                <th>Proyecto</th>
+                                                <th>Planos asociados</th>
+                                                <th>Operadores asignados</th>
+                                                <th>Número de piezas</th>
+                                                <th>Nivel de pieza</th>
+                                                <th>Accion</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $query = "SELECT proyecto.*, plano.*
                                         FROM plano 
                                         JOIN proyecto ON plano.idproyecto = proyecto.id
                                         WHERE estatusplano = 1 
                                         ORDER BY plano.nivel DESC";
-                                        $query_run = mysqli_query($con, $query);
-                                        if (mysqli_num_rows($query_run) > 0) {
-                                            foreach ($query_run as $registro) {
-                                        ?>
-                                                <tr>
-                                                    <td><?= $registro['nombre']; ?></td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
-                                                        <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-                                                            <div class="modal-dialog modal-lg">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                            $query_run = mysqli_query($con, $query);
+                                            if (mysqli_num_rows($query_run) > 0) {
+                                                foreach ($query_run as $registro) {
+                                            ?>
+                                                    <tr>
+                                                        <td><?= $registro['nombre']; ?></td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
+                                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><?php
-                                                        // Consulta para obtener los registros de asignacionplano con el nombre completo
-                                                        $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom
+                                                        </td>
+                                                        <td><?php
+                                                            // Consulta para obtener los registros de asignacionplano con el nombre completo
+                                                            $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom
                                     FROM asignacionplano
                                     JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                     WHERE asignacionplano.idplano = " . $registro['id'];
 
-                                                        $query_run_asignacion = mysqli_query($con, $queryAsignacion);
+                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 
-                                                        if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                            foreach ($query_run_asignacion as $asignacion) {
-                                                                echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
+                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
+                                                                foreach ($query_run_asignacion as $asignacion) {
+                                                                    echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
+                                                                }
+                                                            } else {
+                                                                echo 'No asignado';
                                                             }
-                                                        } else {
-                                                            echo 'No asignado';
-                                                        }
-                                                        ?></td>
-                                                    <td><?= $registro['piezas']; ?></td>
-                                                    <td>
-                                                        <?php
-                                                        if ($registro['nivel'] === '1') {
-                                                            echo "Nivel 1";
-                                                        } else if ($registro['nivel'] === '2') {
-                                                            echo "Nivel 2";
-                                                        } else if ($registro['nivel'] === '3') {
-                                                            echo "Nivel 3";
-                                                        } else if ($registro['nivel'] === '4') {
-                                                            echo "Nivel 4";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                            ?></td>
+                                                        <td><?= $registro['piezas']; ?></td>
+                                                        <td>
+                                                            <?php
+                                                            if ($registro['nivel'] === '1') {
+                                                                echo "Nivel 1";
+                                                            } else if ($registro['nivel'] === '2') {
+                                                                echo "Nivel 2";
+                                                            } else if ($registro['nivel'] === '3') {
+                                                                echo "Nivel 3";
+                                                            } else if ($registro['nivel'] === '4') {
+                                                                echo "Nivel 4";
+                                                            } else {
+                                                                echo "Error, contacte a soporte";
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                        <td>
+                                                            <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                        <form action="codemaquinados.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>"  class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                        <?php
+                                                            <form action="codemaquinados.php" method="POST" class="d-inline">
+                                                                <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                            <?php
+                                                }
+                                            } else {
+                                                echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td><td></td><td></td><td></td>";
                                             }
-                                        } else {
-                                            echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td><td></td><td></td><td></td>";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
+                                            ?>
+                                        </tbody>
+                                    </table>
                                 <?php
                                 }
                                 ?>
