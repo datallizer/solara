@@ -3,7 +3,9 @@ require 'dbcon.php';
 $username = $_SESSION['codigo'];
 ?>
 <link rel="stylesheet" href="css/sidenav.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" style="min-height: 80px;">
@@ -13,11 +15,11 @@ $username = $_SESSION['codigo'];
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
         <!-- Navbar Search-->
         <!-- <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Buscar..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                    <button class="btn btn-light" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-                </div>
-            </form> -->
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Buscar..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                <button class="btn btn-light" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+            </div>
+        </form> -->
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-12 me-3 me-lg-12">
             <li class="nav-item dropdown">
@@ -108,8 +110,8 @@ $username = $_SESSION['codigo'];
                         </div>
                         <?php
                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                    // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                            // Mostrar el enlace HTML solo si la condición se cumple
+                            echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                                     <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                     Almacen
                                     <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
@@ -123,10 +125,20 @@ $username = $_SESSION['codigo'];
                                         <a class="nav-link" href="#">Quotes</a>
                                     </nav>
                                 </div>';
-                                }
-                                ?>
-                        
+                        }
+                        ?>
+
                         <div class="sb-sidenav-menu-heading">Panel de control</div>
+                        <?php
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                            // Mostrar el enlace HTML solo si la condición se cumple
+                            echo '<a class="nav-link" href="motivos.php">
+                            <div class="sb-nav-link-icon"><i class="bi bi-sign-stop"></i></div>
+                            Motivos de paro
+                        </a>';
+                        }
+                        ?>
+                        
                         <a class="nav-link" href="soporte.php">
                             <div class="sb-nav-link-icon"><i class="bi bi-headset"></i></div>
                             Soporte

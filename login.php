@@ -16,7 +16,11 @@ if (isset($_POST['codigo'])) {
         $_SESSION['codigo'] = $row['codigo'];
         $_SESSION['rol'] = $row['rol']; // Guardar el rol en la sesión
         $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop;
-        header("Location: dashboard.php");
+        if ($_SESSION['rol'] == 8) {
+            header("Location: maquinados.php");
+        } else {
+            header("Location: dashboard.php");
+        }
         exit();
     } else {
         $_SESSION['message'] = "Codigo incorrecto";

@@ -47,11 +47,7 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MAQUINADOS
-                                    <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                        Nuevo plano
-                                    </button>
-                                </h4>
+                                <h4>MAQUINADOS</h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
                                 <?php include('message.php'); ?>
@@ -76,8 +72,9 @@ if (isset($_SESSION['codigo'])) {
                                             JOIN proyecto ON plano.idproyecto = proyecto.id 
                                             JOIN asignacionplano ON asignacionplano.idplano = plano.id 
                                             JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                            WHERE asignacionplano.codigooperador = usuarios.codigo 
-                                            ORDER BY plano.id DESC";
+                                            WHERE asignacionplano.codigooperador = $codigo 
+                                            AND plano.estatusplano = 1
+                                            ORDER BY plano.nivel DESC";
 
                                             $query_run = mysqli_query($con, $query);
 
@@ -87,8 +84,7 @@ if (isset($_SESSION['codigo'])) {
                                                     <tr>
                                                         <td><?= $registro['nombre']; ?></td>
                                                         <td>
-                                                            <p><?= $registro['nombreplano']; ?></p>
-                                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver PDF</button>
+                                                            <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
                                                             <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                                 <div class="modal-dialog modal-lg">
                                                                     <div class="modal-content">
@@ -137,10 +133,7 @@ if (isset($_SESSION['codigo'])) {
                                                             ?>
                                                         </td>
                                                         <td>
-                                                            <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-                                                            <form action="codemaquinados.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                            </form>
+                                                            <a href="inicioactividades.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1">Iniciar</a>
                                                         </td>
                                                     </tr>
                                             <?php
@@ -169,8 +162,9 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                         $query = "SELECT proyecto.*, plano.*
                                         FROM plano 
-                                        JOIN proyecto ON plano.idproyecto = proyecto.id 
-                                        ORDER BY plano.id DESC";
+                                        JOIN proyecto ON plano.idproyecto = proyecto.id
+                                        WHERE estatusplano = 1 
+                                        ORDER BY plano.nivel DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
@@ -178,8 +172,7 @@ if (isset($_SESSION['codigo'])) {
                                                 <tr>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
-                                                        <p><?= $registro['nombreplano']; ?></p>
-                                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver PDF</button>
+                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
                                                         <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
