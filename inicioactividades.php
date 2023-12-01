@@ -1,6 +1,31 @@
 <?php
 session_start();
 require 'dbcon.php';
+
+// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
+if (isset($_SESSION['codigo'])) {
+    $idcodigo = $_SESSION['codigo'];
+    $nombre = $_SESSION['nombre'];
+    $apellidop = $_SESSION['apellidop'];
+    $id_plano = $_GET['id'];
+    $query = "SELECT nombreplano FROM plano WHERE id = $id_plano";
+    $result = mysqli_query($con, $query);
+    $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+    $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+
+    if ($result) {
+        if (mysqli_num_rows($result) > 0) {
+            // Obtener el nombreplano si se encontró un registro
+            $row = mysqli_fetch_assoc($result);
+            $nombreplano = $row['nombreplano'];
+            
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='$nombre $apellidop inicio actividades en el plano $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+            $query_rundos = mysqli_query($con, $querydos);
+            $_SESSION['message'] = "Se inicio la asignación exitosamente a las $hora_actual";
+        }
+
+    
+}}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +34,7 @@ require 'dbcon.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Editar maquinado | Solara</title>
+    <title>Actividad en progreso | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
@@ -18,14 +43,14 @@ require 'dbcon.php';
 </head>
 
 <body class="sb-nav-fixed">
-    <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
-            <div class="container mt-5">
+            <div class="container mt-4">
 
                 <div class="row justify-content-center">
                     <div class="col-md-12">
                         <div class="card">
+                        <?php include('message.php'); ?>
                             <div class="card-header">
                                 <h4>ACTIVIDAD EN PROGRESO</h4>
                             </div>
@@ -98,15 +123,26 @@ require 'dbcon.php';
                                                 </div>
 
                                                 <div class="col-6 text-center mt-3 d-flex align-items-center justify-content-center">
-                                                    <button type="submit" name="save" class="btn btn-danger">
+                                                <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver plano</button><br>
+                                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                    <button type="submit" name="save" class="btn btn-danger m-3">
                                                         Detener actividad
                                                     </button>
                                                 </div>
-
-
                                             </div>
                             </div>
-
                             </form>
                     <?php
                                     } else {

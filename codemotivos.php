@@ -1,5 +1,6 @@
 <?php
 require 'dbcon.php';
+session_start();
 
 if(isset($_POST['delete']))
 {
@@ -27,14 +28,16 @@ if(isset($_POST['update']))
     $id = mysqli_real_escape_string($con,$_POST['id']);
     $motivosparo = mysqli_real_escape_string($con, $_POST['motivosparo']);
 
-    // Encriptar la nueva contraseña
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    $query = "UPDATE `motivos` SET `motivosparo` = '$motivosparo'";
+    $query = "UPDATE `motivos` SET `motivosparo` = '$motivosparo' WHERE `motivos`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
     if($query_run)
     {
+        $idcodigo = $_SESSION['codigo'];
+        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito un motivo de paro: $motivosparo', hora='$hora_actual', fecha='$fecha_actual'";
+        $query_rundos = mysqli_query($con, $querydos);
         $_SESSION['message'] = "Motivo editado exitosamente";
         header("Location: motivos.php");
         exit(0);
@@ -56,6 +59,11 @@ if(isset($_POST['save']))
     $query_run = mysqli_query($con, $query);
     if($query_run)
     {
+        $idcodigo = $_SESSION['codigo'];
+        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Registro un nuevo motivo de paro: $motivosparo', hora='$hora_actual', fecha='$fecha_actual'";
+        $query_rundos = mysqli_query($con, $querydos);
         $_SESSION['message'] = "Motivo creado exitosamente";
         header("Location: motivos.php");
         exit(0);

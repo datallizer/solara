@@ -66,7 +66,7 @@ require 'dbcon.php';
                                                 </div>
 
                                                 <div class="form-floating col-12 mt-3">
-                                                    <input type="text" class="form-control" name="codigo" id="codigo" value="<?= $registro['codigo']; ?>" disabled>
+                                                    <input type="text" class="form-control" name="codigo" id="codigo" value="<?= $registro['codigo']; ?>" readonly>
                                                     <label for="codigo">Codigo de acceso</label>
                                                 </div>
 

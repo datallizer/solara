@@ -169,7 +169,7 @@ require 'dbcon.php';
                         </div>
 
                         <div class="form-floating col-12 mt-3">
-                            <input type="text" class="form-control" name="codigo" id="codigo" placeholder="Codigo acceso" autocomplete="off" required>
+                            <input type="int" class="form-control" name="codigo" id="codigo" placeholder="Codigo acceso" autocomplete="off" required>
                             <label for="codigo">Codigo acceso</label>
                         </div>
 

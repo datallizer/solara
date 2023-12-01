@@ -1,5 +1,6 @@
 <?php
 require 'dbcon.php';
+session_start();
 
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
@@ -26,9 +27,6 @@ if (isset($_POST['update'])) {
     $password = mysqli_real_escape_string($con, $_POST['password']);
     $rol = mysqli_real_escape_string($con, $_POST['rol']);
 
-    // Encriptar la nueva contraseña
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
     $query = "UPDATE `plano` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `password` = '$hashed_password', `rol` = '$rol' WHERE `plano`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
@@ -54,7 +52,7 @@ if (isset($_POST['save'])) {
     // Verify if checkboxes are selected and process each value
     if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
         // Insertar el registro en la tabla `plano` una sola vez fuera del bucle
-        $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas) VALUES (?, ?, ?, ?, ?)";
+        $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, estatusplano) VALUES (?, ?, ?, ?, ?, '1')";
         $stmt = mysqli_prepare($con, $query);
 
         if ($stmt) {
@@ -72,16 +70,22 @@ if (isset($_POST['save'])) {
                 if ($stmtPlano) {
                     mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
                     mysqli_stmt_execute($stmtPlano);
+                    $idcodigo = $_SESSION['codigo'];
+                    $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+                    $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+
+                    $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo plano, nombre: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+                    $query_rundos = mysqli_query($con, $querydos);
+
+                    $_SESSION['message'] = "Plano creado exitosamente";
+                    header("Location: maquinados.php");
+                    exit(0);
                 } else {
                     $_SESSION['message'] = "Error al crear el plano, contacte a soporte";
                     header("Location: maquinados.php");
                     exit(0);
                 }
             }
-
-            $_SESSION['message'] = "Plano(s) creado(s) exitosamente";
-            header("Location: maquinados.php");
-            exit(0);
         } else {
             $_SESSION['message'] = "Error al crear el plano, contacte a soporte";
             header("Location: maquinados.php");
@@ -89,5 +93,3 @@ if (isset($_POST['save'])) {
         }
     }
 }
-
-?>

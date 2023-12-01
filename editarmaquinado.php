@@ -27,7 +27,11 @@ require 'dbcon.php';
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>ACTIVIDAD EN PROGRESO</h4>
+                                <h4>EDITAR PLANO
+                                    <a href="maquinados.php" class="btn btn-danger btn-sm float-end">
+                                        Regresar
+                                    </a>
+                                </h4>
                             </div>
                             <div class="card-body">
 
@@ -44,73 +48,57 @@ require 'dbcon.php';
 
                                     if (mysqli_num_rows($query_run) > 0) {
                                         $registro = mysqli_fetch_array($query_run);
+                                        $pieza_actual = $registro['nivel'];
+                                        $estatus_actual = $registro['estatus'];
 
                                 ?>
 
-                                        <form action="codeactividad.php" method="POST">
+                                        <form action="codemaquinado.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row mt-1">
-                                                <div class="form-floating col-12">
-                                                    <input type="text" class="form-control" id="nombre" value="<?= $registro['nombre']; ?>" disabled>
-                                                    <label for="nombre">Nombre del proyecto</label>
-                                                </div>
 
                                                 <div class="form-floating col-12 col-md-4 mt-3">
-                                                    <input type="text" class="form-control" id="nombreplano" value="<?= $registro['nombreplano']; ?>" disabled>
+                                                    <input type="text" class="form-control" id="nombreplano" value="<?= $registro['nombreplano']; ?>">
                                                     <label for="nombreplano">Nombre del plano</label>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-8 mt-3">
-                                                    <input type="text" class="form-control" id="nivel" value="<?= $registro['nivel']; ?>" disabled>
-                                                    <label for="nivel">Nivel </label>
+                                                <div class="col-12 col-md-7 mt-3 form-floating">
+                                                    <select class="form-select" name="nivel" id="nivel">
+                                                        <option disabled>Seleccione una modalidad</option>
+                                                        <option value="1" <?= ($pieza_actual == 1) ? 'selected' : ''; ?>>Nivel 1</option>
+                                                        <option value="2" <?= ($pieza_actual == 2) ? 'selected' : ''; ?>>Nivel 2</option>
+                                                        <option value="3" <?= ($pieza_actual == 3) ? 'selected' : ''; ?>>Nivel 3</option>
+                                                        <option value="4" <?= ($pieza_actual == 4) ? 'selected' : ''; ?>>Nivel 4</option>
+                                                    </select>
+                                                    <label style="margin-left: 10px;" for="nivel">Modalidad</label>
                                                 </div>
 
                                                 <div class="form-floating col-5 mt-3">
-                                                    <input type="text" class="form-control" id="piezas" value="<?= $registro['piezas']; ?>" disabled>
+                                                    <input type="text" class="form-control" id="piezas" name="piezas" value="<?= $registro['piezas']; ?>">
                                                     <label for="piezas">Numero de piezas</label>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-7 mt-3">
-                                                    <?php
-                                                    // Tu código de conexión a la base de datos aquí
-
-                                                    $query = "SELECT * FROM motivos";
-                                                    $result = mysqli_query($con, $query);
-
-                                                    // Comprobamos si hay resultados
-                                                    if (mysqli_num_rows($result) > 0) {
-                                                        echo '<select class="form-select" name="motivosparo" id="motivosparo">';
-                                                        // Iteramos sobre los resultados para generar las opciones del select
-                                                        while ($row = mysqli_fetch_assoc($result)) {
-                                                            echo '<option value="' . $row['motivosparo'] . '">' . $row['motivosparo'] . '</option>';
-                                                        }
-                                                        echo '</select>';
-                                                    } else {
-                                                        echo 'No hay motivos disponibles';
-                                                    }
-                                                    ?>
-                                                    <label for="estatus">Estatus</label>
+                                                <div class="col-12 col-md-7 mt-3 form-floating">
+                                                    <select class="form-select" name="estatus" id="estatus">
+                                                        <option disabled>Seleccione una modalidad</option>
+                                                        <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Activo</option>
+                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Terminado</option>
+                                                    </select>
+                                                    <label style="margin-left: 10px;" for="estatus">Estatus</label>
                                                 </div>
 
-                                                <div class="col-5">
-                                                    <img src="images/actividad.gif" alt="">
-                                                </div>
-
-                                                <div class="col-6 text-center mt-3 d-flex align-items-center justify-content-center">
-                                                    <button type="submit" name="save" class="btn btn-danger">
-                                                        Detener actividad
+                                                <div class="col-12 text-center mt-3 d-flex align-items-center justify-content-center">
+                                                    <button type="submit" name="save" class="btn btn-warning">
+                                                        Actualizar plano
                                                     </button>
                                                 </div>
-
-
                                             </div>
                             </div>
-
                             </form>
                     <?php
                                     } else {
-                                        echo "<h4>No Such Id Found</h4>";
+                                        echo "<h4>No se encontro ningun registro con este ID</h4>";
                                     }
                                 }
                     ?>

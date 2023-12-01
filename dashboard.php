@@ -54,6 +54,7 @@ if (isset($_SESSION['codigo'])) {
                         <table id="miTabla" class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th scope="col">#</th>
                                     <th scope="col">Usuario</th>
                                     <th scope="col">Detalles</th>
                                     <th scope="col">Hora</th>
@@ -63,16 +64,19 @@ if (isset($_SESSION['codigo'])) {
                             <tbody>
                                 <?php
                                 $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
-          FROM historial h 
-          INNER JOIN usuarios u ON h.idcodigo = u.codigo 
-          ORDER BY h.id DESC";
+                                FROM historial h 
+                                INNER JOIN usuarios u ON h.idcodigo = u.codigo 
+                                ORDER BY h.id DESC";
 
-                                $query_run = mysqli_query($con, $query); 
+                                $query_run = mysqli_query($con, $query);
 
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
                                 ?>
                                         <tr>
+                                            <td>
+                                                <p><?= $registro['id']; ?></p>
+                                            </td>
                                             <td><?= $registro['nombre'] . ' ' . $registro['apellidop'] . ' ' . $registro['apellidom']; ?></td>
                                             <td>
                                                 <p><?= $registro['detalles']; ?></p>
@@ -87,7 +91,7 @@ if (isset($_SESSION['codigo'])) {
                                 <?php
                                     }
                                 } else {
-                                    echo "<tr><td colspan='4'><p>No se encontró ningún registro</p></td></tr>";
+                                    echo "<tr><td colspan='5'><p>No se encontró ningún registro</p></td></tr>";
                                 }
                                 ?>
 
@@ -105,7 +109,11 @@ if (isset($_SESSION['codigo'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script>
         $(document).ready(function() {
-            $('#miTabla').DataTable();
+            $('#miTabla').DataTable({
+                "order": [
+                    [0, "desc"]
+                ] // Ordenar la primera columna (índice 0) en orden descendente
+            });
         });
     </script>
 </body>

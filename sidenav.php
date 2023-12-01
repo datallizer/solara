@@ -1,6 +1,5 @@
 <?php
 require 'dbcon.php';
-$username = $_SESSION['codigo'];
 ?>
 <link rel="stylesheet" href="css/sidenav.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
@@ -71,16 +70,6 @@ $username = $_SESSION['codigo'];
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="maquinados.php">Maquinados</a>';
                                 }
-                                // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
-                                    // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="nav-link" href="diseño.php">Diseño</a>';
-                                }
-
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 9])) {
-                                    // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="nav-link" href="control.php">Control</a>';
-                                }
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="ensamble.php">Ensamble</a>';
@@ -149,7 +138,7 @@ $username = $_SESSION['codigo'];
                     <div class="small">Usuario:</div>
                     <?php
                     if (isset($_SESSION['codigo'])) {
-                        $registro_id = mysqli_real_escape_string($con, $_SESSION['codigo']);
+                        $registro_id = $_SESSION['codigo'];
                         $query = "SELECT * FROM usuarios WHERE codigo='$registro_id' ";
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {

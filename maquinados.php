@@ -161,6 +161,7 @@ if (isset($_SESSION['codigo'])) {
                                                 <th>Planos asociados</th>
                                                 <th>Operadores asignados</th>
                                                 <th>Número de piezas</th>
+                                                <th>Prioridad</th>
                                                 <th>Nivel de pieza</th>
                                                 <th>Accion</th>
                                             </tr>
@@ -194,12 +195,13 @@ if (isset($_SESSION['codigo'])) {
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td><?= $registro['prioridad']; ?></td>
                                                         <td><?php
                                                             // Consulta para obtener los registros de asignacionplano con el nombre completo
                                                             $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom
-                                    FROM asignacionplano
-                                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                    WHERE asignacionplano.idplano = " . $registro['id'];
+                                                            FROM asignacionplano
+                                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                                                            WHERE asignacionplano.idplano = " . $registro['id'];
 
                                                             $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 

@@ -12,14 +12,24 @@ if (isset($_POST['codigo'])) {
         $row = mysqli_fetch_assoc($result);
         $nombre = $row['nombre'];
         $apellidop = $row['apellidop'];
-        $_SESSION['nombre'] = $nombre; // Asignar el nombre a la sesión
+        $_SESSION['nombre'] = $nombre;
+        $_SESSION['apellidop'] = $apellidop; // Asignar el nombre a la sesión
         $_SESSION['codigo'] = $row['codigo'];
         $_SESSION['rol'] = $row['rol']; // Guardar el rol en la sesión
-        $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop;
         if ($_SESSION['rol'] == 8) {
+            $idcodigo = $_SESSION['codigo'];
+            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema: $nombre $apellidop, $codigo a las $hora_actual', hora='$hora_actual', fecha='$fecha_actual'";
+            $query_rundos = mysqli_query($con, $querydos);
+            $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             header("Location: maquinados.php");
+            exit();
         } else {
+            $hora_actual = date("H:i");
+            $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             header("Location: dashboard.php");
+            exit();
         }
         exit();
     } else {
