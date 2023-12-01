@@ -20,7 +20,7 @@ if (isset($_POST['codigo'])) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
             $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema: $nombre $apellidop, $codigo a las $hora_actual', hora='$hora_actual', fecha='$fecha_actual'";
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema', hora='$hora_actual', fecha='$fecha_actual'";
             $query_rundos = mysqli_query($con, $querydos);
             $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             header("Location: maquinados.php");

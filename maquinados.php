@@ -50,7 +50,7 @@ if (isset($_SESSION['codigo'])) {
                                 <h4>MAQUINADOS
                                 <?php
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])){
-                                    echo'<button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    echo'<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Nuevo plano
                                 </button>';}
                                 ?>
@@ -152,15 +152,15 @@ if (isset($_SESSION['codigo'])) {
                                         </tbody>
                                     </table>
                                 <?php
-                                } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                 ?>
                                     <table class="table table-bordered table-striped" style="width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>Proyecto</th>
                                                 <th>Planos asociados</th>
-                                                <th>Operadores asignados</th>
                                                 <th>Número de piezas</th>
+                                                <th>Operadores asignados</th>
                                                 <th>Prioridad</th>
                                                 <th>Nivel de pieza</th>
                                                 <th>Accion</th>
@@ -196,13 +196,12 @@ if (isset($_SESSION['codigo'])) {
                                                             </div>
                                                         </td>
                                                         <td><?= $registro['prioridad']; ?></td>
-                                                        <td><?php
-                                                            // Consulta para obtener los registros de asignacionplano con el nombre completo
-                                                            $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom
+                                                        <td>
+                                                            <?php
+                                                            $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                             FROM asignacionplano
                                                             JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                                             WHERE asignacionplano.idplano = " . $registro['id'];
-
                                                             $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 
                                                             if (mysqli_num_rows($query_run_asignacion) > 0) {
@@ -212,7 +211,8 @@ if (isset($_SESSION['codigo'])) {
                                                             } else {
                                                                 echo 'No asignado';
                                                             }
-                                                            ?></td>
+                                                            ?>
+                                                        </td>
                                                         <td><?= $registro['piezas']; ?></td>
                                                         <td>
                                                             <?php

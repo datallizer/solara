@@ -74,7 +74,7 @@ if (isset($_POST['save'])) {
                     $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
                     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
 
-                    $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo plano, nombre: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+                    $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo plano: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
                     $query_rundos = mysqli_query($con, $querydos);
 
                     $_SESSION['message'] = "Plano creado exitosamente";

@@ -19,7 +19,7 @@ if (isset($_SESSION['codigo'])) {
             $row = mysqli_fetch_assoc($result);
             $nombreplano = $row['nombreplano'];
             
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='$nombre $apellidop inicio actividades en el plano $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Inicio actividades en el plano $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
             $query_rundos = mysqli_query($con, $querydos);
             $_SESSION['message'] = "Se inicio la asignación exitosamente a las $hora_actual";
         }

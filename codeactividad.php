@@ -9,7 +9,7 @@ if (isset($_POST['save'])) {
     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
     $motivosparo = mysqli_real_escape_string($con, $_POST['motivosparo']);
 
-    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Operdador(a) $nombre $apellidop detuvo la actividad, $nombreplano por motivo $motivosparo', hora='$hora_actual', fecha='$fecha_actual'";
+    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Detuvo la actividad, $nombreplano por motivo $motivosparo', hora='$hora_actual', fecha='$fecha_actual'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
