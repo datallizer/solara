@@ -21,22 +21,21 @@ if (isset($_POST['delete'])) {
 
 if (isset($_POST['update'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $apellidop = mysqli_real_escape_string($con, $_POST['apellidop']);
-    $apellidom = mysqli_real_escape_string($con, $_POST['apellidom']);
-    $password = mysqli_real_escape_string($con, $_POST['password']);
-    $rol = mysqli_real_escape_string($con, $_POST['rol']);
+    $nombreplano = mysqli_real_escape_string($con, $_POST['nombreplano']);
+    $nivel = mysqli_real_escape_string($con, $_POST['nivel']);
+    $piezas = mysqli_real_escape_string($con, $_POST['piezas']);
+    $estatusplano = mysqli_real_escape_string($con, $_POST['estatusplano']);
 
-    $query = "UPDATE `plano` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `password` = '$hashed_password', `rol` = '$rol' WHERE `plano`.`id` = '$id'";
+    $query = "UPDATE `plano` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano' WHERE `plano`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Plano editado exitosamente";
-        header("Location: proyectos.php");
+        $_SESSION['message'] = "Plano $nombreplano editado exitosamente";
+        header("Location: maquinados.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al editar el plano, contácte a soporte";
-        header("Location: proyectos.php");
+        $_SESSION['message'] = "Error al editar el plano $nombreplano, contácte a soporte";
+        header("Location: maquinados.php");
         exit(0);
     }
 }

@@ -53,13 +53,13 @@ require 'dbcon.php';
 
                                 ?>
 
-                                        <form action="codemaquinado.php" method="POST">
+                                        <form action="codemaquinados.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row mt-1">
 
                                                 <div class="form-floating col-12 col-md-4 mt-3">
-                                                    <input type="text" class="form-control" id="nombreplano" value="<?= $registro['nombreplano']; ?>">
+                                                    <input type="text" class="form-control" id="nombreplano" name="nombreplano" value="<?= $registro['nombreplano']; ?>">
                                                     <label for="nombreplano">Nombre del plano</label>
                                                 </div>
 
@@ -71,25 +71,26 @@ require 'dbcon.php';
                                                         <option value="3" <?= ($pieza_actual == 3) ? 'selected' : ''; ?>>Nivel 3</option>
                                                         <option value="4" <?= ($pieza_actual == 4) ? 'selected' : ''; ?>>Nivel 4</option>
                                                     </select>
-                                                    <label style="margin-left: 10px;" for="nivel">Modalidad</label>
+                                                    <label style="margin-left: 10px;" for="nivel">Nivel de pieza</label>
                                                 </div>
 
                                                 <div class="form-floating col-5 mt-3">
                                                     <input type="text" class="form-control" id="piezas" name="piezas" value="<?= $registro['piezas']; ?>">
-                                                    <label for="piezas">Numero de piezas</label>
+                                                    <label for="piezas">Número de piezas</label>
                                                 </div>
 
                                                 <div class="col-12 col-md-7 mt-3 form-floating">
-                                                    <select class="form-select" name="estatus" id="estatus">
-                                                        <option disabled>Seleccione una modalidad</option>
-                                                        <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Activo</option>
-                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Terminado</option>
+                                                    <select class="form-select" name="estatusplano" id="estatusplano">
+                                                        <option disabled>Seleccione un estatus</option>
+                                                        <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Terminado</option>
+                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Activo</option>
+                                                        <option value="2" <?= ($estatus_actual == 2) ? 'selected' : ''; ?>>Pausado</option>
                                                     </select>
-                                                    <label style="margin-left: 10px;" for="estatus">Estatus</label>
+                                                    <label style="margin-left: 10px;" for="estatusplano">Estatus del plano</label>
                                                 </div>
 
                                                 <div class="col-12 text-center mt-3 d-flex align-items-center justify-content-center">
-                                                    <button type="submit" name="save" class="btn btn-warning">
+                                                    <button type="submit" name="update" class="btn btn-warning">
                                                         Actualizar plano
                                                     </button>
                                                 </div>

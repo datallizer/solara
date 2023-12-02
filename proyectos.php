@@ -59,6 +59,9 @@ if (isset($_SESSION['codigo'])) {
                                     <thead>
                                         <tr>
                                             <th>Datos del proyecto</th>
+                                            <th>Prioridad</th>
+                                            <th>Etapa diseño</th>
+                                            <th>Etapa control</th>
                                             <th>Detalles</th>
                                             <th>Encargado(s) de proyecto</th>
                                             <th>Accion</th>
@@ -75,11 +78,12 @@ if (isset($_SESSION['codigo'])) {
                                                     <td style="min-width: 250px;">
                                                         <p><b>Nombre: </b><?= $registro['nombre']; ?></p>
                                                         <p><b>Cliente: </b><?= $registro['cliente']; ?></p>
-                                                        <p><b>Prioridad: </b><?= $registro['prioridad']; ?></p>
                                                         <p><b>Presupuesto: </b>$<?= $registro['presupuesto']; ?></p>
                                                         <p><b>Fecha de inicio:</b> <?= $registro['fechainicio']; ?></p>
                                                         <p><b>Fecha finalización:</b> <?= $registro['fechafin']; ?></p>
-                                                        <p><b>Etapa diseño: </b><?php
+                                                    </td>
+                                                    <td><p class="text-center"><?= $registro['prioridad']; ?></p></td>
+                                                    <td><p><?php
                                                                                 if ($registro['etapadiseño'] === '1') {
                                                                                     echo "Diseño";
                                                                                 } else if ($registro['etapadiseño'] === '2') {
@@ -97,8 +101,8 @@ if (isset($_SESSION['codigo'])) {
                                                                                 } else {
                                                                                     echo "Error, contacte a soporte";
                                                                                 }
-                                                                                ?></p>
-                                                        <p><b>Etapa control: </b><?php
+                                                                                ?></p></td>
+                                                    <td><p><?php
                                                                                     if ($registro['etapacontrol'] === '1') {
                                                                                         echo "Diseño";
                                                                                     } else if ($registro['etapacontrol'] === '2') {
@@ -118,8 +122,7 @@ if (isset($_SESSION['codigo'])) {
                                                                                     } else {
                                                                                         echo "Error, contacte a soporte";
                                                                                     }
-                                                                                    ?></p>
-                                                    </td>
+                                                                                    ?></p></td>
                                                     <td>
                                                         <p><b>Detalles: </b><?= $registro['detalles']; ?></p>
                                                     </td>

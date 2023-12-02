@@ -54,11 +54,11 @@ require 'dbcon.php';
                                             <div class="row mt-1">
                                                 <div class="form-floating col-12">
                                                     <input type="text" class="form-control" name="nombre" id="nombre" value="<?= $registro['nombre']; ?>">
-                                                    <label for="nombre">Nombre</label>
+                                                    <label for="nombre">Nombre del proyecto</label>
                                                 </div>
 
                                                 <div class="form-floating col-12 col-md-6 mt-3">
-                                                    <input type="text" class="form-control" name="cliente" id="cliente" value="<?= $registro['cliente']; ?>">
+                                                    <input type="text" class="form-control" name="cliente" id="cliente" value="<?= $registro['cliente']; ?>" readonly>
                                                     <label for="cliente">Cliente</label>
                                                 </div>
 
@@ -68,16 +68,16 @@ require 'dbcon.php';
                                                 </div>
 
                                                 <div class="form-floating col-7 mt-3">
-                                                    <input type="date" class="form-control" name="fechainicio" id="fechainicio" value="<?= $registro['fechainicio']; ?>" disabled>
+                                                    <input type="date" class="form-control" name="fechainicio" id="fechainicio" value="<?= $registro['fechainicio']; ?>" readonly>
                                                     <label for="fechainicio">Fecha de inicio</label>
                                                 </div>
 
                                                 <div class="form-floating col-5 mt-3">
-                                                    <input type="date" class="form-control" name="fechafin" id="fechafin" value="<?= $registro['fechafin']; ?>" disabled>
+                                                    <input type="date" class="form-control" name="fechafin" id="fechafin" value="<?= $registro['fechafin']; ?>" readonly>
                                                     <label for="fechafin">Fecha de finalización</label>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-8 mt-3">
+                                                <div class="form-floating col-3 mt-3">
                                                 <select class="form-select" name="estatus" id="estatus">
                                                     <option disabled>Seleccione un estatus</option>
                                                     <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Inactivo</option>
@@ -86,7 +86,7 @@ require 'dbcon.php';
                                                     <label for="estatus">Estatus</label>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-4 mt-3">
+                                                <div class="form-floating col-3 mt-3">
                                                 <select class="form-select" name="prioridad" id="prioridad">
                                                     <option disabled>Seleccione la prioridad</option>
                                                     <option value="1" <?= ($prioridad_actual == 1) ? 'selected' : ''; ?>>Nivel 1</option>
@@ -123,7 +123,7 @@ require 'dbcon.php';
                                                     <label for="prioridad">Prioridad</label>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-5 mt-3">
+                                                <div class="form-floating col-3 mt-3">
                                                 <select class="form-select" name="etapadiseño" id="etapadiseño">
                                                     <option disabled>Seleccione la etapa</option>
                                                     <option value="1" <?= ($diseño_actual == 1) ? 'selected' : ''; ?>>Diseño</option>
@@ -137,7 +137,7 @@ require 'dbcon.php';
                                                     <label for="etapadiseño">Etapa de diseño</label>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-7 mt-3">
+                                                <div class="form-floating col-3 mt-3">
                                                 <select class="form-select" name="etapacontrol" id="etapacontrol">
                                                     <option disabled>Seleccione la etapa</option>
                                                     <option value="1" <?= ($control_actual == 1) ? 'selected' : ''; ?>>Diseño</option>
@@ -149,7 +149,12 @@ require 'dbcon.php';
                                                     <option value="7" <?= ($control_actual == 7) ? 'selected' : ''; ?>>Debugging</option>
                                                     <option value="8" <?= ($control_actual == 8) ? 'selected' : ''; ?>>Documentación</option>
                                                 </select>
-                                                    <label for="etapacontrol">Etapa de diseño</label>
+                                                    <label for="etapacontrol">Etapa de control</label>
+                                                </div>
+
+                                                <div class="form-floating col-12 mt-3">
+                                                    <textarea type="text" class="form-control" name="detalles" id="detalles" style="min-height:150px;"><?= $registro['detalles']; ?></textarea>
+                                                    <label for="detalles">Detalles</label>
                                                 </div>
 
                                                 <div class="col-12 text-center mt-3">
