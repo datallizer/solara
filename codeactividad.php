@@ -17,7 +17,7 @@ if (isset($_POST['save'])) {
     if ($query_run) {
         $querydos = "UPDATE `plano` SET `estatusplano` = '2' WHERE `plano`.`id` = '$id'";
         $query_rundos = mysqli_query($con, $querydos);
-        $_SESSION['message'] = "Se detuvo la actividad exitosamente";
+        $_SESSION['message'] = "Se detuvo la actividad exitosamente, motivo $motivosparo";
         header("Location: inicioactividades.php?id=$id");
         exit(0);
     } else {
