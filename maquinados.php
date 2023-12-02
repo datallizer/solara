@@ -80,7 +80,7 @@ if (isset($_SESSION['codigo'])) {
                                             JOIN asignacionplano ON asignacionplano.idplano = plano.id 
                                             JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                             WHERE asignacionplano.codigooperador = $codigo 
-                                            AND plano.estatusplano = 1
+                                            AND (plano.estatusplano = 1 OR plano.estatusplano = 2)
                                             ORDER BY plano.nivel DESC";
 
                                             $query_run = mysqli_query($con, $query);
@@ -140,7 +140,20 @@ if (isset($_SESSION['codigo'])) {
                                                             ?>
                                                         </td>
                                                         <td>
-                                                            <a href="inicioactividades.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1">Iniciar</a>
+                                                        <?php
+                                                        $id = $registro['id'];
+                                                            if ($registro['estatusplano'] === '1') {
+                                                                echo '<a href="inicioactividades.php?id='. $id .'" class="btn btn-success btn-sm m-1">Iniciar</a>';
+                                                            } else if ($registro['estatusplano'] === '2') {
+                                                                echo '<form action="codeactividad.php" method="post">
+                                                                <input type="hidden" value="'. $id .'" name="id">
+                                                                <button type="submit" name="restart" class="btn btn-sm btn-primary">Seguimiento</button>
+                                                                </form>';
+                                                            } else {
+                                                                echo "Error, contacte a soporte";
+                                                            }
+                                                            ?>
+                                                            
                                                         </td>
                                                     </tr>
                                             <?php
@@ -171,7 +184,7 @@ if (isset($_SESSION['codigo'])) {
                                             $query = "SELECT proyecto.*, plano.*
                                         FROM plano 
                                         JOIN proyecto ON plano.idproyecto = proyecto.id
-                                        WHERE estatusplano = 1 
+                                        WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2)
                                         ORDER BY plano.nivel DESC";
                                             $query_run = mysqli_query($con, $query);
                                             if (mysqli_num_rows($query_run) > 0) {
