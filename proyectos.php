@@ -178,7 +178,7 @@ if (isset($_SESSION['codigo'])) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codeproyecto.php" method="POST" class="row">
+                    <form id="miFormulario" action="codeproyecto.php" method="POST" class="row">
                         <div class="form-floating col-12">
                             <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" autocomplete="off" required>
                             <label for="nombre">Nombre del proyecto</label>
@@ -196,7 +196,7 @@ if (isset($_SESSION['codigo'])) {
 
                         <div class="form-floating col-12 mt-3">
                             <select class="form-select" name="prioridad" id="prioridad" autocomplete="off" required>
-                                <option selected disabled>Seleccione un nivel de prioridad</option>
+                                <option value="1" selected>Seleccione un nivel de prioridad</option>
                                 <option value="1">Prioridad 1</option>
                                 <option value="2">Prioridad 2</option>
                                 <option value="3">Prioridad 3</option>
@@ -271,7 +271,7 @@ if (isset($_SESSION['codigo'])) {
                         </div>
 
                         <div class="form-floating col-12 mt-3">
-                            <textarea class="form-control" placeholder="Detalles" id="detalles" name="detalles" style="height: 150px"></textarea>
+                            <textarea class="form-control" placeholder="Detalles" id="detalles" name="detalles" style="height: 150px" required></textarea>
                             <label for="detalles">Detalles del proyecto:</label>
                         </div>
 
@@ -307,6 +307,26 @@ if (isset($_SESSION['codigo'])) {
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script>
+    document.getElementById('miFormulario').addEventListener('submit', function(event) {
+        // Obtener todos los checkboxes con name 'codigooperador[]'
+        const checkboxes = document.querySelectorAll('input[name="codigooperador[]"]');
+        
+        // Verificar si al menos uno está marcado
+        let alMenosUnoMarcado = false;
+        checkboxes.forEach(function(checkbox) {
+            if (checkbox.checked) {
+                alMenosUnoMarcado = true;
+            }
+        });
+        
+        // Si ningún checkbox está marcado, evita el envío del formulario
+        if (!alMenosUnoMarcado) {
+            alert('Por favor, seleccione al menos un usuario encargado.');
+            event.preventDefault(); // Evita que el formulario se envíe
+        }
+    });
+</script>
 </body>
 
 </html>
