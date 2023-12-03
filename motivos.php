@@ -73,10 +73,17 @@ require 'dbcon.php';
                                                 <tr>
                                                     <td><?= $registro['motivosparo']; ?></td>
                                                     <td>
-                                                        <a href="editarmotivo.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-                                                        <form action="codemotivos.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                        </form>
+                                                        <?php
+                                                        if ($registro['motivosparo'] !== "Pieza terminada" && $registro['motivosparo'] !== "Atención a otra prioridad") {
+                                                            // Muestra los elementos HTML (botones de editar y eliminar) si el motivo de paro no es "Pieza terminada" ni "Atención a otra prioridad"
+                                                        ?>
+                                                            <a href="editarmotivo.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                            <form action="codemotivos.php" method="POST" class="d-inline">
+                                                                <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            </form>
+                                                        <?php
+                                                        }
+                                                        ?>
                                                     </td>
                                                 </tr>
                                         <?php

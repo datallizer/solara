@@ -49,7 +49,7 @@ require 'dbcon.php';
                                     if (mysqli_num_rows($query_run) > 0) {
                                         $registro = mysqli_fetch_array($query_run);
                                         $pieza_actual = $registro['nivel'];
-                                        $estatus_actual = $registro['estatus'];
+                                        $estatus_actual = $registro['estatusplano'];
 
                                 ?>
 

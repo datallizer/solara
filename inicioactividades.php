@@ -62,35 +62,44 @@ if (isset($_SESSION['codigo'])) {
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body class="sb-nav-fixed">
+<body class="sb-nav-fixed" style="background-color: #e7e7e7;">
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container mt-4">
 
-                <div class="row justify-content-center">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <?php include('message.php'); ?>
-                            <div class="card-header">
-                                <h4>ACTIVIDAD EN PROGRESO</h4>
-                            </div>
-                            <div class="card-body">
+                <?php
 
-                                <?php
+                if (isset($_GET['id'])) {
+                    $registro_id = mysqli_real_escape_string($con, $_GET['id']);
+                    $query = "SELECT proyecto.*, plano.*
+    FROM plano 
+    JOIN proyecto ON plano.idproyecto = proyecto.id 
+    JOIN asignacionplano ON asignacionplano.idplano = plano.id 
+    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo WHERE plano.id='$registro_id' ";
+                    $query_run = mysqli_query($con, $query);
 
-                                if (isset($_GET['id'])) {
-                                    $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                    $query = "SELECT proyecto.*, plano.*
-                                    FROM plano 
-                                    JOIN proyecto ON plano.idproyecto = proyecto.id 
-                                    JOIN asignacionplano ON asignacionplano.idplano = plano.id 
-                                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo WHERE plano.id='$registro_id' ";
-                                    $query_run = mysqli_query($con, $query);
+                    if (mysqli_num_rows($query_run) > 0) {
+                        $registro = mysqli_fetch_array($query_run);
 
-                                    if (mysqli_num_rows($query_run) > 0) {
-                                        $registro = mysqli_fetch_array($query_run);
+                ?>
+                        <div class="row justify-content-center">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header pt-3">
+                                        <?php
+                                        if ($registro['estatusplano'] === '1') {
+                                            echo '<h4>MAQUINADO EN PROGRESO</h4>';
+                                        } else if ($registro['estatusplano'] === '2') {
+                                            echo '<h4>MAQUINADO EN PAUSA</h4>';
+                                        } else {
+                                            echo "Error, contacte a soporte";
+                                        }
+                                        ?>
 
-                                ?>
+                                    </div>
+                                    <div class="card-body">
+                                        <?php include('message.php'); ?>
+
                                         <form action="codeactividad.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
@@ -116,34 +125,34 @@ if (isset($_SESSION['codigo'])) {
                                                 </div>
 
                                                 <?php
-                                                            if ($registro['estatusplano'] === '1') {
-                                                                echo '<div class="col-5">
-                                                                <img src="images/actividad.gif" alt="">
+                                                if ($registro['estatusplano'] === '1') {
+                                                    echo '<div class="col-5 mt-3">
+                                                                <img src="images/progreso.gif" alt="">
                                                             </div>';
-                                                            } else if ($registro['estatusplano'] === '2') {
-                                                                echo '<div class="col-5 m-4">
-                                                                <img src="images/pausa.png" alt="">
+                                                } else if ($registro['estatusplano'] === '2') {
+                                                    echo '<div class="col-5 m-4">
+                                                                <img src="images/pausa.jpg" alt="">
                                                             </div>';
-                                                            }  else {
-                                                                echo "Error, contacte a soporte";
-                                                            }
-                                                            ?>
+                                                } else {
+                                                    echo "Error, contacte a soporte";
+                                                }
+                                                ?>
 
                                                 <div class="col-6 text-center mt-3 d-flex align-items-center justify-content-center">
-                                                <?php
-                                                            if ($registro['estatusplano'] === '1') {
-                                                                echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3'>
+                                                    <?php
+                                                    if ($registro['estatusplano'] === '1') {
+                                                        echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3'>
                                                                 Detener actividad
                                                             </button>";
-                                                            } else if ($registro['estatusplano'] === '2') {
-                                                                echo '<form action="codeactividad.php" method="post">
+                                                    } else if ($registro['estatusplano'] === '2') {
+                                                        echo '<form action="codeactividad.php" method="post">
                                                                 <button type="submit" name="restart" class="btn btn-success m-3">Reiniciar actividad</button>
                                                             </form>';
-                                                            }  else {
-                                                                echo "Error, contacte a soporte";
-                                                            }
-                                                            ?>
-                                                            
+                                                    } else {
+                                                        echo "Error, contacte a soporte";
+                                                    }
+                                                    ?>
+
                                                     <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver plano</button>
                                                     <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog modal-lg">
@@ -158,7 +167,7 @@ if (isset($_SESSION['codigo'])) {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <!-- Modal -->
                                                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
@@ -179,7 +188,7 @@ if (isset($_SESSION['codigo'])) {
 
                                                                             // Comprobamos si hay resultados
                                                                             if (mysqli_num_rows($result) > 0) {
-                                                                                echo '<select class="form-select" name="motivosparo" id="motivosparo">';
+                                                                                echo '<select class="form-select" name="motivosparo" id="motivosparoSelect">';
                                                                                 // Iteramos sobre los resultados para generar las opciones del select
                                                                                 while ($row = mysqli_fetch_assoc($result)) {
                                                                                     echo '<option value="' . $row['motivosparo'] . '">' . $row['motivosparo'] . '</option>';
@@ -189,32 +198,35 @@ if (isset($_SESSION['codigo'])) {
                                                                                 echo 'No hay motivos disponibles';
                                                                             }
                                                                             ?>
-                                                                            <label for="estatus">Motivo de paro</label>
+                                                                            <label for="motivosparoSelect">Motivo de paro</label>
                                                                         </div>
                                                                     </div>
-
 
                                                                 </div>
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                    <button type="submit" class="btn btn-primary" name="save">Pausar actividad</button>
-                                                                    <form action="codeactividad.php" method="post">
-                                                                        <button type="submit" class="btn btn-warning" name="finish">Terminar</button>
-                                                                    </form>
+                                                                    <div id="botonPausar" style="display: block;">
+                                                                        <button type="submit" class="btn btn-primary" name="save">Detener actividad</button>
+                                                                    </div>
+                                                                    <div id="botonTerminar" style="display: none;">
+                                                                        <form action="codeactividad.php" method="post">
+                                                                            <button type="submit" class="btn btn-warning" name="finish">Terminar</button>
+                                                                        </form>
+                                                                    </div>
                                                                 </div>
                                         </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
             </div>
         </div>
 
 <?php
-                                    } else {
-                                        echo "<h4>No Such Id Found</h4>";
-                                    }
-                                }
+                    } else {
+                        echo "<h4>No Such Id Found</h4>";
+                    }
+                }
 ?>
     </div>
     </div>
@@ -227,6 +239,27 @@ if (isset($_SESSION['codigo'])) {
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script>
+        // Obtener el campo select y el div del botón "Terminar"
+        const selectMotivosParo = document.getElementById('motivosparoSelect');
+        const divBotonTerminar = document.getElementById('botonTerminar');
+        const divBotonPausar = document.getElementById('botonPausar');
+
+        // Escuchar el evento de cambio en el campo select
+        selectMotivosParo.addEventListener('change', function(event) {
+            const valorSeleccionado = event.target.value;
+
+            // Mostrar u ocultar el botón dependiendo del valor seleccionado
+            if (valorSeleccionado === 'Pieza terminada' || valorSeleccionado === 'Atención a otra prioridad') {
+                divBotonTerminar.style.display = 'block'; // Mostrar el botón
+                divBotonPausar.style.display = 'none';
+            } else {
+                divBotonTerminar.style.display = 'none'; // Ocultar el botón
+                divBotonPausar.style.display = 'block';
+            }
+        });
+    </script>
+
 </body>
 
 </html>

@@ -48,11 +48,7 @@ if (isset($_SESSION['codigo'])) {
                 <div class="row justify-content-md-center justify-content-start mt-5 mb-5">
                     <div class="col-12">
                         <?php include 'message.php'; ?>
-                        <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA <?php  if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])) {
-                                    // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="btn btn-primary float-end m-1" href="maquinados.php">Maquinados</a>';
-                                }
-                                ?></h2>
+                        <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA <a class="btn btn-primary float-end m-1" href="maquinados.php">Maquinados</a></h2>
                     </div>
                     <div class="col-12 p-3 text-center" style="background-color: #e3e3e3;">
                         <table id="miTabla" class="table table-striped">
@@ -66,11 +62,18 @@ if (isset($_SESSION['codigo'])) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
-                                FROM historial h 
-                                INNER JOIN usuarios u ON h.idcodigo = u.codigo 
-                                ORDER BY h.id DESC";
+                                <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                    $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
+                                    FROM historial h 
+                                    INNER JOIN usuarios u ON h.idcodigo = u.codigo
+                                    ORDER BY h.id DESC";
+                                } else{
+                                    $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
+                                    FROM historial h 
+                                    INNER JOIN usuarios u ON h.idcodigo = u.codigo 
+                                    WHERE u.codigo = $codigo
+                                    ORDER BY h.id DESC";
+                                }
 
                                 $query_run = mysqli_query($con, $query);
 

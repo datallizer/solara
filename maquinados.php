@@ -68,6 +68,7 @@ if (isset($_SESSION['codigo'])) {
                                                 <th>Planos asociados</th>
                                                 <th>Operadores asignados</th>
                                                 <th>Número de piezas</th>
+                                                <th>Prioridad</th>
                                                 <th>Nivel de pieza</th>
                                                 <th>Acción</th>
                                             </tr>
@@ -124,6 +125,7 @@ if (isset($_SESSION['codigo'])) {
                                                             ?>
                                                         </td>
                                                         <td><?= $registro['piezas']; ?></td>
+                                                        <td><?= $registro['prioridad']; ?></td>
                                                         <td>
                                                             <?php
                                                             if ($registro['nivel'] === '1') {
