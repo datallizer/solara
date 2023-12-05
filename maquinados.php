@@ -302,7 +302,7 @@ if (isset($_SESSION['codigo'])) {
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td><?= $registro['prioridad']; ?></td>
+                                                        <td><?= $registro['piezas']; ?></td>
                                                         <td>
                                                             <?php
                                                             $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
@@ -320,7 +320,7 @@ if (isset($_SESSION['codigo'])) {
                                                             }
                                                             ?>
                                                         </td>
-                                                        <td><?= $registro['piezas']; ?></td>
+                                                        <td><?= $registro['prioridad']; ?></td>
                                                         <td>
                                                             <?php
                                                             if ($registro['nivel'] === '1') {
