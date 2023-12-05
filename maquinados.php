@@ -187,7 +187,7 @@ if (isset($_SESSION['codigo'])) {
                                         FROM plano 
                                         JOIN proyecto ON plano.idproyecto = proyecto.id
                                         WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2)
-                                        ORDER BY plano.nivel DESC";
+                                        ORDER BY proyecto.prioridad asc";
                                             $query_run = mysqli_query($con, $query);
                                             if (mysqli_num_rows($query_run) > 0) {
                                                 foreach ($query_run as $registro) {
@@ -279,7 +279,7 @@ if (isset($_SESSION['codigo'])) {
                                         FROM plano 
                                         JOIN proyecto ON plano.idproyecto = proyecto.id
                                         WHERE estatusplano = 0 
-                                        ORDER BY plano.nivel DESC";
+                                        ORDER BY proyecto.prioridad asc";
                                             $query_run = mysqli_query($con, $query);
                                             if (mysqli_num_rows($query_run) > 0) {
                                                 foreach ($query_run as $registro) {
