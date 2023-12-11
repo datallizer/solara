@@ -212,7 +212,7 @@ if (isset($_SESSION['codigo'])) {
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td><?= $registro['prioridad']; ?></td>
+                                                        <td><?= $registro['piezas']; ?></td>
                                                         <td>
                                                             <?php
                                                             $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
@@ -230,7 +230,7 @@ if (isset($_SESSION['codigo'])) {
                                                             }
                                                             ?>
                                                         </td>
-                                                        <td><?= $registro['piezas']; ?></td>
+                                                        <td><?= $registro['prioridad']; ?></td>
                                                         <td>
                                                             <?php
                                                             if ($registro['nivel'] === '1') {
@@ -464,7 +464,7 @@ if (isset($_SESSION['codigo'])) {
     $(document).ready(function() {
         $('#miTabla, #miTablaDos, #miTablaTres').DataTable({
             "order": [
-                [2, "desc"]
+                [4, "asc"]
             ] // Ordenar la primera columna (índice 0) en orden descendente
         });
     });
