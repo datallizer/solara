@@ -34,6 +34,7 @@ if (isset($_SESSION['codigo'])) {
     <title>Proyectos | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -48,16 +49,24 @@ if (isset($_SESSION['codigo'])) {
                         <div class="card">
                             <div class="card-header">
                                 <h4>PROYECTOS
-                                    <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <?php
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                        echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         Nuevo proyecto
+                                        </button>';
+                                        }
+                                    ?>
+                                    <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
+                                        Asignar encargado
                                     </button>
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
                                 <?php include('message.php'); ?>
-                                <table class="table table-bordered table-striped" style="width: 100%;">
+                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
+                                            <th>#</th>
                                             <th>Datos del proyecto</th>
                                             <th>Prioridad</th>
                                             <th>Etapa diseño</th>
@@ -69,12 +78,15 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM proyecto ORDER BY id DESC";
+                                        $query = "SELECT * FROM proyecto ORDER BY prioridad ASC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
+                                                    <td>
+                                                        <p class="text-center"><?= $registro['id']; ?></p>
+                                                    </td>
                                                     <td style="min-width: 250px;">
                                                         <p><b>Nombre: </b><?= $registro['nombre']; ?></p>
                                                         <p><b>Cliente: </b><?= $registro['cliente']; ?></p>
@@ -82,56 +94,67 @@ if (isset($_SESSION['codigo'])) {
                                                         <p><b>Fecha de inicio:</b> <?= $registro['fechainicio']; ?></p>
                                                         <p><b>Fecha finalización:</b> <?= $registro['fechafin']; ?></p>
                                                     </td>
-                                                    <td><p class="text-center"><?= $registro['prioridad']; ?></p></td>
-                                                    <td><p><?php
-                                                                                if ($registro['etapadiseño'] === '1') {
-                                                                                    echo "Diseño";
-                                                                                } else if ($registro['etapadiseño'] === '2') {
-                                                                                    echo "Revisión interna";
-                                                                                } else if ($registro['etapadiseño'] === '3') {
-                                                                                    echo "Revisión con cliente";
-                                                                                } else if ($registro['etapadiseño'] === '4') {
-                                                                                    echo "Planos";
-                                                                                } else if ($registro['etapadiseño'] === '5') {
-                                                                                    echo "Bom";
-                                                                                } else if ($registro['etapadiseño'] === '6') {
-                                                                                    echo "Remediación";
-                                                                                } else if ($registro['etapadiseño'] === '7') {
-                                                                                    echo "Documentación";
-                                                                                } else {
-                                                                                    echo "Error, contacte a soporte";
-                                                                                }
-                                                                                ?></p></td>
-                                                    <td><p><?php
-                                                                                    if ($registro['etapacontrol'] === '1') {
-                                                                                        echo "Diseño";
-                                                                                    } else if ($registro['etapacontrol'] === '2') {
-                                                                                        echo "Revisión interna";
-                                                                                    } else if ($registro['etapacontrol'] === '3') {
-                                                                                        echo "Revisión con cliente";
-                                                                                    } else if ($registro['etapacontrol'] === '4') {
-                                                                                        echo "Diagramas";
-                                                                                    } else if ($registro['etapacontrol'] === '5') {
-                                                                                        echo "Bom";
-                                                                                    } else if ($registro['etapacontrol'] === '6') {
-                                                                                        echo "Programación";
-                                                                                    } else if ($registro['etapacontrol'] === '7') {
-                                                                                        echo "Debugging";
-                                                                                    } else if ($registro['etapacontrol'] === '8') {
-                                                                                        echo "Documentación";
-                                                                                    } else {
-                                                                                        echo "Error, contacte a soporte";
-                                                                                    }
-                                                                                    ?></p></td>
                                                     <td>
-                                                        <p><b>Detalles: </b><?= $registro['detalles']; ?></p>
+                                                        <p class="text-center"><?= $registro['prioridad']; ?></p>
                                                     </td>
-                                                    <td><?php
+                                                    <td>
+                                                        <p><?php
+                                                            if ($registro['etapadiseño'] === '1') {
+                                                                echo "Diseño";
+                                                            } else if ($registro['etapadiseño'] === '2') {
+                                                                echo "Revisión interna";
+                                                            } else if ($registro['etapadiseño'] === '3') {
+                                                                echo "Revisión con cliente";
+                                                            } else if ($registro['etapadiseño'] === '4') {
+                                                                echo "Planos";
+                                                            } else if ($registro['etapadiseño'] === '5') {
+                                                                echo "Bom";
+                                                            } else if ($registro['etapadiseño'] === '6') {
+                                                                echo "Manufactura";
+                                                            } else if ($registro['etapadiseño'] === '7') {
+                                                                echo "Remediación";
+                                                            } else if ($registro['etapadiseño'] === '8') {
+                                                                echo "Documentación";
+                                                            } else {
+                                                                echo "Error, contacte a soporte";
+                                                            }
+                                                            ?></p>
+                                                    </td>
+                                                    <td style="cursor: all-scroll;">
+                                                        <p><?php
+                                                            if ($registro['etapacontrol'] === '1') {
+                                                                echo "Diseño";
+                                                            } else if ($registro['etapacontrol'] === '2') {
+                                                                echo "Revisión interna";
+                                                            } else if ($registro['etapacontrol'] === '3') {
+                                                                echo "Revisión con cliente";
+                                                            } else if ($registro['etapacontrol'] === '4') {
+                                                                echo "Diagramas";
+                                                            } else if ($registro['etapacontrol'] === '5') {
+                                                                echo "Bom";
+                                                            } else if ($registro['etapadiseño'] === '6') {
+                                                                echo "Manufactura";
+                                                            } else if ($registro['etapacontrol'] === '7') {
+                                                                echo "Programación";
+                                                            } else if ($registro['etapacontrol'] === '8') {
+                                                                echo "Debugging";
+                                                            } else if ($registro['etapacontrol'] === '9') {
+                                                                echo "Documentación";
+                                                            } else {
+                                                                echo "Error, contacte a soporte";
+                                                            }
+                                                            ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $registro['detalles']; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <?php
                                                         // Consulta para obtener los registros de encargadoproyecto con el nombre completo
                                                         $queryAsignacion = "SELECT encargadoproyecto.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom
-                                    FROM encargadoproyecto
-                                    JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
-                                    WHERE encargadoproyecto.idproyecto = " . $registro['id'];
+                                                        FROM encargadoproyecto
+                                                        JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
+                                                        WHERE encargadoproyecto.idproyecto = " . $registro['id'];
 
                                                         $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 
@@ -140,17 +163,19 @@ if (isset($_SESSION['codigo'])) {
                                                                 echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
                                                             }
                                                         } else {
-                                                            echo 'No asignado';
+                                                            echo '-';
                                                         }
-                                                        ?></td>
+                                                        ?>
+                                                    </td>
                                                     <td>
                                                         <a href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-
-
-                                                        <form action="codeproyecto.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                        </form>
-
+                                                        <?php
+                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                                echo '<form action="codeproyecto.php" method="POST" class="d-inline">
+                                                                        <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                                    </form>';
+                                                            }
+                                                        ?>
                                                     </td>
                                                 </tr>
                                         <?php
@@ -231,7 +256,7 @@ if (isset($_SESSION['codigo'])) {
                             <label for="prioridad">Prioridad del proyecto</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3 mt-3">
+                        <div class="form-floating col-12 mt-3 mt-3" hidden>
                             <select class="form-select" name="etapadiseño" id="etapadiseño" autocomplete="off" required>
                                 <option disabled>Seleccione una etapa</option>
                                 <option selected value="1">Diseño</option>
@@ -239,13 +264,14 @@ if (isset($_SESSION['codigo'])) {
                                 <option value="3">Revisión con cliente</option>
                                 <option value="4">Planos</option>
                                 <option value="5">Bom</option>
-                                <option value="6">Remediación</option>
-                                <option value="7">Documentación</option>
+                                <option value="6">Manufactura</option>
+                                <option value="7">Remediación</option>
+                                <option value="8">Documentación</option>
                             </select>
                             <label for="etapadiseño">Etapa de diseño:</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3 mt-3">
+                        <div class="form-floating col-12 mt-3 mt-3" hidden>
                             <select class="form-select" name="etapacontrol" id="etapacontrol" autocomplete="off" required>
                                 <option disabled>Seleccione una etapa</option>
                                 <option selected value="1">Diseño</option>
@@ -253,11 +279,39 @@ if (isset($_SESSION['codigo'])) {
                                 <option value="3">Revisión con cliente</option>
                                 <option value="4">Diagramas</option>
                                 <option value="5">Bom</option>
-                                <option value="6">Programación</option>
-                                <option value="7">Debugging</option>
-                                <option value="8">Documentación</option>
+                                <option value="6">Manufactura</option>
+                                <option value="7">Programación</option>
+                                <option value="8">Debugging</option>
+                                <option value="9">Documentación</option>
                             </select>
                             <label for="etapacontrol">Etapa de control:</label>
+                        </div>
+
+                        <div class="form-floating col-12 mt-3 mt-3" hidden>
+                            <select class="form-select" name="etapatcontrol" id="etapatcontrol" autocomplete="off" required hidden>
+                                <option disabled>Seleccione una etapa</option>
+                                <option selected value="1">Revisión BOM controles</option>
+                                <option value="2">Armado de tableros de control</option>
+                                <option value="3">Pruebas electricas y de comunicación</option>
+                                <option value="4">Remediación</option>
+                                <option value="5">Ensamble en maquinaria</option>
+                                <option value="6">Ruteo final</option>
+                                <option value="7">Etiquetado</option>
+                            </select>
+                            <label for="etapatcontrol">Etapa ensamble técnico control:</label>
+                        </div>
+
+                        <div class="form-floating col-12 mt-3 mt-3" hidden>
+                            <select class="form-select" name="etapamecanica" id="etapamecanica" autocomplete="off" required>
+                                <option disabled>Seleccione una etapa</option>
+                                <option selected value="1">Revisión BOM mecánico</option>
+                                <option value="2">Armado de componentes mecánicos</option>
+                                <option value="3">Pruebas de ensamble</option>
+                                <option value="4">Remediación</option>
+                                <option value="5">Desensamble para acabados</option>
+                                <option value="6">Armado final</option>
+                            </select>
+                            <label for="etapamecanica">Etapa ensamble mecánica/neumatica:</label>
                         </div>
 
                         <div class="form-floating col-12 col-md-6 mt-3">
@@ -305,28 +359,100 @@ if (isset($_SESSION['codigo'])) {
         </div>
     </div>
 
+    <!-- Modal 2 -->
+    <div class="modal fade" id="exampleModalDos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">ASIGNAR ENCARGADO DE PROYECTO</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="miFormulario" action="codetecnicos.php" method="POST" class="row">
+                        <div class="form-floating col-12">
+                            <select class="form-select" name="idproyecto" id="idproyecto">
+                                <option disabled selected>Seleccione un proyecto</option>
+                                <?php
+                                // Consulta a la base de datos para obtener los proyectos
+                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
+                                $result = mysqli_query($con, $query);
+
+                                // Verificar si hay resultados
+                                if (mysqli_num_rows($result) > 0) {
+                                    while ($proyecto = mysqli_fetch_assoc($result)) {
+                                        // Construir el texto de la opción con nombre del proyecto
+                                        $opcion = $proyecto['nombre'];
+                                        // Obtener el ID del usuario
+                                        $idProyecto = $proyecto['id'];
+                                        // Mostrar la opción con el valor igual al ID del proyecto
+                                        echo "<option value='$idProyecto' " . ($registro['id'] == $idProyecto ?: '') . ">$opcion</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
+                            <label for="idproyecto">Proyecto a asignar</label>
+                        </div>
+
+                        <div class="form-check col-12 m-3">
+                            <?php
+                            // Consulta a la base de datos para obtener los usuarios con rol igual a 8
+                            $query = "SELECT * FROM usuarios";
+                            $result = mysqli_query($con, $query);
+
+                            // Verificar si hay resultados
+                            if (mysqli_num_rows($result) > 0) {
+                                while ($usuario = mysqli_fetch_assoc($result)) {
+                                    $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
+                                    $idUsuario = $usuario['codigo'];
+
+                                    // Cambio en el nombre del campo para que se envíen como un array
+                                    echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
+                                    echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
+                                }
+                            }
+                            ?>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary" name="proyecto">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script>
-    document.getElementById('miFormulario').addEventListener('submit', function(event) {
-        // Obtener todos los checkboxes con name 'codigooperador[]'
-        const checkboxes = document.querySelectorAll('input[name="codigooperador[]"]');
-        
-        // Verificar si al menos uno está marcado
-        let alMenosUnoMarcado = false;
-        checkboxes.forEach(function(checkbox) {
-            if (checkbox.checked) {
-                alMenosUnoMarcado = true;
+        $(document).ready(function() {
+            $('#miTabla').DataTable({
+                "order": [
+                    [2, "asc"]
+                ] // Ordenar la primera columna (índice 0) en orden descendente
+            });
+        });
+        document.getElementById('miFormulario').addEventListener('submit', function(event) {
+            // Obtener todos los checkboxes con name 'codigooperador[]'
+            const checkboxes = document.querySelectorAll('input[name="codigooperador[]"]');
+
+            // Verificar si al menos uno está marcado
+            let alMenosUnoMarcado = false;
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    alMenosUnoMarcado = true;
+                }
+            });
+
+            // Si ningún checkbox está marcado, evita el envío del formulario
+            if (!alMenosUnoMarcado) {
+                alert('Por favor, seleccione al menos un usuario encargado.');
+                event.preventDefault(); // Evita que el formulario se envíe
             }
         });
-        
-        // Si ningún checkbox está marcado, evita el envío del formulario
-        if (!alMenosUnoMarcado) {
-            alert('Por favor, seleccione al menos un usuario encargado.');
-            event.preventDefault(); // Evita que el formulario se envíe
-        }
-    });
-</script>
+    </script>
 </body>
 
 </html>

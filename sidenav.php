@@ -54,14 +54,17 @@ require 'dbcon.php';
                         }
                         ?>
 
-
-
                         <div class="sb-sidenav-menu-heading">Modulos</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                        <?php
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 8, 9])) {
+                            // Mostrar el enlace HTML solo si la condición se cumple
+                            echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                             <div class="sb-nav-link-icon"><i class="bi bi-shield-fill-check"></i></div>
                             Procesos
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
+                        </a>';
+                        }
+                        ?>
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <?php
@@ -97,25 +100,55 @@ require 'dbcon.php';
                                 ?>
                             </nav>
                         </div>
+
+
                         <?php
-                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                            // Mostrar el enlace HTML solo si la condición se cumple
-                            echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])) {
+                            echo '
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                                     <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                     Almacen
                                     <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                 </a>
                                 <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                        <a class="nav-link" href="#">Inventario</a>
-                                        <a class="nav-link" href="#">Entradas</a>
-                                        <a class="nav-link" href="#">Salidas</a>
-                                        <a class="nav-link" href="#">Reorden</a>
-                                        <a class="nav-link" href="#">Quotes</a>
+                                        <a class="nav-link" href="inventario.php">Inventario</a>
+                                            <a class="nav-link" href="#">Reorden</a>
+                                            <a class="nav-link" href="#">Quotes</a>
                                     </nav>
-                                </div>';
+                                </div>
+                                ';
                         }
                         ?>
+
+                        <?php
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 9])) {
+                            // Mostrar el enlace HTML solo si la condición se cumple
+                            echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePagesDos" aria-expanded="false" aria-controls="collapsePagesDos">
+                            <div class="sb-nav-link-icon"><i class="bi bi-trash-fill"></i></div>
+                            Asignaciones
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>';
+                        }
+                        ?>
+                        <div class="collapse" id="collapsePagesDos" aria-labelledby="headingThree" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <?php
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                    echo '<a class="nav-link" href="encargadoproyecto.php">Proyectos</a>';
+                                }
+
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    echo '<a class="nav-link" href="encargadoplanos.php">Maquinados</a>
+                                            <a class="nav-link" href="encargadomecanico.php">Técnicos mecánicos</a>
+                                            <a class="nav-link" href="encargadocontrol.php">Técnicos de control</a>';
+                                }
+
+                                ?>
+                            </nav>
+                        </div>
+
+
 
                         <div class="sb-sidenav-menu-heading">Panel de control</div>
                         <?php
@@ -127,7 +160,7 @@ require 'dbcon.php';
                         </a>';
                         }
                         ?>
-                        
+
                         <a class="nav-link" href="soporte.php">
                             <div class="sb-nav-link-icon"><i class="bi bi-headset"></i></div>
                             Soporte
@@ -145,6 +178,7 @@ require 'dbcon.php';
                             $registro = mysqli_fetch_array($query_run);
                     ?>
                             <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
+                            <img style="width: 40%;border-radius:10px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                     <?php
                         } else {
                             echo "<p>Error contacte a soporte</p>";

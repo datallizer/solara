@@ -74,7 +74,7 @@ require 'dbcon.php';
                                                     <td><?= $registro['motivosparo']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if ($registro['motivosparo'] !== "Pieza terminada" && $registro['motivosparo'] !== "Atención a otra prioridad") {
+                                                        if ($registro['motivosparo'] !== "Pieza terminada" && $registro['motivosparo'] !== "Atención a otra prioridad" && $registro['motivosparo'] !== "Fin de jornada laboral") {
                                                             // Muestra los elementos HTML (botones de editar y eliminar) si el motivo de paro no es "Pieza terminada" ni "Atención a otra prioridad"
                                                         ?>
                                                             <a href="editarmotivo.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'dbcon.php';
+header('Content-Type: text/html; charset=UTF-8');
 
 //Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
 if (isset($_SESSION['codigo'])) {
@@ -34,6 +35,7 @@ if (isset($_SESSION['codigo'])) {
     <title>Maquinados | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -61,7 +63,7 @@ if (isset($_SESSION['codigo'])) {
                                 <?php
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                                 ?>
-                                    <table class="table table-bordered table-striped" style="width: 100%;">
+                                    <table id="miTablaTres" class="table table-bordered table-striped" style="width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>Proyecto</th>
@@ -82,7 +84,7 @@ if (isset($_SESSION['codigo'])) {
                                             JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                             WHERE asignacionplano.codigooperador = $codigo 
                                             AND (plano.estatusplano = 1 OR plano.estatusplano = 2)
-                                            ORDER BY plano.nivel DESC";
+                                            ORDER BY proyecto.prioridad ASC";
 
                                             $query_run = mysqli_query($con, $query);
 
@@ -161,7 +163,7 @@ if (isset($_SESSION['codigo'])) {
                                             <?php
                                                 }
                                             } else {
-                                                echo "<tr><td colspan='6'><p>No se encontró ningún registro</p></td></tr>";
+                                                echo "<tr><td colspan='7'><p>No se encontró ningún registro</p></td></tr>";
                                             }
                                             ?>
                                         </tbody>
@@ -169,7 +171,7 @@ if (isset($_SESSION['codigo'])) {
                                 <?php
                                 } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                 ?>
-                                    <table class="table table-bordered table-striped" style="width: 100%;">
+                                    <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>Proyecto</th>
@@ -255,13 +257,13 @@ if (isset($_SESSION['codigo'])) {
                                             <?php
                                                 }
                                             } else {
-                                                echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td><td></td><td></td><td></td>";
+                                                echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td><td></td><td></td><td></td><td></td>";
                                             }
                                             ?>
                                         </tbody>
                                     </table>
                                     <h4 class="mt-5">MAQUINADOS FINALIZADOS</h4>
-                                    <table class="table table-bordered table-striped" style="width: 100%;">
+                                    <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>Proyecto</th>
@@ -316,26 +318,24 @@ if (isset($_SESSION['codigo'])) {
                                                                     echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
                                                                 }
                                                             } else {
-                                                                echo 'No asignado';
+                                                                echo '-';
                                                             }
                                                             ?>
                                                         </td>
                                                         <td><?= $registro['prioridad']; ?></td>
-                                                        <td>
-                                                            <?php
-                                                            if ($registro['nivel'] === '1') {
+                                                        <td><?php
+                                                            if ($registro['nivel'] === '1'){
                                                                 echo "Nivel 1";
-                                                            } else if ($registro['nivel'] === '2') {
+                                                            } elseif ($registro['nivel'] === '2'){
                                                                 echo "Nivel 2";
-                                                            } else if ($registro['nivel'] === '3') {
+                                                            } elseif ($registro['nivel'] === '3'){
                                                                 echo "Nivel 3";
-                                                            } else if ($registro['nivel'] === '4') {
+                                                            } elseif ($registro['nivel'] === '4'){
                                                                 echo "Nivel 4";
-                                                            } else {
+                                                            } else{
                                                                 echo "Error, contacte a soporte";
                                                             }
-                                                            ?>
-                                                        </td>
+                                                            ?></td>
                                                         <td>
                                                             <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
@@ -458,7 +458,17 @@ if (isset($_SESSION['codigo'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <!-- Incluir los archivos de PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
-    <script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#miTabla, #miTablaDos, #miTablaTres').DataTable({
+            "order": [
+                [2, "desc"]
+            ] // Ordenar la primera columna (índice 0) en orden descendente
+        });
+    });
+
         // Función para cargar y mostrar el PDF en el iframe
         function showPDF(pdfUrl, iframeId) {
             const loadingTask = pdfjsLib.getDocument(pdfUrl);
@@ -505,6 +515,7 @@ if (isset($_SESSION['codigo'])) {
             <?php endforeach; ?>
         });
     </script>
+    
 
 
 </body>

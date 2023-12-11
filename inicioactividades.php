@@ -188,7 +188,8 @@ if (isset($_SESSION['codigo'])) {
 
                                                                             // Comprobamos si hay resultados
                                                                             if (mysqli_num_rows($result) > 0) {
-                                                                                echo '<select class="form-select" name="motivosparo" id="motivosparoSelect">';
+                                                                                echo '<select class="form-select" name="motivosparo" id="motivosparoSelect">
+                                                                                <option selected disabled>Selecciona un motivo</option>';
                                                                                 // Iteramos sobre los resultados para generar las opciones del select
                                                                                 while ($row = mysqli_fetch_assoc($result)) {
                                                                                     echo '<option value="' . $row['motivosparo'] . '">' . $row['motivosparo'] . '</option>';
@@ -209,9 +210,10 @@ if (isset($_SESSION['codigo'])) {
                                                                         <button type="submit" class="btn btn-primary" name="save">Detener actividad</button>
                                                                     </div>
                                                                     <div id="botonTerminar" style="display: none;">
-                                                                        <form action="codeactividad.php" method="post">
                                                                             <button type="submit" class="btn btn-warning" name="finish">Terminar</button>
-                                                                        </form>
+                                                                    </div>
+                                                                    <div id="botonMenu" style="display: none;">
+                                                                        <button type="submit" class="btn btn-primary" name="pausar">Regresar a maquinados</button>
                                                                     </div>
                                                                 </div>
                                         </form>
@@ -244,18 +246,25 @@ if (isset($_SESSION['codigo'])) {
         const selectMotivosParo = document.getElementById('motivosparoSelect');
         const divBotonTerminar = document.getElementById('botonTerminar');
         const divBotonPausar = document.getElementById('botonPausar');
+        const divBotonMenu = document.getElementById('botonMenu');
 
         // Escuchar el evento de cambio en el campo select
         selectMotivosParo.addEventListener('change', function(event) {
             const valorSeleccionado = event.target.value;
 
             // Mostrar u ocultar el botón dependiendo del valor seleccionado
-            if (valorSeleccionado === 'Pieza terminada' || valorSeleccionado === 'Atención a otra prioridad') {
+            if (valorSeleccionado === 'Pieza terminada') {
                 divBotonTerminar.style.display = 'block'; // Mostrar el botón
                 divBotonPausar.style.display = 'none';
+                divBotonMenu.style.display = 'none';
+            } else if (valorSeleccionado === 'Atención a otra prioridad' || valorSeleccionado === 'Fin de jornada laboral') {
+                divBotonTerminar.style.display = 'none'; // Ocultar el botón
+                divBotonPausar.style.display = 'none';
+                divBotonMenu.style.display = 'block';
             } else {
                 divBotonTerminar.style.display = 'none'; // Ocultar el botón
                 divBotonPausar.style.display = 'block';
+                divBotonMenu.style.display = 'none';
             }
         });
     </script>

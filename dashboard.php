@@ -34,7 +34,6 @@ if (isset($_SESSION['codigo'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
-
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <title>Dashboard | Solara</title>
@@ -48,7 +47,7 @@ if (isset($_SESSION['codigo'])) {
                 <div class="row justify-content-md-center justify-content-start mt-5 mb-5">
                     <div class="col-12">
                         <?php include 'message.php'; ?>
-                        <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA <a class="btn btn-primary float-end m-1" href="maquinados.php">Maquinados</a></h2>
+                        <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA</h2>
                     </div>
                     <div class="col-12 p-3 text-center" style="background-color: #e3e3e3;">
                         <table id="miTabla" class="table table-striped">

@@ -27,7 +27,7 @@ require 'dbcon.php';
                         <div class="card">
                             <div class="card-header">
                                 <h4>EDITAR PROYECTO
-                                    <a href="usuarios.php" class="btn btn-danger btn-sm float-end">Regresar</a>
+                                    <a href="proyectos.php" class="btn btn-danger btn-sm float-end">Regresar</a>
                                 </h4>
                             </div>
                             <div class="card-body">
@@ -44,6 +44,8 @@ require 'dbcon.php';
                                         $prioridad_actual = $registro['prioridad'];
                                         $diseño_actual = $registro['etapadiseño'];
                                         $control_actual = $registro['etapacontrol'];
+                                        $tcontrol_actual = $registro['etapatcontrol'];
+                                        $mecanica_actual = $registro['etapamecanica'];
                                         $estatus_actual = $registro['estatus'];
 
                                 ?>
@@ -150,6 +152,33 @@ require 'dbcon.php';
                                                     <option value="8" <?= ($control_actual == 8) ? 'selected' : ''; ?>>Documentación</option>
                                                 </select>
                                                     <label for="etapacontrol">Etapa de control</label>
+                                                </div>
+
+                                                <div class="form-floating col-6 mt-3">
+                                                <select class="form-select" name="etapamecanica" id="etapamecanica">
+                                                    <option disabled>Seleccione la etapa</option>
+                                                    <option value="1" <?= ($mecanica_actual == 1) ? 'selected' : ''; ?>>Revisión BOM mecánico</option>
+                                                    <option value="2" <?= ($mecanica_actual == 2) ? 'selected' : ''; ?>>Armado de componentes mecánicos</option>
+                                                    <option value="3" <?= ($contromecanica_actuall_mecanica_actualactual == 3) ? 'selected' : ''; ?>>Pruebas de ensamble</option>
+                                                    <option value="4" <?= ($mecanica_actual == 4) ? 'selected' : ''; ?>>Remediación</option>
+                                                    <option value="5" <?= ($mecanica_actual == 5) ? 'selected' : ''; ?>>Desensamble para acabados</option>
+                                                    <option value="6" <?= ($mecanica_actual == 6) ? 'selected' : ''; ?>>Armado final</option>
+                                                </select>
+                                                    <label for="etapamecanica">Etapa de ensamble mecánica/neumatica</label>
+                                                </div>
+
+                                                <div class="form-floating col-6 mt-3">
+                                                <select class="form-select" name="etapatcontrol" id="etapatcontrol">
+                                                    <option disabled>Seleccione la etapa</option>
+                                                    <option value="1" <?= ($tcontrol_actual == 1) ? 'selected' : ''; ?>>Revisión BOM controles</option>
+                                                    <option value="2" <?= ($tcontrol_actual == 2) ? 'selected' : ''; ?>>Armado de tableros de control</option>
+                                                    <option value="3" <?= ($tcontrol_actual == 3) ? 'selected' : ''; ?>>Pruebas electrícas y de comunicación</option>
+                                                    <option value="4" <?= ($tcontrol_actual == 4) ? 'selected' : ''; ?>>Remediación</option>
+                                                    <option value="5" <?= ($tcontrol_actual == 5) ? 'selected' : ''; ?>>Ensamble en maquinaria</option>
+                                                    <option value="6" <?= ($tcontrol_actual == 6) ? 'selected' : ''; ?>>Ruteo final</option>
+                                                    <option value="7" <?= ($tcontrol_actual == 7) ? 'selected' : ''; ?>>Etiquetado</option>
+                                                </select>
+                                                    <label for="etapatcontrol">Etapa ensamble T.Control</label>
                                                 </div>
 
                                                 <div class="form-floating col-12 mt-3">

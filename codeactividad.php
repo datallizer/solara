@@ -67,4 +67,29 @@ if (isset($_POST['finish'])) {
         exit(0);
     }
 }
+
+if (isset($_POST['pausar'])) {
+    $idcodigo = $_SESSION['codigo'];
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $nombre = $_SESSION['nombre'];
+    $apellidop = $_SESSION['apellidop'];
+    $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+    $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+    $nombreplano = mysqli_real_escape_string($con, $_POST['nombreplano']);
+
+    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Se pauso el plano: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+
+    $query_run = mysqli_query($con, $query);
+    if ($query_run) {
+        $querydos = "UPDATE `plano` SET `estatusplano` = '2' WHERE `plano`.`id` = '$id'";
+        $query_rundos = mysqli_query($con, $querydos);
+        $_SESSION['message'] = "$nombre, pausaste el plano: $nombreplano";
+        header("Location: maquinados.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al terminar el plano, contacte a soporte";
+        header("Location: maquinados.php");
+        exit(0);
+    }
+}
 ?>
