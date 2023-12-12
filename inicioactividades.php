@@ -1,6 +1,27 @@
 <?php
 session_start();
 require 'dbcon.php';
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
+
+if (!empty($message)) {
+    // HTML y JavaScript para mostrar la alerta...
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const message = " . json_encode($message) . ";
+                Swal.fire({
+                    title: 'NOTIFICACIÓN',
+                    text: message,
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Hacer algo si se confirma la alerta
+                    }
+                });
+            });
+        </script>";
+    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
+}
 
 // Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
 if (isset($_SESSION['codigo'])) {
@@ -34,7 +55,23 @@ if (isset($_SESSION['codigo'])) {
 
                         $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Inicio actividades en el plano $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
                         $query_rundos = mysqli_query($con, $querydos);
-                        $_SESSION['message'] = "Se inicio la asignación exitosamente a las $hora_actual";
+                        $message = "Se inicio la asignación exitosamente a las $hora_actual";
+                        echo "<script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const message = " . json_encode($message) . ";
+                                    Swal.fire({
+                                        title: 'NOTIFICACIÓN',
+                                        text: message,
+                                        icon: 'info',
+                                        confirmButtonText: 'OK'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            // Hacer algo si se confirma la alerta
+                                        }
+                                    });
+                                });
+                            </script>";
+                        unset($_SESSION['message']);
                     }
                 }
             } else {
@@ -98,7 +135,6 @@ if (isset($_SESSION['codigo'])) {
 
                                     </div>
                                     <div class="card-body">
-                                        <?php include('message.php'); ?>
 
                                         <form action="codeactividad.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
@@ -210,7 +246,7 @@ if (isset($_SESSION['codigo'])) {
                                                                         <button type="submit" class="btn btn-primary" name="save">Detener actividad</button>
                                                                     </div>
                                                                     <div id="botonTerminar" style="display: none;">
-                                                                            <button type="submit" class="btn btn-warning" name="finish">Terminar</button>
+                                                                        <button type="submit" class="btn btn-warning" name="finish">Terminar</button>
                                                                     </div>
                                                                     <div id="botonMenu" style="display: none;">
                                                                         <button type="submit" class="btn btn-primary" name="pausar">Regresar a maquinados</button>
@@ -241,6 +277,7 @@ if (isset($_SESSION['codigo'])) {
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         // Obtener el campo select y el div del botón "Terminar"
         const selectMotivosParo = document.getElementById('motivosparoSelect');

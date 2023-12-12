@@ -55,8 +55,9 @@ if (isset($_POST['save'])) {
     $apellidom = mysqli_real_escape_string($con, $_POST['apellidom']);
     $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
     $rol = mysqli_real_escape_string($con, $_POST['rol']);
+    $medio =addslashes (file_get_contents($_FILES['medio']['tmp_name']));
 
-    $query = "INSERT INTO usuarios SET nombre='$nombre', apellidop='$apellidop', apellidom='$apellidom', codigo='$codigo', estatus='1', rol='$rol'";
+    $query = "INSERT INTO usuarios SET nombre='$nombre', apellidop='$apellidop', apellidom='$apellidom', codigo='$codigo', estatus='1', rol='$rol',medio='$medio'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {

@@ -1,33 +1,54 @@
 <?php
 session_start();
 require 'dbcon.php';
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
+
+if (!empty($message)) {
+    // HTML y JavaScript para mostrar la alerta...
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const message = " . json_encode($message) . ";
+                Swal.fire({
+                    title: 'NOTIFICACIÓN',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Hacer algo si se confirma la alerta
+                    }
+                });
+            });
+        </script>";
+    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
+}
 
 if (isset($_POST['codigo'])) {
     $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
-
     $query = "SELECT * FROM usuarios WHERE codigo='$codigo'";
     $result = mysqli_query($con, $query);
-
     if (mysqli_num_rows($result) == 1) {
         $row = mysqli_fetch_assoc($result);
         $nombre = $row['nombre'];
         $apellidop = $row['apellidop'];
         $_SESSION['nombre'] = $nombre;
-        $_SESSION['apellidop'] = $apellidop; // Asignar el nombre a la sesión
+        $_SESSION['apellidop'] = $apellidop;
         $_SESSION['codigo'] = $row['codigo'];
-        $_SESSION['rol'] = $row['rol']; // Guardar el rol en la sesión
+        $_SESSION['rol'] = $row['rol'];
         if ($_SESSION['rol'] == 8) {
             $idcodigo = $_SESSION['codigo'];
-            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+            $fecha_actual = date("Y-m-d");
+            $hora_actual = date("H:i");
             $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema', hora='$hora_actual', fecha='$fecha_actual'";
             $query_rundos = mysqli_query($con, $querydos);
-            $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
+            $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
+            $_SESSION['message'] = $message;
             header("Location: maquinados.php");
             exit();
         } else {
             $hora_actual = date("H:i");
-            $_SESSION['message'] = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
+            $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
+            $_SESSION['message'] = $message;
             header("Location: dashboard.php");
             exit();
         }
@@ -38,22 +59,19 @@ if (isset($_POST['codigo'])) {
         exit();
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="images/ics.png">
     <link rel="stylesheet" href="css/styles.css">
     <title>Acceso al sistema | Solara</title>
 </head>
-
 <body>
     <div class="container-fluid">
         <div style="min-height: 100vh;" class="row justify-content-evenly align-items-center loginform text-center">
@@ -81,14 +99,13 @@ if (isset($_POST['codigo'])) {
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         function agregarValor(valor) {
             var input = document.getElementById('inputCodigo');
             input.value += valor;
         }
-
         function borrarUltimoCaracter() {
             var input = document.getElementById('inputCodigo');
             var valor = input.value;
@@ -96,5 +113,4 @@ if (isset($_POST['codigo'])) {
         }
     </script>
 </body>
-
 </html>

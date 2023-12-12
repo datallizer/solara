@@ -177,7 +177,7 @@ require 'dbcon.php';
                         if (mysqli_num_rows($query_run) > 0) {
                             $registro = mysqli_fetch_array($query_run);
                     ?>
-                            <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
+                            <p class="mb-2"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></p>
                             <img style="width: 40%;border-radius:10px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                     <?php
                         } else {
@@ -190,7 +190,6 @@ require 'dbcon.php';
         </div>
     </div>
 </body>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="js/sidenav.js"></script>

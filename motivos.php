@@ -1,28 +1,49 @@
 <?php
 session_start();
 require 'dbcon.php';
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
 
-// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
-// if (isset($_SESSION['username'])) {
-//     $username = $_SESSION['username'];
+if (!empty($message)) {
+    // HTML y JavaScript para mostrar la alerta...
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const message = " . json_encode($message) . ";
+                Swal.fire({
+                    title: 'NOTIFICACIÓN',
+                    text: message,
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Hacer algo si se confirma la alerta
+                    }
+                });
+            });
+        </script>";
+    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
+}
 
-//     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-//     $query = "SELECT * FROM usuarios WHERE username = '$username'";
-//     $result = mysqli_query($con, $query);
+//Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
+if (isset($_SESSION['codigo'])) {
+    $codigo = $_SESSION['codigo'];
 
-//     // Si se encuentra un registro coincidente, el usuario está autorizado
-//     if (mysqli_num_rows($result) > 0) {
-//         // El usuario está autorizado, se puede acceder al contenido
-//     } else {
-//         // Redirigir al usuario a una página de inicio de sesión
-//         header('Location: login.php');
-//         exit(); // Finalizar el script después de la redirección
-//     }
-// } else {
-//     // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
-//     header('Location: login.php');
-//     exit(); // Finalizar el script después de la redirección
-// }
+    // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $result = mysqli_query($con, $query);
+
+    // Si se encuentra un registro coincidente, el usuario está autorizado
+    if (mysqli_num_rows($result) > 0) {
+        // El usuario está autorizado, se puede acceder al contenido
+    } else {
+        // Redirigir al usuario a una página de inicio de sesión
+        header('Location: login.php');
+        exit(); // Finalizar el script después de la redirección
+    }
+} else {
+    // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
+    header('Location: login.php');
+    exit(); // Finalizar el script después de la redirección
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -128,6 +149,7 @@ require 'dbcon.php';
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
 </body>
 
 </html>

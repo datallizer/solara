@@ -1,6 +1,27 @@
 <?php
 session_start();
 require 'dbcon.php';
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
+
+if (!empty($message)) {
+    // HTML y JavaScript para mostrar la alerta...
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const message = " . json_encode($message) . ";
+                Swal.fire({
+                    title: 'NOTIFICACIÓN',
+                    text: message,
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Hacer algo si se confirma la alerta
+                    }
+                });
+            });
+        </script>";
+    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
+}
 
 // Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
 if (isset($_SESSION['codigo'])) {
@@ -46,7 +67,6 @@ if (isset($_SESSION['codigo'])) {
             <div class="container-fluid">
                 <div class="row justify-content-md-center justify-content-start mt-5 mb-5">
                     <div class="col-12">
-                        <?php include 'message.php'; ?>
                         <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA</h2>
                     </div>
                     <div class="col-12 p-3 text-center" style="background-color: #e3e3e3;">
@@ -66,7 +86,7 @@ if (isset($_SESSION['codigo'])) {
                                     FROM historial h 
                                     INNER JOIN usuarios u ON h.idcodigo = u.codigo
                                     ORDER BY h.id DESC";
-                                } else{
+                                } else {
                                     $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
                                     FROM historial h 
                                     INNER JOIN usuarios u ON h.idcodigo = u.codigo 
@@ -113,6 +133,7 @@ if (isset($_SESSION['codigo'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         $(document).ready(function() {
             $('#miTabla').DataTable({

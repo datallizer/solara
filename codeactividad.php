@@ -34,6 +34,7 @@ if (isset($_POST['restart'])) {
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
+        $_SESSION['message'] = "Reiniciaste actividades exitosamente";
         header("Location: inicioactividades.php?id=$id");
         exit(0);
     } else {
