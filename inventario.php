@@ -88,7 +88,6 @@ if (isset($_SESSION['codigo'])) {
                                             <th>#</th>
                                             <th>Material</th>
                                             <th>Cantidad</th>
-                                            <th>Ubicacion</th>
                                             <th>Clasificacion</th>
                                             <th>Tipo</th>
                                             <th>Proveedor</th>
@@ -114,7 +113,6 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['id']; ?></td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td><?= $registro['cantidad']; ?></td>
-                                                    <td><?= $registro['ubicacion']; ?></td>
                                                     <td><?= $registro['clasificacion']; ?></td>
                                                     <td><?= $registro['tipo']; ?></td>
                                                     <td><?= $registro['proveedor']; ?></td>
@@ -127,10 +125,10 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['caja']; ?></td>
                                                     <td><?= $registro['numero']; ?></td>
                                                     <td>
-                                                        <a href="editarusuario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                        <a href="editarinventario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                        <form action="codeusuarios.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="'<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                        <form action="codeinventario.php" method="POST" class="d-inline">
+                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                         </form>
 
                                                     </td>
@@ -233,11 +231,6 @@ if (isset($_SESSION['codigo'])) {
                         <div class="form-floating col-6 mt-3">
                             <input type="text" class="form-control" name="numero" id="numero" placeholder="Numero" autocomplete="off" required>
                             <label for="numero">Número</label>
-                        </div>
-
-                        <div class="form-floating col-7 mt-3">
-                            <input type="text" class="form-control" name="ubicacion" id="ubicacion" placeholder="Ubicacion" autocomplete="off" required>
-                            <label for="Ubicacion">Ubicacion</label>
                         </div>
 
                         <div class="form-floating col-5 mt-3">
@@ -357,7 +350,8 @@ if (isset($_SESSION['codigo'])) {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         $(document).ready(function() {

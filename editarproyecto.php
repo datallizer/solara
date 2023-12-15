@@ -133,8 +133,9 @@ require 'dbcon.php';
                                                     <option value="3" <?= ($diseño_actual == 3) ? 'selected' : ''; ?>>Revisión con cliente</option>
                                                     <option value="4" <?= ($diseño_actual == 4) ? 'selected' : ''; ?>>Planos</option>
                                                     <option value="5" <?= ($diseño_actual == 5) ? 'selected' : ''; ?>>Bom</option>
-                                                    <option value="6" <?= ($diseño_actual == 6) ? 'selected' : ''; ?>>Remediación</option>
-                                                    <option value="7" <?= ($diseño_actual == 7) ? 'selected' : ''; ?>>Documentación</option>
+                                                    <option value="6" <?= ($diseño_actual == 6) ? 'selected' : ''; ?>>Manufactura</option>
+                                                    <option value="7" <?= ($diseño_actual == 7) ? 'selected' : ''; ?>>Remediación</option>
+                                                    <option value="8" <?= ($diseño_actual == 8) ? 'selected' : ''; ?>>Documentación</option>
                                                 </select>
                                                     <label for="etapadiseño">Etapa de diseño</label>
                                                 </div>
@@ -147,9 +148,10 @@ require 'dbcon.php';
                                                     <option value="3" <?= ($control_actual == 3) ? 'selected' : ''; ?>>Revisión con cliente</option>
                                                     <option value="4" <?= ($control_actual == 4) ? 'selected' : ''; ?>>Diagramas</option>
                                                     <option value="5" <?= ($control_actual == 5) ? 'selected' : ''; ?>>Bom</option>
-                                                    <option value="6" <?= ($control_actual == 6) ? 'selected' : ''; ?>>Programación</option>
-                                                    <option value="7" <?= ($control_actual == 7) ? 'selected' : ''; ?>>Debugging</option>
-                                                    <option value="8" <?= ($control_actual == 8) ? 'selected' : ''; ?>>Documentación</option>
+                                                    <option value="6" <?= ($control_actual == 6) ? 'selected' : ''; ?>>Manufactura</option>
+                                                    <option value="7" <?= ($control_actual == 7) ? 'selected' : ''; ?>>Programación</option>
+                                                    <option value="8" <?= ($control_actual == 8) ? 'selected' : ''; ?>>Debugging</option>
+                                                    <option value="9" <?= ($control_actual == 9) ? 'selected' : ''; ?>>Documentación</option>
                                                 </select>
                                                     <label for="etapacontrol">Etapa de control</label>
                                                 </div>

@@ -5,16 +5,47 @@ session_start();
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
 
-    $query = "DELETE FROM usuarios WHERE id='$registro_id' ";
+    $query = "DELETE FROM inventario WHERE id='$registro_id' ";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Usuario eliminado exitosamente";
-        header("Location: usuarios.php");
+        $_SESSION['message'] = "Material eliminado exitosamente";
+        header("Location: inventario.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al eliminar el usuario, contácte a soporte";
-        header("Location: usuarios.php");
+        $_SESSION['message'] = "Error al eliminar el material, contacte a soporte";
+        header("Location: inventario.php");
+        exit(0);
+    }
+}
+
+if (isset($_POST['update'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $clasificacion = mysqli_real_escape_string($con, $_POST['clasificacion']);
+    $tipo = mysqli_real_escape_string($con, $_POST['tipo']);
+    $proveedor = mysqli_real_escape_string($con, $_POST['proveedor']);
+    $parte = mysqli_real_escape_string($con, $_POST['parte']);
+    $descripcion = mysqli_real_escape_string($con, $_POST['descripcion']);
+    $marca = mysqli_real_escape_string($con, $_POST['marca']);
+    $condicion = mysqli_real_escape_string($con, $_POST['condicion']);
+    $cantidad = mysqli_real_escape_string($con, $_POST['cantidad']);
+    $rack = mysqli_real_escape_string($con, $_POST['rack']);
+    $bin = mysqli_real_escape_string($con, $_POST['bin']);
+    $caja = mysqli_real_escape_string($con, $_POST['caja']);
+    $costo = mysqli_real_escape_string($con, $_POST['costo']);
+    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
+    $numero = mysqli_real_escape_string($con, $_POST['numero']);
+
+    $query = "UPDATE `inventario` SET `clasificacion` = '$clasificacion', `tipo` = '$tipo', `proveedor` = '$proveedor', `parte` = '$parte', `descripcion` = '$descripcion', `marca` = '$marca', `condicion` = '$condicion', `cantidad` = '$cantidad', `rack` = '$rack', `bin` = '$bin', `caja` = '$caja', `costo` = '$costo', `nombre` = '$nombre', `numero` = '$numero' WHERE `inventario`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Material editado exitosamente";
+        header("Location: inventario.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar el material, contacte a soporte";
+        header("Location: inventario.php");
         exit(0);
     }
 }

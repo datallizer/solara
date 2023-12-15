@@ -94,11 +94,17 @@ if (isset($_SESSION['codigo'])) {
     <title>Actividad en progreso | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.1/dist/css/select2.min.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
+<style>
+    .select2-container--default .select2-results__option {
+    font-size: 16px; /* Tamaño de fuente deseado */
+    padding: 10px; /* Espaciado interno */
+}
+</style>
 <body class="sb-nav-fixed" style="background-color: #e7e7e7;">
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
@@ -215,28 +221,32 @@ if (isset($_SESSION['codigo'])) {
                                                                 <div class="modal-body">
 
                                                                     <div class="row">
-                                                                        <div class="form-floating col-12">
-                                                                            <?php
-                                                                            // Tu código de conexión a la base de datos aquí
+                                                                    <div class="form-floating col-12">
+    <?php
+    // Tu código de conexión a la base de datos aquí
 
-                                                                            $query = "SELECT * FROM motivos";
-                                                                            $result = mysqli_query($con, $query);
+    $query = "SELECT * FROM motivos";
+    $result = mysqli_query($con, $query);
 
-                                                                            // Comprobamos si hay resultados
-                                                                            if (mysqli_num_rows($result) > 0) {
-                                                                                echo '<select class="form-select" name="motivosparo" id="motivosparoSelect">
-                                                                                <option selected disabled>Selecciona un motivo</option>';
-                                                                                // Iteramos sobre los resultados para generar las opciones del select
-                                                                                while ($row = mysqli_fetch_assoc($result)) {
-                                                                                    echo '<option value="' . $row['motivosparo'] . '">' . $row['motivosparo'] . '</option>';
-                                                                                }
-                                                                                echo '</select>';
-                                                                            } else {
-                                                                                echo 'No hay motivos disponibles';
-                                                                            }
-                                                                            ?>
-                                                                            <label for="motivosparoSelect">Motivo de paro</label>
-                                                                        </div>
+    // Comprobamos si hay resultados
+    if (mysqli_num_rows($result) > 0) {
+        echo '<div class="row">';
+        // Iteramos sobre los resultados para generar los radio buttons en dos columnas
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo '<div class="col-md-6 mb-3" style="text-align:left;">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="motivosparo" id="' . $row['motivosparo'] . '" value="' . $row['motivosparo'] . '">
+                        <label class="form-check-label" for="' . $row['motivosparo'] . '">' . $row['motivosparo'] . '</label>
+                    </div>
+                  </div>';
+        }
+        echo '</div>';
+    } else {
+        echo 'No hay motivos disponibles';
+    }
+    ?>
+</div>
+
                                                                     </div>
 
                                                                 </div>
@@ -277,34 +287,39 @@ if (isset($_SESSION['codigo'])) {
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.1/dist/js/select2.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
-        // Obtener el campo select y el div del botón "Terminar"
-        const selectMotivosParo = document.getElementById('motivosparoSelect');
-        const divBotonTerminar = document.getElementById('botonTerminar');
-        const divBotonPausar = document.getElementById('botonPausar');
-        const divBotonMenu = document.getElementById('botonMenu');
+    // Obtener los radio buttons y los divs de los botones "Terminar", "Pausar" y "Menú"
+    const radioButtons = document.querySelectorAll('input[name="motivosparo"]');
+    const divBotonTerminar = document.getElementById('botonTerminar');
+    const divBotonPausar = document.getElementById('botonPausar');
+    const divBotonMenu = document.getElementById('botonMenu');
 
-        // Escuchar el evento de cambio en el campo select
-        selectMotivosParo.addEventListener('change', function(event) {
+    // Escuchar el evento de cambio en los radio buttons
+    radioButtons.forEach(radioButton => {
+        radioButton.addEventListener('change', function(event) {
             const valorSeleccionado = event.target.value;
 
-            // Mostrar u ocultar el botón dependiendo del valor seleccionado
+            // Mostrar u ocultar los botones dependiendo del valor seleccionado
             if (valorSeleccionado === 'Pieza terminada') {
-                divBotonTerminar.style.display = 'block'; // Mostrar el botón
-                divBotonPausar.style.display = 'none';
-                divBotonMenu.style.display = 'none';
+                divBotonTerminar.style.display = 'block'; // Mostrar el botón "Terminar"
+                divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
+                divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
             } else if (valorSeleccionado === 'Atención a otra prioridad' || valorSeleccionado === 'Fin de jornada laboral') {
-                divBotonTerminar.style.display = 'none'; // Ocultar el botón
-                divBotonPausar.style.display = 'none';
-                divBotonMenu.style.display = 'block';
+                divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
+                divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
+                divBotonMenu.style.display = 'block'; // Mostrar el botón "Menú"
             } else {
-                divBotonTerminar.style.display = 'none'; // Ocultar el botón
-                divBotonPausar.style.display = 'block';
-                divBotonMenu.style.display = 'none';
+                divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
+                divBotonPausar.style.display = 'block'; // Mostrar el botón "Pausar"
+                divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
             }
         });
-    </script>
+    });
+</script>
+
 
 </body>
 
