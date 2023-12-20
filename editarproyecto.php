@@ -75,7 +75,7 @@ require 'dbcon.php';
                                                 </div>
 
                                                 <div class="form-floating col-5 mt-3">
-                                                    <input type="date" class="form-control" name="fechafin" id="fechafin" value="<?= $registro['fechafin']; ?>" readonly>
+                                                    <input type="date" class="form-control" name="fechafin" id="fechafin" value="<?= $registro['fechafin']; ?>">
                                                     <label for="fechafin">Fecha de finalización</label>
                                                 </div>
 

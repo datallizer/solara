@@ -351,7 +351,7 @@ if (isset($_SESSION['codigo'])) {
                         <div class="form-check col-12 mt-3 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios";
+                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9)";
                             $result = mysqli_query($con, $query);
 
                             // Verificar si hay resultados
@@ -415,7 +415,7 @@ if (isset($_SESSION['codigo'])) {
                         <div class="form-check col-12 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios";
+                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9)";
                             $result = mysqli_query($con, $query);
 
                             // Verificar si hay resultados

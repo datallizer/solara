@@ -15,12 +15,11 @@ if (!empty($message)) {
                     confirmButtonText: 'OK'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Hacer algo si se confirma la alerta
+                        
                     }
                 });
             });
         </script>";
-    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
 }
 
 // Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
@@ -141,7 +140,7 @@ if (isset($_SESSION['codigo'])) {
 
                                     </div>
                                     <div class="card-body">
-
+                                    <?php include 'message.php'; ?>
                                         <form action="codeactividad.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
