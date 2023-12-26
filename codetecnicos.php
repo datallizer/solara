@@ -4,14 +4,14 @@ session_start();
 
 if (isset($_POST['mecanico'])) {
     
-        $idproyecto = isset($_POST['idproyecto']) ? mysqli_real_escape_string($con, $_POST['idproyecto']) : '';
+        $idplano = isset($_POST['idplano']) ? mysqli_real_escape_string($con, $_POST['idplano']) : '';
             foreach ($_POST['codigooperador'] as $codigoOperador) {
-                // Insertar en la tabla `encargadomecanico` utilizando el ID obtenido anteriormente
-                $queryplano = "INSERT INTO encargadomecanico (idproyecto, codigooperador) VALUES (?, ?)";
+                // Insertar en la tabla `asignaciondiagrama` utilizando el ID obtenido anteriormente
+                $queryplano = "INSERT INTO asignaciondiagrama (idplano, codigooperador) VALUES (?, ?)";
                 $stmtPlano = mysqli_prepare($con, $queryplano);
 
                 if ($stmtPlano) {
-                    mysqli_stmt_bind_param($stmtPlano, 'ii', $idproyecto, $codigoOperador);
+                    mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
                     mysqli_stmt_execute($stmtPlano);
                 } else {
                     $_SESSION['message'] = "Error al asignar técnico(s) mecánico(s) al proyecto, contacte a soporte";
@@ -26,14 +26,14 @@ if (isset($_POST['mecanico'])) {
     }
 
     if (isset($_POST['control'])) {
-            $idproyecto = isset($_POST['idproyecto']) ? mysqli_real_escape_string($con, $_POST['idproyecto']) : '';
+            $idplano = isset($_POST['idplano']) ? mysqli_real_escape_string($con, $_POST['idplano']) : '';
                 foreach ($_POST['codigooperador'] as $codigoOperador) {
-                    // Insertar en la tabla `encargadotcontrol` utilizando el ID obtenido anteriormente
-                    $queryplano = "INSERT INTO encargadotcontrol (idproyecto, codigooperador) VALUES (?, ?)";
+                    // Insertar en la tabla `asignaciondiagrama` utilizando el ID obtenido anteriormente
+                    $queryplano = "INSERT INTO asignaciondiagrama (idplano, codigooperador) VALUES (?, ?)";
                     $stmtPlano = mysqli_prepare($con, $queryplano);
     
                     if ($stmtPlano) {
-                        mysqli_stmt_bind_param($stmtPlano, 'ii', $idproyecto, $codigoOperador);
+                        mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
                         mysqli_stmt_execute($stmtPlano);
                     } else {
                         $_SESSION['message'] = "Error al asignar técnico en control al proyecto, contacte a soporte";

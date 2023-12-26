@@ -123,3 +123,34 @@ ALTER TABLE `proyecto`
 
 ALTER TABLE `usuarios`
   MODIFY `id` int(100) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE `diagrama` (
+  `id` int(100) NOT NULL,
+  `idproyecto` int(100) DEFAULT NULL,
+  `nombreplano` varchar(100) DEFAULT NULL,
+  `medio` longblob DEFAULT NULL,
+  `nivel` int(10) DEFAULT NULL,
+  `piezas` int(100) DEFAULT NULL,
+  `estatusplano` int(10) NOT NULL,
+  `actividad` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `diagrama`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `diagrama`
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT;
+
+  CREATE TABLE `asignaciondiagrama` (
+  `id` int(255) NOT NULL,
+  `idplano` int(255) NOT NULL,
+  `codigooperador` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+ALTER TABLE `asignaciondiagrama`
+  ADD PRIMARY KEY (`id`);
+
+
+ALTER TABLE `asignaciondiagrama`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;

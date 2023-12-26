@@ -86,11 +86,11 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT encargadomecanico.*, proyecto.id, encargadomecanico.id AS id_encargado, proyecto.nombre,usuarios.nombre AS username, usuarios.apellidop, usuarios.apellidom
-                                        FROM encargadomecanico
-                                        JOIN usuarios ON encargadomecanico.codigooperador = usuarios.codigo
-                                        JOIN proyecto ON encargadomecanico.idproyecto = proyecto.id 
-                                        WHERE encargadomecanico.codigooperador = usuarios.codigo
+                                        $query = "SELECT asignaciondiagrama.*, proyecto.id, asignaciondiagrama.id AS id_encargado, proyecto.nombre,usuarios.nombre AS username, usuarios.apellidop, usuarios.apellidom
+                                        FROM asignaciondiagrama
+                                        JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
+                                        JOIN proyecto ON asignaciondiagrama.idplano = proyecto.id 
+                                        WHERE asignaciondiagrama.codigooperador = usuarios.codigo
                                         ORDER BY id_encargado desc";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {

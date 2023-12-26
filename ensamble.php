@@ -86,19 +86,19 @@ if (isset($_SESSION['codigo'])) {
                                     <tbody>
                                         <?php
                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
-                                            $query = "SELECT proyecto.*, plano.*
-                                                FROM plano 
-                                                JOIN proyecto ON plano.idproyecto = proyecto.id 
-                                                JOIN asignacionplano ON asignacionplano.idplano = plano.id 
+                                            $query = "SELECT proyecto.*, diagrama.*
+                                                FROM diagrama 
+                                                JOIN proyecto ON diagrama.idproyecto = proyecto.id 
+                                                JOIN asignacionplano ON asignacionplano.idplano = diagrama.id 
                                                 JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                                 WHERE asignacionplano.codigooperador = $codigo 
-                                                AND (plano.estatusplano = 1 OR plano.estatusplano = 2)
+                                                AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2)
                                                 ORDER BY proyecto.prioridad ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                                            $query = "SELECT proyecto.*, plano.*
-                                                FROM plano 
-                                                JOIN proyecto ON plano.idproyecto = proyecto.id
-                                                WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2)
+                                            $query = "SELECT proyecto.*, diagrama.*
+                                                FROM diagrama 
+                                                JOIN proyecto ON diagrama.idproyecto = proyecto.id
+                                                WHERE (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2)
                                                 ORDER BY proyecto.prioridad asc";
                                         }
                                         $query_run = mysqli_query($con, $query);
@@ -236,9 +236,9 @@ if (isset($_SESSION['codigo'])) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $query = "SELECT proyecto.*, plano.*
-                                        FROM plano 
-                                        JOIN proyecto ON plano.idproyecto = proyecto.id
+                                    $query = "SELECT proyecto.*, diagrama.*
+                                        FROM diagrama 
+                                        JOIN proyecto ON diagrama.idproyecto = proyecto.id
                                         WHERE estatusplano = 0 
                                         ORDER BY proyecto.prioridad asc";
                                     $query_run = mysqli_query($con, $query);
