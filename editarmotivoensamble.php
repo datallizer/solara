@@ -36,7 +36,7 @@ require 'dbcon.php';
                                 
                                 if (isset($_GET['id'])) {
                                     $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                    $query = "SELECT * FROM motivos WHERE id='$registro_id' ";
+                                    $query = "SELECT * FROM motivosensamble WHERE id='$registro_id' ";
                                     $query_run = mysqli_query($con, $query);
 
                                     if (mysqli_num_rows($query_run) > 0) {
@@ -54,7 +54,7 @@ require 'dbcon.php';
                                                 </div>
 
                                                 <div class="col-12 text-center mt-3">
-                                                    <button type="submit" name="update" class="btn btn-primary">
+                                                    <button type="submit" name="updateensamble" class="btn btn-primary">
                                                         Actualizar
                                                     </button>
                                                 </div>

@@ -38,6 +38,7 @@ if (isset($_SESSION['codigo'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,6 +50,7 @@ if (isset($_SESSION['codigo'])) {
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">
@@ -62,7 +64,7 @@ if (isset($_SESSION['codigo'])) {
                                     <?php
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    Nuevo plano
+                                    Nuevo plano / actividad
                                 </button>';
                                     }
                                     ?>
@@ -73,7 +75,7 @@ if (isset($_SESSION['codigo'])) {
                                     <thead>
                                         <tr>
                                             <th>Proyecto</th>
-                                            <th>Planos asociados</th>
+                                            <th>Plano / actividad asociados</th>
                                             <th>Operadores asignados</th>
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
@@ -106,31 +108,46 @@ if (isset($_SESSION['codigo'])) {
                                                 <tr>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
-                                                    <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
-                                            ?><button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
-                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <?php
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                                            ?>
-                                            <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
-                                            <?php
-                                        }
-                                        ?>
-                                                    
-                                                        
+                                                        <?php
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                            // Verifica si 'medio' está vacío o no
+                                                            if (empty($registro['medio'])) {
+                                                                ?>
+                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
+                                                            <?php
+                                                            } else {
+                                                                ?>
+                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
+                                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <?php
+                                                            }
+                                                        ?>
+                                                            
+                                                            <?php
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+
+                                                            // Verifica si 'medio' está vacío o no
+                                                            if (empty($registro['medio'])) {
+                                                            
+                                                            } else {
+                                                            ?>
+                                                                <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
+                                                        <?php
+                                                            }
+                                                        }
+                                                        ?>
                                                     </td>
                                                     <td>
                                                         <?php
@@ -231,7 +248,18 @@ if (isset($_SESSION['codigo'])) {
                                             <tr>
                                                 <td><?= $registro['nombre']; ?></td>
                                                 <td>
-                                                <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
+                                                    <?php
+                                                // Verifica si 'medio' está vacío o no
+                                                            if (empty($registro['medio'])) {
+                                                            ?>
+                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
+                                                            <?php
+                                                            } else {
+                                                            ?>
+                                                                <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
+                                                        <?php
+                                                            }
+                                                            ?>
                                                 </td>
                                                 <td><?= $registro['piezas']; ?></td>
                                                 <td>
@@ -294,12 +322,13 @@ if (isset($_SESSION['codigo'])) {
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO PLANO</h1>
+                    <h1 class="modal-title fs-5" id="tituloPlano">NUEVO PLANO</h1>
+                    <h1 class="modal-title fs-5" id="tituloActividad" style="display: none;">NUEVA ACTIVIDAD</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form action="codemaquinados.php" method="POST" class="row" enctype="multipart/form-data">
-                        <div class="form-floating col-12 mb-3">
+                        <div class="form-floating col-8 mb-3">
                             <select class="form-select" name="idproyecto" id="idproyecto">
                                 <option disabled selected>Seleccione un proyecto</option>
                                 <?php
@@ -323,16 +352,29 @@ if (isset($_SESSION['codigo'])) {
                             <label for="idproyecto">Proyecto asociado</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-1">
-                            <input type="text" class="form-control" name="nombreplano" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
-                            <label for="nombreplano">Nombre del plano</label>
+                        <div class="col-4 mb-3">
+                            <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onchange="toggleElements()">
+                                <label class="form-check-label" for="flexSwitchCheckDefault" id="labelPlano">Plano</label>
+                                <label class="form-check-label" for="flexSwitchCheckDefault" id="labelActividad" style="display: none;">Actividad</label>
+                            </div>
                         </div>
 
-                        <div class="mt-3">
+                        <div class="form-floating col-12 mt-1">
+                            <input type="text" class="form-control" name="nombreplano" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
+                            <label for="nombreplano" id="nombrePlano">Nombre del plano</label>
+                            <label for="nombreplano" id="nombreActividad" style="display: none;">Nombre de la actividad</label>
+                        </div>
+
+                        <div class="mt-3" id="planoElements">
                             <label for="medio" class="form-label">Plano PDF</label>
                             <input class="form-control" type="file" id="medio" name="medio" max="100000">
                         </div>
 
+                        <div class="form-floating col-12 mt-3" id="actividadElements" style="display: none;">
+                            <input type="text" class="form-control" name="actividad" id="actividad" placeholder="Actividad" autocomplete="off">
+                            <label for="actividad">Detalles de la actividad</label>
+                        </div>
 
                         <div class="form-floating col-12 col-md-5 mt-3">
                             <input type="text" class="form-control" name="piezas" id="piezas" placeholder="Piezas" autocomplete="off" required>
@@ -386,6 +428,36 @@ if (isset($_SESSION['codigo'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
+        function toggleElements() {
+        var switchElement = document.getElementById('flexSwitchCheckDefault');
+        var tituloPlano = document.getElementById('tituloPlano');
+        var tituloActividad = document.getElementById('tituloActividad');
+        var nombrePlano = document.getElementById('nombrePlano');
+        var nombreActividad = document.getElementById('nombreActividad');
+        var planoElements = document.getElementById('planoElements');
+        var actividadElements = document.getElementById('actividadElements');
+
+        if (switchElement.checked) {
+            tituloPlano.style.display = 'none';
+            tituloActividad.style.display = 'block';
+            nombrePlano.style.display = 'none';
+            nombreActividad.style.display = 'block';
+            planoElements.style.display = 'none';
+            actividadElements.style.display = 'block';
+            labelPlano.style.display = 'none';
+            labelActividad.style.display = 'block';
+        } else {
+            tituloPlano.style.display = 'block';
+            tituloActividad.style.display = 'none';
+            nombrePlano.style.display = 'block';
+            nombreActividad.style.display = 'none';
+            planoElements.style.display = 'block';
+            actividadElements.style.display = 'none';
+            labelPlano.style.display = 'block';
+            labelActividad.style.display = 'none';
+        }
+    }
+
         $(document).ready(function() {
             $('#miTabla, #miTablaDos').DataTable({
                 "order": [

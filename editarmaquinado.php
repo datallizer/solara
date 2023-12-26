@@ -79,6 +79,18 @@ require 'dbcon.php';
                                                     <label for="piezas">Número de piezas</label>
                                                 </div>
 
+                                                <?php
+                                                // Verifica si 'medio' está vacío o no
+                                                if (empty($registro['medio'])) {
+                                                ?>
+                                                    <div class="form-floating col-7 mt-3">
+                                                        <input type="text" class="form-control" id="actividad" name="actividad" value="<?= $registro['actividad']; ?>">
+                                                        <label for="actividad">Actividad</label>
+                                                    </div>
+                                                <?php
+                                                }
+                                                ?>
+
                                                 <div class="col-12 col-md-7 mt-3 form-floating">
                                                     <select class="form-select" name="estatusplano" id="estatusplano">
                                                         <option disabled>Seleccione un estatus</option>

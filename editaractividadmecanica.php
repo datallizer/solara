@@ -26,8 +26,8 @@ require 'dbcon.php';
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>EDITAR MOTIVO
-                                    <a href="motivos.php" class="btn btn-danger btn-sm float-end">Regresar</a>
+                                <h4>EDITAR ACTIVIDAD T. MECÁNICO
+                                    <a href="actividades.php" class="btn btn-danger btn-sm float-end">Regresar</a>
                                 </h4>
                             </div>
                             <div class="card-body">
@@ -36,7 +36,7 @@ require 'dbcon.php';
                                 
                                 if (isset($_GET['id'])) {
                                     $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                    $query = "SELECT * FROM motivos WHERE id='$registro_id' ";
+                                    $query = "SELECT * FROM actividadesmecanica WHERE id='$registro_id' ";
                                     $query_run = mysqli_query($con, $query);
 
                                     if (mysqli_num_rows($query_run) > 0) {
@@ -44,13 +44,13 @@ require 'dbcon.php';
 
                                 ?>
                                 
-                                        <form action="codemotivos.php" method="POST">
+                                        <form action="codeactividades.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row mt-1">
                                                 <div class="form-floating col-12">
-                                                    <input type="text" class="form-control" name="motivosparo" id="motivosparo" value="<?= $registro['motivosparo']; ?>">
-                                                    <label for="motivosparo">Motivo de paro</label>
+                                                    <input type="text" class="form-control" name="actividad" id="actividad" value="<?= $registro['actividad']; ?>">
+                                                    <label for="actividad">Actividad</label>
                                                 </div>
 
                                                 <div class="col-12 text-center mt-3">

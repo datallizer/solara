@@ -53,17 +53,17 @@ if (isset($_POST['finish'])) {
     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
     $nombreplano = mysqli_real_escape_string($con, $_POST['nombreplano']);
 
-    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Termino el plano, $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Termino el maquinado, $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
         $querydos = "UPDATE `plano` SET `estatusplano` = '0' WHERE `plano`.`id` = '$id'";
         $query_rundos = mysqli_query($con, $querydos);
-        $_SESSION['message'] = "$nombre, terminaste el plano $nombreplano exitosamente";
+        $_SESSION['message'] = "$nombre, terminaste el maquinado $nombreplano exitosamente";
         header("Location: maquinados.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al terminar el plano, contacte a soporte";
+        $_SESSION['message'] = "Error al terminar el maquinado, contacte a soporte";
         header("Location: maquinados.php");
         exit(0);
     }
@@ -78,17 +78,17 @@ if (isset($_POST['pausar'])) {
     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
     $nombreplano = mysqli_real_escape_string($con, $_POST['nombreplano']);
 
-    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Se pauso el plano: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Se pauso el maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
         $querydos = "UPDATE `plano` SET `estatusplano` = '2' WHERE `plano`.`id` = '$id'";
         $query_rundos = mysqli_query($con, $querydos);
-        $_SESSION['message'] = "$nombre, pausaste el plano: $nombreplano";
+        $_SESSION['message'] = "$nombre, pausaste el maquinado: $nombreplano";
         header("Location: maquinados.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al terminar el plano, contacte a soporte";
+        $_SESSION['message'] = "Error al terminar el maquinado, contacte a soporte";
         header("Location: maquinados.php");
         exit(0);
     }

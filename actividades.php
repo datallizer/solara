@@ -52,7 +52,7 @@ if (isset($_SESSION['codigo'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Motivos de paro | Solara</title>
+    <title>Actividades | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
@@ -68,9 +68,9 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MOTIVOS DE PARO MAQUINADOS
+                                <h4>ACTIVIDADES MECÁNICA
                                     <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                        Nuevo motivo
+                                        Nueva actividad
                                     </button>
                                 </h4>
                             </div>
@@ -79,31 +79,24 @@ if (isset($_SESSION['codigo'])) {
                                 <table class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>Motivo de paro</th>
+                                            <th>Actividad</th>
                                             <th>Accion</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM motivos ORDER BY id DESC";
+                                        $query = "SELECT * FROM actividadesmecanica ORDER BY id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
-                                                    <td><?= $registro['motivosparo']; ?></td>
+                                                    <td><?= $registro['actividad']; ?></td>
                                                     <td>
-                                                        <?php
-                                                        if ($registro['motivosparo'] !== "Pieza terminada" && $registro['motivosparo'] !== "Atención a otra prioridad" && $registro['motivosparo'] !== "Fin de jornada laboral") {
-                                                            // Muestra los elementos HTML (botones de editar y eliminar) si el motivo de paro no es "Pieza terminada" ni "Atención a otra prioridad"
-                                                        ?>
-                                                            <a href="editarmotivo.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-                                                            <form action="codemotivos.php" method="POST" class="d-inline">
+                                                            <a href="editaractividadmecanica.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                            <form action="codeactividades.php" method="POST" class="d-inline">
                                                                 <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                             </form>
-                                                        <?php
-                                                        }
-                                                        ?>
                                                     </td>
                                                 </tr>
                                         <?php
@@ -117,13 +110,12 @@ if (isset($_SESSION['codigo'])) {
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MOTIVOS DE PARO ENSAMBLE
-                                    <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
-                                        Nuevo motivo
+                                <h4>ACTIVIDADES CONTROL
+                                    <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModaldos">
+                                        Nueva actividad
                                     </button>
                                 </h4>
                             </div>
@@ -132,31 +124,24 @@ if (isset($_SESSION['codigo'])) {
                                 <table class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>Motivo de paro</th>
+                                            <th>Actividad</th>
                                             <th>Accion</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM motivosensamble ORDER BY id DESC";
+                                        $query = "SELECT * FROM actividadescontrol ORDER BY id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
-                                                    <td><?= $registro['motivosparo']; ?></td>
+                                                    <td><?= $registro['actividad']; ?></td>
                                                     <td>
-                                                        <?php
-                                                        if ($registro['motivosparo'] !== "Pieza terminada" && $registro['motivosparo'] !== "Atención a otra prioridad" && $registro['motivosparo'] !== "Fin de jornada laboral") {
-                                                            // Muestra los elementos HTML (botones de editar y eliminar) si el motivo de paro no es "Pieza terminada" ni "Atención a otra prioridad"
-                                                        ?>
-                                                            <a href="editarmotivoensamble.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-                                                            <form action="codemotivos.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="deleteensamble" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            <a href="editaractividadcontrol.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                            <form action="codeactividades.php" method="POST" class="d-inline">
+                                                                <button type="submit" name="deletecontrol" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                             </form>
-                                                        <?php
-                                                        }
-                                                        ?>
                                                     </td>
                                                 </tr>
                                         <?php
@@ -180,14 +165,14 @@ if (isset($_SESSION['codigo'])) {
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO MOTIVO DE PARO MAQUINADOS</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVA ACTIVIDAD T. MECÁNICA</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codemotivos.php" method="POST" class="row">
+                    <form action="codeactividades.php" method="POST" class="row">
                         <div class="form-floating col-12 mb-3">
-                            <input type="text" class="form-control" name="motivosparo" id="motivosparo" placeholder="Motivo de paro" autocomplete="off" required>
-                            <label for="motivosparo">Escriba un motivo</label>
+                            <input type="text" class="form-control" name="actividad" id="actividad" placeholder="Actividad" autocomplete="off" required>
+                            <label for="actividad">Escriba una actividad</label>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -199,30 +184,28 @@ if (isset($_SESSION['codigo'])) {
         </div>
     </div>
 
-    <!-- Modal Dos -->
-    <div class="modal fade" id="exampleModalDos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModaldos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO MOTIVO DE PARO ENSAMBLE</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVA ACTIVIDAD T. CONTROL</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codemotivos.php" method="POST" class="row">
+                    <form action="codeactividades.php" method="POST" class="row">
                         <div class="form-floating col-12 mb-3">
-                            <input type="text" class="form-control" name="motivosparo" id="motivosparo" placeholder="Motivo de paro" autocomplete="off" required>
-                            <label for="motivosparo">Escriba un motivo</label>
+                            <input type="text" class="form-control" name="actividad" id="actividad" placeholder="Actividad" autocomplete="off" required>
+                            <label for="actividad">Escriba una actividad</label>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="saveensamble">Guardar</button>
+                            <button type="submit" class="btn btn-primary" name="savecontrol">Guardar</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>

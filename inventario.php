@@ -278,8 +278,9 @@ if (isset($_SESSION['codigo'])) {
                                         $opcion = $material['nombre'];
                                         // Obtener el ID del usuario
                                         $idMaterial = $material['id'];
+                                        $cantidadact = $material['cantidad'];
                                         // Mostrar la opción con el valor igual al ID del material
-                                        echo "<option value='$idMaterial' " . ($registro['id'] == $idMaterial ?: '') . ">$opcion</option>";
+                                        echo "<option value='$idMaterial' " . ($registro['id'] == $idMaterial ?: '') . ">#$idMaterial $opcion - $cantidadact</option>";
                                     }
                                 }
                                 ?>
@@ -325,10 +326,11 @@ if (isset($_SESSION['codigo'])) {
                                     while ($material = mysqli_fetch_assoc($result)) {
                                         // Construir el texto de la opción con nombre del material
                                         $opcion = $material['nombre'];
+                                        $cantidadact = $material['cantidad'];
                                         // Obtener el ID del usuario
                                         $idMaterial = $material['id'];
                                         // Mostrar la opción con el valor igual al ID del material
-                                        echo "<option value='$idMaterial' " . ($registro['id'] == $idMaterial ?: '') . ">$opcion</option>";
+                                        echo "<option value='$idMaterial' " . ($registro['id'] == $idMaterial ?: '') . ">#$idMaterial $opcion - $cantidadact</option>";
                                     }
                                 }
                                 ?>

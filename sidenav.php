@@ -157,6 +157,11 @@ require 'dbcon.php';
                             echo '<a class="nav-link" href="motivos.php">
                             <div class="sb-nav-link-icon"><i class="bi bi-sign-stop"></i></div>
                             Motivos de paro
+                        </a>
+                        
+                        <a class="nav-link" href="actividades.php">
+                            <div class="sb-nav-link-icon"><i class="bi bi-check2-circle"></i></div>
+                            Actividades
                         </a>';
                         }
                         ?>
