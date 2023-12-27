@@ -89,9 +89,9 @@ if (isset($_SESSION['codigo'])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id 
-                                                JOIN asignacionplano ON asignacionplano.idplano = diagrama.id 
-                                                JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                                WHERE asignacionplano.codigooperador = $codigo 
+                                                JOIN asignaciondiagrama ON asignaciondiagrama.idplano = diagrama.id 
+                                                JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
+                                                WHERE asignaciondiagrama.codigooperador = $codigo 
                                                 AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2)
                                                 ORDER BY proyecto.prioridad ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
@@ -151,10 +151,10 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td>
                                                         <?php
-                                                        $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
-                                                            FROM asignacionplano
-                                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                                            WHERE asignacionplano.idplano = " . $registro['id'];
+                                                        $queryAsignacion = "SELECT asignaciondiagrama.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+                                                            FROM asignaciondiagrama
+                                                            JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
+                                                            WHERE asignaciondiagrama.idplano = " . $registro['id'];
                                                         $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                         if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                             foreach ($query_run_asignacion as $asignacion) {
@@ -264,10 +264,10 @@ if (isset($_SESSION['codigo'])) {
                                                 <td><?= $registro['piezas']; ?></td>
                                                 <td>
                                                     <?php
-                                                    $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
-                                                            FROM asignacionplano
-                                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                                            WHERE asignacionplano.idplano = " . $registro['id'];
+                                                    $queryAsignacion = "SELECT asignaciondiagrama.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+                                                            FROM asignaciondiagrama
+                                                            JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
+                                                            WHERE asignaciondiagrama.idplano = " . $registro['id'];
                                                     $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 
                                                     if (mysqli_num_rows($query_run_asignacion) > 0) {
@@ -294,9 +294,9 @@ if (isset($_SESSION['codigo'])) {
                                                     }
                                                     ?></td>
                                                 <td>
-                                                    <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                    <a href="editardiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                    <form action="codemaquinados.php" method="POST" class="d-inline">
+                                                    <form action="codediagramas.php" method="POST" class="d-inline">
                                                         <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                     </form>
                                                 </td>
@@ -327,7 +327,7 @@ if (isset($_SESSION['codigo'])) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codemaquinados.php" method="POST" class="row" enctype="multipart/form-data">
+                    <form action="codediagramas.php" method="POST" class="row" enctype="multipart/form-data">
                         <div class="form-floating col-8 mb-3">
                             <select class="form-select" name="idproyecto" id="idproyecto">
                                 <option disabled selected>Seleccione un proyecto</option>
