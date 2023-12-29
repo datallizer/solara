@@ -105,7 +105,7 @@ if (isset($_SESSION['codigo'])) {
                                                         } else if ($registro['rol'] === '2') {
                                                             echo "Gerencia";
                                                         }  else if ($registro['rol'] === '4') {
-                                                            echo "Tecnico controles";
+                                                            echo "Técnico controles";
                                                         } else if ($registro['rol'] === '5') {
                                                             echo "Ing. Diseño";
                                                         } else if ($registro['rol'] === '6') {
@@ -113,7 +113,7 @@ if (isset($_SESSION['codigo'])) {
                                                         } else if ($registro['rol'] === '7') {
                                                             echo "Almacenista";
                                                         } else if ($registro['rol'] === '8') {
-                                                            echo "Tecnico mecanico";
+                                                            echo "Técnico mecanico";
                                                         } else if ($registro['rol'] === '9') {
                                                             echo "Ing. Control";
                                                         } else {
@@ -203,11 +203,11 @@ if (isset($_SESSION['codigo'])) {
                                 <option selected disabled>Seleccione el rol</option>
                                 <option value="1">Administrador</option>
                                 <option value="2">Gerencia</option>
-                                <option value="4">Tecnico controles</option>
+                                <option value="4">Técnico controles</option>
                                 <option value="5">Ing. Diseño</option>
                                 <option value="6">Compras</option>
                                 <option value="7">Almacenista</option>
-                                <option value="8">Tecnico mecanico</option>
+                                <option value="8">Técnico mecanico</option>
                                 <option value="9">Ing. Control</option>
                             </select>
                             <label for="rol">Rol</label>

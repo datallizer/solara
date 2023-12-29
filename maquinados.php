@@ -220,13 +220,15 @@ if (isset($_SESSION['codigo'])) {
                     </div>
                     <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                     ?>
-                        <div class="col-12">
-                            <h4 class="mt-3">MAQUINADOS FINALIZADOS</h4>
-                            <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
+                        <div class="col-12 mt-3">
+                            <div class="card">
+                                <div class="card-header"><h4>MAQUINADOS FINALIZADOS</h4></div>
+                                <div class="card-body">
+                                <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>Proyecto</th>
-                                        <th>Planos asociados</th>
+                                        <th>Plano / actividad asociados</th>
                                         <th>Número de piezas</th>
                                         <th>Operadores asignados</th>
                                         <th>Prioridad</th>
@@ -309,6 +311,8 @@ if (isset($_SESSION['codigo'])) {
                                     ?>
                                 </tbody>
                             </table>
+                                </div>
+                            </div>
                         </div>
                     <?php
                     }

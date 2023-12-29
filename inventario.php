@@ -359,7 +359,7 @@ if (isset($_SESSION['codigo'])) {
         $(document).ready(function() {
             $('#miTabla, #miTablaDos').DataTable({
                 "order": [
-                    [4, "asc"]
+                    [0, "asc"]
                 ] // Ordenar la primera columna (índice 0) en orden descendente
             });
         });

@@ -135,6 +135,22 @@ CREATE TABLE `diagrama` (
   `actividad` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `quotes` (
+  `id` int(255) NOT NULL,
+  `solicitante` varchar(300) DEFAULT NULL,
+  `rol` varchar(100) DEFAULT NULL,
+  `proyecto` varchar(150) DEFAULT NULL,
+  `medio` longblob DEFAULT NULL,
+  `estatusq` varchar(150) DEFAULT NULL,
+  `cotizacion` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `quotes`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `quotes`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `diagrama`
   ADD PRIMARY KEY (`id`);
 
@@ -154,3 +170,4 @@ ALTER TABLE `asignaciondiagrama`
 
 ALTER TABLE `asignaciondiagrama`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+

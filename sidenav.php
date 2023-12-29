@@ -77,13 +77,9 @@ require 'dbcon.php';
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="ensamble.php">Ensamble</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="nav-link" href="bomcontroles.php">BOM Controles</a>';
-                                }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                    // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="nav-link" href="bommecanico.php">BOM Mecanico</a>';
+                                    echo '<a class="nav-link" href="bom.php">BOM</a>';
                                 }
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
@@ -92,10 +88,6 @@ require 'dbcon.php';
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="proyectos.php">Proyectos</a>';
-                                }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                    // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="nav-link" href="quotes.php">Quotes</a>';
                                 }
                                 ?>
                             </nav>
@@ -114,7 +106,7 @@ require 'dbcon.php';
                                     <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
                                         <a class="nav-link" href="inventario.php">Inventario</a>
                                             <a class="nav-link" href="#">Reorden</a>
-                                            <a class="nav-link" href="#">Quotes</a>
+                                            <a class="nav-link" href="quotes.php">Quotes</a>
                                     </nav>
                                 </div>
                                 ';

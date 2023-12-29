@@ -31,8 +31,10 @@ if (isset($_POST['codigo'])) {
         $row = mysqli_fetch_assoc($result);
         $nombre = $row['nombre'];
         $apellidop = $row['apellidop'];
+        $apellidom = $row['apellidom'];
         $_SESSION['nombre'] = $nombre;
         $_SESSION['apellidop'] = $apellidop;
+        $_SESSION['apellidom'] = $apellidom;
         $_SESSION['codigo'] = $row['codigo'];
         $_SESSION['rol'] = $row['rol'];
         if ($_SESSION['rol'] == 8) {
