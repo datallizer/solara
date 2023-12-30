@@ -219,8 +219,18 @@ if (isset($_SESSION['codigo'])) {
                         </div>
 
                         <div class="form-floating col-4 mt-3">
-                            <input type="int" class="form-control" name="cantidad" id="cantidad" placeholder="Cantidad" autocomplete="off" required>
+                            <input type="number" class="form-control" name="cantidad" id="cantidad" placeholder="Cantidad" autocomplete="off" required>
                             <label for="cantidad">Cantidad</label>
+                        </div>
+
+                        <div class="form-floating col-5 mt-3" id="maximoContainer" style="display: none;">
+                            <input type="number" class="form-control" name="maximo" id="maximo" placeholder="Maximo" autocomplete="off">
+                            <label for="maximo">Maximo (Reorden)</label>
+                        </div>
+
+                        <div class="form-floating col-7 mt-3" id="minimoContainer" style="display: none;">
+                            <input type="number" class="form-control" name="minimo" id="minimo" placeholder="Minimo" autocomplete="off">
+                            <label for="minimo">Minimo (Reorden)</label>
                         </div>
 
                         <div class="form-floating col-6 mt-3">
@@ -233,8 +243,8 @@ if (isset($_SESSION['codigo'])) {
                             <label for="numero">Número</label>
                         </div>
 
-                        <div class="form-floating col-5 mt-3">
-                            <input type="int" class="form-control" name="costo" id="costo" placeholder="Costo" autocomplete="off" required>
+                        <div class="form-floating col-12 mt-3">
+                            <input type="number" class="form-control" name="costo" id="costo" placeholder="Costo" autocomplete="off" required>
                             <label for="costo">Costo</label>
                         </div>
 
@@ -356,6 +366,23 @@ if (isset($_SESSION['codigo'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const tipoSelect = document.getElementById('tipo');
+        const maximoContainer = document.getElementById('maximoContainer');
+        const minimoContainer = document.getElementById('minimoContainer');
+
+        tipoSelect.addEventListener('change', function() {
+            const selectedOption = tipoSelect.value;
+
+            if (selectedOption === 'Consumible') {
+                maximoContainer.style.display = 'block';
+                minimoContainer.style.display = 'block';
+            } else {
+                maximoContainer.style.display = 'none';
+                minimoContainer.style.display = 'none';
+            }
+        });
+    });
         $(document).ready(function() {
             $('#miTabla, #miTablaDos').DataTable({
                 "order": [

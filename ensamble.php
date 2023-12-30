@@ -162,21 +162,19 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td><?= $registro['piezas']; ?></td>
                                                     <td><?= $registro['prioridad']; ?></td>
-                                                    <td>
-                                                        <?php
+                                                    <?php
                                                         if ($registro['nivel'] === '1') {
-                                                            echo "Nivel 1";
-                                                        } else if ($registro['nivel'] === '2') {
-                                                            echo "Nivel 2";
-                                                        } else if ($registro['nivel'] === '3') {
-                                                            echo "Nivel 3";
-                                                        } else if ($registro['nivel'] === '4') {
-                                                            echo "Nivel 4";
+                                                            echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
+                                                        } elseif ($registro['nivel'] === '2') {
+                                                            echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
+                                                        } elseif ($registro['nivel'] === '3') {
+                                                            echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
+                                                        } elseif ($registro['nivel'] === '4') {
+                                                            echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
                                                         ?>
-                                                    </td>
                                                     <td>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
@@ -276,19 +274,19 @@ if (isset($_SESSION['codigo'])) {
                                                     ?>
                                                 </td>
                                                 <td><?= $registro['prioridad']; ?></td>
-                                                <td><?php
-                                                    if ($registro['nivel'] === '1') {
-                                                        echo "Nivel 1";
-                                                    } elseif ($registro['nivel'] === '2') {
-                                                        echo "Nivel 2";
-                                                    } elseif ($registro['nivel'] === '3') {
-                                                        echo "Nivel 3";
-                                                    } elseif ($registro['nivel'] === '4') {
-                                                        echo "Nivel 4";
-                                                    } else {
-                                                        echo "Error, contacte a soporte";
-                                                    }
-                                                    ?></td>
+                                                <?php
+                                                        if ($registro['nivel'] === '1') {
+                                                            echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
+                                                        } elseif ($registro['nivel'] === '2') {
+                                                            echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
+                                                        } elseif ($registro['nivel'] === '3') {
+                                                            echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
+                                                        } elseif ($registro['nivel'] === '4') {
+                                                            echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
                                                 <td>
                                                     <a href="editardiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
@@ -300,7 +298,7 @@ if (isset($_SESSION['codigo'])) {
                                     <?php
                                         }
                                     } else {
-                                        echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td><td></td><td></td><td></td><td></td>";
+                                        echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
                                     }
                                     ?>
                                 </tbody>

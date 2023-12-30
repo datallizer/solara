@@ -105,7 +105,7 @@ require 'dbcon.php';
                                 <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
                                         <a class="nav-link" href="inventario.php">Inventario</a>
-                                            <a class="nav-link" href="#">Reorden</a>
+                                            <a class="nav-link" href="reorden.php">Reorden</a>
                                             <a class="nav-link" href="quotes.php">Quotes</a>
                                     </nav>
                                 </div>

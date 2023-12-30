@@ -35,8 +35,11 @@ if (isset($_POST['update'])) {
     $costo = mysqli_real_escape_string($con, $_POST['costo']);
     $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
     $numero = mysqli_real_escape_string($con, $_POST['numero']);
+    $maximo = mysqli_real_escape_string($con, $_POST['maximo']);
+    $minimo = mysqli_real_escape_string($con, $_POST['minimo']);
+    
 
-    $query = "UPDATE `inventario` SET `clasificacion` = '$clasificacion', `tipo` = '$tipo', `proveedor` = '$proveedor', `parte` = '$parte', `descripcion` = '$descripcion', `marca` = '$marca', `condicion` = '$condicion', `cantidad` = '$cantidad', `rack` = '$rack', `bin` = '$bin', `caja` = '$caja', `costo` = '$costo', `nombre` = '$nombre', `numero` = '$numero' WHERE `inventario`.`id` = '$id'";
+    $query = "UPDATE `inventario` SET `clasificacion` = '$clasificacion', `tipo` = '$tipo', `proveedor` = '$proveedor', `parte` = '$parte', `descripcion` = '$descripcion', `marca` = '$marca', `condicion` = '$condicion', `cantidad` = '$cantidad', `rack` = '$rack', `bin` = '$bin', `caja` = '$caja', `costo` = '$costo', `nombre` = '$nombre', `numero` = '$numero', `maximo` = '$maximo', `minimo` = '$minimo' WHERE `inventario`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
@@ -46,6 +49,25 @@ if (isset($_POST['update'])) {
     } else {
         $_SESSION['message'] = "Error al editar el material, contacte a soporte";
         header("Location: inventario.php");
+        exit(0);
+    }
+}
+
+if (isset($_POST['reorden'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $maximo = mysqli_real_escape_string($con, $_POST['maximo']);
+    $minimo = mysqli_real_escape_string($con, $_POST['minimo']);
+    
+    $query = "UPDATE `inventario` SET `maximo` = '$maximo', `minimo` = '$minimo' WHERE `inventario`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Reorden editado exitosamente";
+        header("Location: reorden.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar reorden, contacte a soporte";
+        header("Location: reorden.php");
         exit(0);
     }
 }
@@ -148,7 +170,6 @@ if (isset($_POST['restar'])) {
 if (isset($_POST['save'])) {
     $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
     $cantidad = mysqli_real_escape_string($con, $_POST['cantidad']);
-    $ubicacion = mysqli_real_escape_string($con, $_POST['ubicacion']);
     $clasificacion = mysqli_real_escape_string($con, $_POST['clasificacion']);
     $tipo = mysqli_real_escape_string($con, $_POST['tipo']);
     $proveedor = mysqli_real_escape_string($con, $_POST['proveedor']);
@@ -161,8 +182,10 @@ if (isset($_POST['save'])) {
     $caja = mysqli_real_escape_string($con, $_POST['caja']);
     $numero = mysqli_real_escape_string($con, $_POST['numero']);
     $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
+    $maximo = mysqli_real_escape_string($con, $_POST['maximo']);
+    $minimo = mysqli_real_escape_string($con, $_POST['minimo']);
 
-    $query = "INSERT INTO inventario SET nombre='$nombre', cantidad='$cantidad', ubicacion='$ubicacion', clasificacion='$clasificacion', tipo='$tipo', proveedor='$proveedor',parte='$parte',descripcion='$descripcion',marca='$marca',condicion='$condicion',rack='$rack',bin='$bin',caja='$caja',numero='$numero'";
+    $query = "INSERT INTO inventario SET nombre='$nombre', cantidad='$cantidad', clasificacion='$clasificacion', tipo='$tipo', proveedor='$proveedor',parte='$parte',descripcion='$descripcion',marca='$marca',condicion='$condicion',rack='$rack',bin='$bin',caja='$caja',numero='$numero',maximo='$maximo',minimo='$minimo'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {

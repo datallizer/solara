@@ -101,26 +101,26 @@ require 'dbcon.php';
                                                     <option value="8" <?= ($prioridad_actual == 8) ? 'selected' : ''; ?>>Nivel 8</option>
                                                     <option value="9" <?= ($prioridad_actual == 9) ? 'selected' : ''; ?>>Nivel 9</option>
                                                     <option value="10" <?= ($prioridad_actual == 10) ? 'selected' : ''; ?>>Nivel 10</option>
-                                                    <option value="1" <?= ($prioridad_actual == 11) ? 'selected' : ''; ?>>Nivel 11</option>
-                                                    <option value="2" <?= ($prioridad_actual == 12) ? 'selected' : ''; ?>>Nivel 12</option>
-                                                    <option value="3" <?= ($prioridad_actual == 13) ? 'selected' : ''; ?>>Nivel 13</option>
-                                                    <option value="4" <?= ($prioridad_actual == 14) ? 'selected' : ''; ?>>Nivel 14</option>
-                                                    <option value="5" <?= ($prioridad_actual == 15) ? 'selected' : ''; ?>>Nivel 15</option>
-                                                    <option value="6" <?= ($prioridad_actual == 16) ? 'selected' : ''; ?>>Nivel 16</option>
-                                                    <option value="7" <?= ($prioridad_actual == 17) ? 'selected' : ''; ?>>Nivel 17</option>
-                                                    <option value="8" <?= ($prioridad_actual == 18) ? 'selected' : ''; ?>>Nivel 18</option>
-                                                    <option value="9" <?= ($prioridad_actual == 19) ? 'selected' : ''; ?>>Nivel 19</option>
-                                                    <option value="10" <?= ($prioridad_actual == 20) ? 'selected' : ''; ?>>Nivel 20</option>
-                                                    <option value="1" <?= ($prioridad_actual == 21) ? 'selected' : ''; ?>>Nivel 21</option>
-                                                    <option value="2" <?= ($prioridad_actual == 22) ? 'selected' : ''; ?>>Nivel 22</option>
-                                                    <option value="3" <?= ($prioridad_actual == 23) ? 'selected' : ''; ?>>Nivel 23</option>
-                                                    <option value="4" <?= ($prioridad_actual == 24) ? 'selected' : ''; ?>>Nivel 24</option>
-                                                    <option value="5" <?= ($prioridad_actual == 25) ? 'selected' : ''; ?>>Nivel 25</option>
-                                                    <option value="6" <?= ($prioridad_actual == 26) ? 'selected' : ''; ?>>Nivel 26</option>
-                                                    <option value="7" <?= ($prioridad_actual == 27) ? 'selected' : ''; ?>>Nivel 27</option>
-                                                    <option value="8" <?= ($prioridad_actual == 28) ? 'selected' : ''; ?>>Nivel 28</option>
-                                                    <option value="9" <?= ($prioridad_actual == 29) ? 'selected' : ''; ?>>Nivel 29</option>
-                                                    <option value="10" <?= ($prioridad_actual == 30) ? 'selected' : ''; ?>>Nivel 30</option>
+                                                    <option value="11" <?= ($prioridad_actual == 11) ? 'selected' : ''; ?>>Nivel 11</option>
+                                                    <option value="12" <?= ($prioridad_actual == 12) ? 'selected' : ''; ?>>Nivel 12</option>
+                                                    <option value="13" <?= ($prioridad_actual == 13) ? 'selected' : ''; ?>>Nivel 13</option>
+                                                    <option value="14" <?= ($prioridad_actual == 14) ? 'selected' : ''; ?>>Nivel 14</option>
+                                                    <option value="15" <?= ($prioridad_actual == 15) ? 'selected' : ''; ?>>Nivel 15</option>
+                                                    <option value="16" <?= ($prioridad_actual == 16) ? 'selected' : ''; ?>>Nivel 16</option>
+                                                    <option value="17" <?= ($prioridad_actual == 17) ? 'selected' : ''; ?>>Nivel 17</option>
+                                                    <option value="18" <?= ($prioridad_actual == 18) ? 'selected' : ''; ?>>Nivel 18</option>
+                                                    <option value="19" <?= ($prioridad_actual == 19) ? 'selected' : ''; ?>>Nivel 19</option>
+                                                    <option value="20" <?= ($prioridad_actual == 20) ? 'selected' : ''; ?>>Nivel 20</option>
+                                                    <option value="21" <?= ($prioridad_actual == 21) ? 'selected' : ''; ?>>Nivel 21</option>
+                                                    <option value="22" <?= ($prioridad_actual == 22) ? 'selected' : ''; ?>>Nivel 22</option>
+                                                    <option value="23" <?= ($prioridad_actual == 23) ? 'selected' : ''; ?>>Nivel 23</option>
+                                                    <option value="24" <?= ($prioridad_actual == 24) ? 'selected' : ''; ?>>Nivel 24</option>
+                                                    <option value="25" <?= ($prioridad_actual == 25) ? 'selected' : ''; ?>>Nivel 25</option>
+                                                    <option value="26" <?= ($prioridad_actual == 26) ? 'selected' : ''; ?>>Nivel 26</option>
+                                                    <option value="27" <?= ($prioridad_actual == 27) ? 'selected' : ''; ?>>Nivel 27</option>
+                                                    <option value="28" <?= ($prioridad_actual == 28) ? 'selected' : ''; ?>>Nivel 28</option>
+                                                    <option value="29" <?= ($prioridad_actual == 29) ? 'selected' : ''; ?>>Nivel 29</option>
+                                                    <option value="30" <?= ($prioridad_actual == 30) ? 'selected' : ''; ?>>Nivel 30</option>
                                                 </select>
                                                     <label for="prioridad">Prioridad</label>
                                                 </div>

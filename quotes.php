@@ -138,11 +138,128 @@ if (isset($_SESSION['codigo'])) {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><?= $registro['estatusq']; ?></td>
+                                                    <td><?php
+                                                        if ($registro['estatusq'] === '0') {
+                                                            echo "Aprobado";
+                                                        } else if ($registro['estatusq'] === '1') {
+                                                            echo "Pendiente";
+                                                        }  else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?></td>
+                                                    <td>
+                                                        <form action="codequotes.php" method="POST" class="d-inline">
+                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1  float-end"><i class="bi bi-trash-fill"></i></button>
+                                                            <button type="submit" name="aprobar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1 float-end"><i class="bi bi-check-lg"> Aprobar</i></button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='7'><p>No se encontró ningún registro</p></td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>QUOTES APROBADOS
+                                    <?php
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                        echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Nueva quote
+                                </button>';
+                                    }
+                                    ?>
+                                </h4>
+                            </div>
+                            <div class="card-body" style="overflow-y:scroll;">
+                                <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Solicitante</th>
+                                            <th>Rol</th>
+                                            <th>Proyecto</th>
+                                            <th>PDF</th>
+                                            <th>Estatus</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $query = "SELECT quotes.*, proyecto.*, quotes.id AS id_quote
+                                            FROM quotes 
+                                            JOIN proyecto ON quotes.proyecto = proyecto.id
+                                            WHERE estatusq = 0
+                                            ORDER BY quotes.id ASC";
+
+
+                                        $query_run = mysqli_query($con, $query);
+                                        if (mysqli_num_rows($query_run) > 0) {
+                                            foreach ($query_run as $registro) {
+                                        ?>
+                                                <tr>
+                                                    <td><?= $registro['id']; ?></td>
+                                                    <td><?= $registro['solicitante']; ?></td>
+                                                    <td>
+                                                        <?php
+                                                        if ($registro['rol'] === '1') {
+                                                            echo "Administrador";
+                                                        } else if ($registro['rol'] === '2') {
+                                                            echo "Gerencia";
+                                                        } else if ($registro['rol'] === '4') {
+                                                            echo "Técnico controles";
+                                                        } else if ($registro['rol'] === '5') {
+                                                            echo "Ing. Diseño";
+                                                        } else if ($registro['rol'] === '6') {
+                                                            echo "Compras";
+                                                        } else if ($registro['rol'] === '7') {
+                                                            echo "Almacenista";
+                                                        } else if ($registro['rol'] === '8') {
+                                                            echo "Técnico mecanico";
+                                                        } else if ($registro['rol'] === '9') {
+                                                            echo "Ing. Control";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                    <td><?= $registro['nombre']; ?></td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Cotizacion <?= $registro['cotizacion']; ?></button>
+                                                        <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="pdfModalLabel">Cotización <?= $registro['cotizacion']; ?></h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><?php
+                                                        if ($registro['estatusq'] === '0') {
+                                                            echo "Aprobado";
+                                                        } else if ($registro['estatusq'] === '1') {
+                                                            echo "Pendiente";
+                                                        }  else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?></td>
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
                                                             <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                            <button type="submit" name="aprobar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-check-lg"></i></button>
                                                         </form>
                                                     </td>
                                                 </tr>
@@ -226,7 +343,7 @@ if (isset($_SESSION['codigo'])) {
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         $(document).ready(function() {
-            $('#miTabla').DataTable({
+            $('#miTabla, #miTablaDos').DataTable({
                 "order": [
                     [0, "asc"]
                 ] // Ordenar la primera columna (índice 0) en orden descendente

@@ -19,3 +19,14 @@ img{
     margin: 10px;
     padding: 10px;
 }
+.menor-minimo {
+    background-color: #ffa8a8 !important;
+}
+
+.menor-cuarto {
+    background-color: #ffffaf !important;
+}
+
+.mayor-cuarto {
+    background-color: #aaffaa !important;
+}
