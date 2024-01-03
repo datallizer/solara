@@ -42,7 +42,7 @@ if (isset($_SESSION['codigo'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Quotes | Solara</title>
+    <title>Compras | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
@@ -55,11 +55,10 @@ if (isset($_SESSION['codigo'])) {
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
-                <div class="row mb-5 mt-5">
-                    <div class="col-md-12">
+                <div class="row mb-5 mt-5"><div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
-                                <h4>QUOTES
+                                <h4>COMPRAS
                                     <?php
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -70,7 +69,7 @@ if (isset($_SESSION['codigo'])) {
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                                <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Id</th>
@@ -87,7 +86,7 @@ if (isset($_SESSION['codigo'])) {
                                         $query = "SELECT quotes.*, proyecto.*, quotes.id AS id_quote
                                             FROM quotes 
                                             JOIN proyecto ON quotes.proyecto = proyecto.id
-                                            WHERE estatusq = 1
+                                            WHERE estatusq = 0
                                             ORDER BY quotes.id ASC";
 
 
@@ -149,8 +148,7 @@ if (isset($_SESSION['codigo'])) {
                                                         ?></td>
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1  float-end"><i class="bi bi-trash-fill"></i></button>
-                                                            <button type="submit" name="aprobar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1 float-end"><i class="bi bi-check-lg"> Aprobar</i></button>
+                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                         </form>
                                                     </td>
                                                 </tr>
