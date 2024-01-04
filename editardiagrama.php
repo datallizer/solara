@@ -27,7 +27,7 @@ require 'dbcon.php';
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>EDITAR DIAGRAMA
+                                <h4>EDITAR ENSAMBLE
                                     <a href="ensamble.php" class="btn btn-danger btn-sm float-end">
                                         Regresar
                                     </a>
@@ -60,12 +60,12 @@ require 'dbcon.php';
 
                                                 <div class="form-floating col-12 col-md-4 mt-3">
                                                     <input type="text" class="form-control" id="nombreplano" name="nombreplano" value="<?= $registro['nombreplano']; ?>">
-                                                    <label for="nombreplano">Nombre del plano</label>
+                                                    <label for="nombreplano">Nombre del diagrama</label>
                                                 </div>
 
                                                 <div class="col-12 col-md-7 mt-3 form-floating">
                                                     <select class="form-select" name="nivel" id="nivel">
-                                                        <option disabled>Seleccione una modalidad</option>
+                                                        <option disabled>Seleccione el nivel</option>
                                                         <option value="1" <?= ($pieza_actual == 1) ? 'selected' : ''; ?>>Nivel 1</option>
                                                         <option value="2" <?= ($pieza_actual == 2) ? 'selected' : ''; ?>>Nivel 2</option>
                                                         <option value="3" <?= ($pieza_actual == 3) ? 'selected' : ''; ?>>Nivel 3</option>
@@ -103,7 +103,7 @@ require 'dbcon.php';
 
                                                 <div class="col-12 text-center mt-3 d-flex align-items-center justify-content-center">
                                                     <button type="submit" name="update" class="btn btn-warning">
-                                                        Actualizar plano
+                                                        Actualizar
                                                     </button>
                                                 </div>
                                             </div>

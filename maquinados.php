@@ -297,9 +297,9 @@ if (isset($_SESSION['codigo'])) {
                                                         <td>
                                                             <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                            <form action="codemaquinados.php" method="POST" class="d-inline">
+                                                            <!-- <form action="codemaquinados.php" method="POST" class="d-inline">
                                                                 <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                            </form>
+                                                            </form> -->
                                                         </td>
                                                     </tr>
                                             <?php

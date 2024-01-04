@@ -9,11 +9,11 @@ if (isset($_POST['delete'])) {
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Maquinado eliminado exitosamente";
+        $_SESSION['message'] = "Ensamble eliminado exitosamente";
         header("Location: ensamble.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al eliminar el maquinado, contácte a soporte";
+        $_SESSION['message'] = "Error al eliminar el ensamble, contácte a soporte";
         header("Location: ensamble.php");
         exit(0);
     }
@@ -31,11 +31,11 @@ if (isset($_POST['update'])) {
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Maquinado $nombreplano editado exitosamente";
+        $_SESSION['message'] = "Ensamble $nombreplano editado exitosamente";
         header("Location: ensamble.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al editar el maquinado $nombreplano, contácte a soporte";
+        $_SESSION['message'] = "Error al editar el ensamble $nombreplano, contácte a soporte";
         header("Location: ensamble.php");
         exit(0);
     }
@@ -80,19 +80,19 @@ if (isset($_POST['save'])) {
                     $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
                     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
 
-                    $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+                    $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo ensamble: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
                     $query_rundos = mysqli_query($con, $querydos);
                 } else {
-                    $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
+                    $_SESSION['message'] = "Error al crear el ensamble, contacte a soporte";
                     header("Location: ensamble.php");
                     exit(0);
                 }
             }
-            $_SESSION['message'] = "Maquinado creado exitosamente";
+            $_SESSION['message'] = "Ensamble creado exitosamente";
                     header("Location: ensamble.php");
                     exit(0);
         } else {
-            $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
+            $_SESSION['message'] = "Error al crear el ensamble, contacte a soporte";
             header("Location: ensamble.php");
             exit(0);
         }

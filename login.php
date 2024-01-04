@@ -47,6 +47,16 @@ if (isset($_POST['codigo'])) {
             $_SESSION['message'] = $message;
             header("Location: maquinados.php");
             exit();
+        } elseif ($_SESSION['rol'] == 4) {
+            $idcodigo = $_SESSION['codigo'];
+            $fecha_actual = date("Y-m-d");
+            $hora_actual = date("H:i");
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema', hora='$hora_actual', fecha='$fecha_actual'";
+            $query_rundos = mysqli_query($con, $querydos);
+            $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
+            $_SESSION['message'] = $message;
+            header("Location: ensamble.php");
+            exit();
         } else {
             $hora_actual = date("H:i");
             $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
@@ -84,7 +94,7 @@ if (isset($_POST['codigo'])) {
                 <?php include 'message.php'; ?>
                 <h2 class="mb-4">ACCESO AL SISTEMA</h2>
                 <form action="" method="post" class="row justify-content-evenly">
-                    <div class="col-11 mb-4"><input id="inputCodigo" style="width: 100%;padding:10px 10px;" type="text" name="codigo" autocomplete="off" required></div>
+                    <div class="col-11 mb-4"><input id="inputCodigo" style="width: 100%;padding:10px 10px;" type="password" name="codigo" autocomplete="off" required></div>
                     <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(1)">1</a></div>
                     <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(2)">2</a></div>
                     <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(3)">3</a></div>

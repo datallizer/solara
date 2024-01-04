@@ -226,5 +226,4 @@ if (isset($_SESSION['codigo'])) {
         });
     </script>
 </body>
-
 </html>

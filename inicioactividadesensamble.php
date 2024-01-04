@@ -97,19 +97,20 @@ if (isset($_SESSION['codigo'])) {
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body class="sb-nav-fixed" style="background-color: #e7e7e7;">
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container mt-4">
+
                 <?php
+
                 if (isset($_GET['id'])) {
                     $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                    $query = "SELECT proyecto.*, plano.*
-                    FROM plano 
-                    JOIN proyecto ON plano.idproyecto = proyecto.id 
-                    JOIN asignacionplano ON asignacionplano.idplano = plano.id 
-                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo WHERE plano.id='$registro_id' ";
+                    $query = "SELECT proyecto.*, diagrama.*
+                    FROM diagrama 
+                    JOIN proyecto ON diagrama.idproyecto = proyecto.id 
+                    JOIN asignaciondiagrama ON asignaciondiagrama.idplano = diagrama.id 
+                    JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo WHERE diagrama.id='$registro_id' ";
                     $query_run = mysqli_query($con, $query);
 
                     if (mysqli_num_rows($query_run) > 0) {
@@ -122,9 +123,9 @@ if (isset($_SESSION['codigo'])) {
                                     <div class="card-header pt-3">
                                         <?php
                                         if ($registro['estatusplano'] === '1') {
-                                            echo '<h4>MAQUINADO EN PROGRESO</h4>';
+                                            echo '<h4>ENSAMBLE EN PROGRESO</h4>';
                                         } else if ($registro['estatusplano'] === '2') {
-                                            echo '<h4>MAQUINADO EN PAUSA</h4>';
+                                            echo '<h4>ENSAMBLE EN PAUSA</h4>';
                                         } else {
                                             echo "Error, contacte a soporte";
                                         }
@@ -144,7 +145,7 @@ if (isset($_SESSION['codigo'])) {
 
                                                 <div class="form-floating col-12 col-md-4 mt-3">
                                                     <input type="text" class="form-control" id="nombreplano" name="nombreplano" value="<?= $registro['nombreplano']; ?>" readonly>
-                                                    <label for="nombreplano">Nombre del plano</label>
+                                                    <label for="nombreplano">Nombre del diagrama</label>
                                                 </div>
 
                                                 <div class="form-floating col-12 col-md-4 mt-3">
@@ -194,7 +195,7 @@ if (isset($_SESSION['codigo'])) {
                                                             <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                        <h5 class="modal-title" id="pdfModalLabel">Actividad <?= $registro['nombreplano']; ?></h5>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body">
@@ -207,12 +208,12 @@ if (isset($_SESSION['codigo'])) {
 
                                                     } else {
                                                     ?>
-                                                        <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver plano</button>
+                                                        <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver diagrama</button>
                                                         <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                        <h5 class="modal-title" id="pdfModalLabel">Diagrama <?= $registro['nombreplano']; ?></h5>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body">
@@ -243,7 +244,7 @@ if (isset($_SESSION['codigo'])) {
                                                                             <?php
                                                                             // Tu código de conexión a la base de datos aquí
 
-                                                                            $query = "SELECT * FROM motivos";
+                                                                            $query = "SELECT * FROM motivosensamble";
                                                                             $result = mysqli_query($con, $query);
 
                                                                             // Comprobamos si hay resultados
@@ -271,13 +272,13 @@ if (isset($_SESSION['codigo'])) {
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                                                     <div id="botonPausar" style="display: block;">
-                                                                        <button type="submit" class="btn btn-primary" name="save">Detener actividad</button>
+                                                                        <button type="submit" class="btn btn-primary" name="saveensamble">Detener actividad</button>
                                                                     </div>
                                                                     <div id="botonTerminar" style="display: none;">
-                                                                        <button type="submit" class="btn btn-warning" name="finish">Terminar</button>
+                                                                        <button type="submit" class="btn btn-warning" name="finishensamble">Terminar</button>
                                                                     </div>
                                                                     <div id="botonMenu" style="display: none;">
-                                                                        <button type="submit" class="btn btn-primary" name="pausar">Regresar a maquinados</button>
+                                                                        <button type="submit" class="btn btn-primary" name="pausarensamble">Regresar a ensamble</button>
                                                                     </div>
                                                                 </div>
                                         </form>

@@ -85,7 +85,7 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id 
@@ -94,7 +94,7 @@ if (isset($_SESSION['codigo'])) {
                                                 WHERE asignaciondiagrama.codigooperador = $codigo 
                                                 AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2)
                                                 ORDER BY proyecto.prioridad ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id
@@ -109,14 +109,14 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8])) {
                                                             if (empty($registro['medio'])) {
                                                                 ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
                                                             <?php
                                                             } else {
                                                                 ?>
-                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
+                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Diagrama <?= $registro['nombreplano']; ?></button>
                                                             <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                                 <div class="modal-dialog modal-lg">
                                                                     <div class="modal-content">
@@ -134,7 +134,7 @@ if (isset($_SESSION['codigo'])) {
                                                             }
                                                         ?>
                                                             <?php
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             if (empty($registro['medio'])) {
                                                             } else {
                                                             ?>
@@ -177,19 +177,19 @@ if (isset($_SESSION['codigo'])) {
                                                         ?>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8])) {
                                                             $id = $registro['id'];
                                                             if ($registro['estatusplano'] === '1') {
-                                                                echo '<a href="inicioactividades.php?id=' . $id . '" class="btn btn-success btn-sm m-1">Iniciar</a>';
+                                                                echo '<a href="inicioactividadesensamble.php?id=' . $id . '" class="btn btn-success btn-sm m-1">Iniciar</a>';
                                                             } else if ($registro['estatusplano'] === '2') {
                                                                 echo '<form action="codeactividad.php" method="post">
                                                                 <input type="hidden" value="' . $id . '" name="id">
-                                                                <button type="submit" name="restart" class="btn btn-sm btn-primary">Seguimiento</button>
+                                                                <button type="submit" name="restartensamble" class="btn btn-sm btn-primary">Seguimiento</button>
                                                                 </form>';
                                                             } else {
                                                                 echo "Error, contacte a soporte";
                                                             }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editardiagrama.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
@@ -211,7 +211,7 @@ if (isset($_SESSION['codigo'])) {
                             </div>
                         </div>
                     </div>
-                    <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                    <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                     ?>
                         <div class="col-12 mt-3">
                             <div class="card">
@@ -290,9 +290,9 @@ if (isset($_SESSION['codigo'])) {
                                                 <td>
                                                     <a href="editardiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                    <form action="codediagramas.php" method="POST" class="d-inline">
+                                                    <!-- <form action="codediagramas.php" method="POST" class="d-inline">
                                                         <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                    </form>
+                                                    </form> -->
                                                 </td>
                                             </tr>
                                     <?php

@@ -73,11 +73,11 @@ require 'dbcon.php';
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="maquinados.php">Maquinados</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 9])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="ensamble.php">Ensamble</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="bom.php">BOM</a>';
                                 }
@@ -114,7 +114,7 @@ require 'dbcon.php';
                         ?>
 
                         <?php
-                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 9])) {
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                             // Mostrar el enlace HTML solo si la condición se cumple
                             echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePagesDos" aria-expanded="false" aria-controls="collapsePagesDos">
                             <div class="sb-nav-link-icon"><i class="bi bi-trash-fill"></i></div>
