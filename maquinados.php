@@ -140,6 +140,9 @@ if (isset($_SESSION['codigo'])) {
 
                                                             // Verifica si 'medio' está vacío o no
                                                             if (empty($registro['medio'])) {
+                                                                ?>
+                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
+                                                                <?php
                                                             } else {
                                                             ?>
                                                                 <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
