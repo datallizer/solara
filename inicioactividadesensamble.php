@@ -180,7 +180,7 @@ if (isset($_SESSION['codigo'])) {
                                                             </button>";
                                                     } else if ($registro['estatusplano'] === '2') {
                                                         echo '<form action="codeactividad.php" method="post">
-                                                                <button type="submit" name="restart" class="btn btn-success m-3">Reiniciar actividad</button>
+                                                                <button type="submit" name="restartensamble" class="btn btn-success m-3">Reiniciar actividad</button>
                                                             </form>';
                                                     } else {
                                                         echo "Error, contacte a soporte";
@@ -313,7 +313,7 @@ if (isset($_SESSION['codigo'])) {
                 const valorSeleccionado = event.target.value;
 
                 // Mostrar u ocultar los botones dependiendo del valor seleccionado
-                if (valorSeleccionado === 'Pieza terminada') {
+                if (valorSeleccionado === 'Trabajo terminado') {
                     divBotonTerminar.style.display = 'block'; // Mostrar el botón "Terminar"
                     divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
                     divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"

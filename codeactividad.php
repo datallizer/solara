@@ -77,8 +77,9 @@ if (isset($_POST['pausar'])) {
     $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
     $nombreplano = mysqli_real_escape_string($con, $_POST['nombreplano']);
+    $motivosparo = mysqli_real_escape_string($con, $_POST['motivosparo']);
 
-    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Se pauso el maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Se pauso el maquinado $nombreplano por motivo: $motivosparo', hora='$hora_actual', fecha='$fecha_actual'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
@@ -170,8 +171,9 @@ if (isset($_POST['pausarensamble'])) {
     $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
     $nombreplano = mysqli_real_escape_string($con, $_POST['nombreplano']);
+    $motivosparo = mysqli_real_escape_string($con, $_POST['motivosparo']);
 
-    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Se pauso el ensamble: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+    $query = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Se pauso el ensamble $nombreplano por motivo: $motivosparo', hora='$hora_actual', fecha='$fecha_actual'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {

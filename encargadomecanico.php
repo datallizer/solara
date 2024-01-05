@@ -86,12 +86,12 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT asignaciondiagrama.*, proyecto.id, asignaciondiagrama.id AS id_encargado, proyecto.nombre,usuarios.nombre AS username, usuarios.apellidop, usuarios.apellidom
+                                        $query = "SELECT asignaciondiagrama.*, diagrama.id, asignaciondiagrama.id AS id_encargado, diagrama.nombreplano, usuarios.nombre AS username, usuarios.apellidop, usuarios.apellidom
                                         FROM asignaciondiagrama
                                         JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
-                                        JOIN proyecto ON asignaciondiagrama.idplano = proyecto.id 
-                                        WHERE asignaciondiagrama.codigooperador = usuarios.codigo
-                                        ORDER BY id_encargado desc";
+                                        JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id
+                                        WHERE usuarios.rol = 8
+                                        ORDER BY asignaciondiagrama.id desc";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
@@ -101,7 +101,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <p class="text-center"><?= $registro['id_encargado']; ?></p>
                                                     </td>
                                                     <td>
-                                                        <p><?= $registro['nombre']; ?></p>
+                                                        <p><?= $registro['nombreplano']; ?></p>
                                                     </td>
                                                     <td>
                                                     <p><?= $registro['username']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></p>
@@ -139,33 +139,33 @@ if (isset($_SESSION['codigo'])) {
                 <div class="modal-body">
                     <form id="miFormulario" action="codetecnicos.php" method="POST" class="row">
                     <div class="form-floating col-12">
-                            <select class="form-select" name="idproyecto" id="idproyecto">
-                                <option disabled selected>Seleccione un proyecto</option>
+                    <select class="form-select" name="idplano" id="idplano">
+                                <option disabled selected>Seleccione un plano</option>
                                 <?php
                                 // Consulta a la base de datos para obtener los proyectos
-                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
+                                $query = "SELECT * FROM diagrama WHERE estatusplano = 1";
                                 $result = mysqli_query($con, $query);
 
                                 // Verificar si hay resultados
                                 if (mysqli_num_rows($result) > 0) {
-                                    while ($proyecto = mysqli_fetch_assoc($result)) {
-                                        // Construir el texto de la opción con nombre del proyecto
-                                        $opcion = $proyecto['nombre'];
+                                    while ($plano = mysqli_fetch_assoc($result)) {
+                                        // Construir el texto de la opción con nombre del plano
+                                        $opcion = $plano['nombreplano'];
                                         // Obtener el ID del usuario
-                                        $idProyecto = $proyecto['id'];
-                                        // Mostrar la opción con el valor igual al ID del proyecto
-                                        echo "<option value='$idProyecto' " . ($registro['id'] == $idProyecto ? : '') . ">$opcion</option>";
+                                        $idPlano = $plano['id'];
+                                        // Mostrar la opción con el valor igual al ID del plano
+                                        echo "<option value='$idPlano' " . ($registro['id'] == $idPlano ? 'selected' : '') . ">$opcion</option>";
                                     }
                                 }
                                 ?>
                             </select>
-                            <label for="idproyecto">Proyecto a asignar</label>
+                            <label for="idproyecto">Diagrama a asignar</label>
                         </div>
                
                         <div class="form-check col-12 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios WHERE rol=3";
+                            $query = "SELECT * FROM usuarios WHERE rol=8";
                             $result = mysqli_query($con, $query);
 
                             // Verificar si hay resultados

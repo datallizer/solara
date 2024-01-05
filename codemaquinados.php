@@ -27,18 +27,24 @@ if (isset($_POST['update'])) {
     $estatusplano = mysqli_real_escape_string($con, $_POST['estatusplano']);
     $actividad = mysqli_real_escape_string($con, $_POST['actividad']);
 
-    $query = "UPDATE `plano` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano', `actividad` = '$actividad' WHERE `plano`.`id` = '$id'";
+    $query = "UPDATE `plano` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano', `actividad` = '$actividad'";
+
+    if (isset($_FILES['medio']) && $_FILES['medio']['error'] == UPLOAD_ERR_OK) {
+        $medio = file_get_contents($_FILES['medio']['tmp_name']);
+        $query .= ", `medio` = '" . mysqli_real_escape_string($con, $medio) . "'";
+    }
+
+    $query .= " WHERE `plano`.`id` = '$id'";
+    
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Maquinado $nombreplano editado exitosamente";
-        header("Location: maquinados.php");
-        exit(0);
+        $_SESSION['message'] = "Ensamble $nombreplano editado exitosamente";
     } else {
-        $_SESSION['message'] = "Error al editar el maquinado $nombreplano, contácte a soporte";
-        header("Location: maquinados.php");
-        exit(0);
+        $_SESSION['message'] = "Error al editar el ensamble $nombreplano, contácte a soporte: " . mysqli_error($con);
     }
+    header("Location: maquinados.php");
+    exit(0);
 }
 
 if (isset($_POST['save'])) {

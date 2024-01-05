@@ -71,7 +71,7 @@ if (isset($_SESSION['codigo'])) {
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                                <table id="miTabla" class="table table-bordered table-striped text-center" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Proyecto</th>
@@ -109,7 +109,7 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4,8])) {
                                                             if (empty($registro['medio'])) {
                                                                 ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
@@ -136,6 +136,9 @@ if (isset($_SESSION['codigo'])) {
                                                             <?php
                                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             if (empty($registro['medio'])) {
+                                                                ?>
+                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
+                                                            <?php
                                                             } else {
                                                             ?>
                                                                 <a href="verdiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Diagrama <?= $registro['nombreplano']; ?></a>
@@ -217,7 +220,7 @@ if (isset($_SESSION['codigo'])) {
                             <div class="card">
                             <div class="card-header"><h4>ENSAMBLES FINALIZADOS</h4></div>
                             <div class="card-body">
-                            <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
+                            <table id="miTablaDos" class="table table-bordered table-striped text-center" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>Proyecto</th>

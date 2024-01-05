@@ -53,7 +53,7 @@ require 'dbcon.php';
 
                                 ?>
 
-                                        <form action="codediagramas.php" method="POST">
+                                        <form action="codediagramas.php" method="POST" enctype="multipart/form-data">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row mt-1">
@@ -79,18 +79,6 @@ require 'dbcon.php';
                                                     <label for="piezas">Número de piezas</label>
                                                 </div>
 
-                                                <?php
-                                                // Verifica si 'medio' está vacío o no
-                                                if (empty($registro['medio'])) {
-                                                ?>
-                                                    <div class="form-floating col-7 mt-3">
-                                                        <input type="text" class="form-control" id="actividad" name="actividad" value="<?= $registro['actividad']; ?>">
-                                                        <label for="actividad">Actividad</label>
-                                                    </div>
-                                                <?php
-                                                }
-                                                ?>
-
                                                 <div class="col-12 col-md-7 mt-3 form-floating">
                                                     <select class="form-select" name="estatusplano" id="estatusplano">
                                                         <option disabled>Seleccione un estatus</option>
@@ -100,6 +88,26 @@ require 'dbcon.php';
                                                     </select>
                                                     <label style="margin-left: 10px;" for="estatusplano">Estatus del plano</label>
                                                 </div>
+
+                                                <?php
+                                                // Verifica si 'medio' está vacío o no
+                                                if (empty($registro['medio'])) {
+                                                ?>
+                                                    <div class="form-floating col-7 mt-3">
+                                                        <input type="text" class="form-control" id="actividad" name="actividad" value="<?= $registro['actividad']; ?>">
+                                                        <label for="actividad">Actividad</label>
+                                                    </div>
+                                                <?php
+                                                 } else {
+                                                    ?>
+                                                        <div class="mt-3">
+                                                            <label for="medio" class="form-label">Nuevo Diagrama PDF</label>
+                                                            <input class="form-control" type="file" id="medio" name="medio" max="100000">
+                                                        </div>
+                                                        <input type="hidden" class="form-control" id="actividad" name="actividad" value="">
+                                                    <?php
+                                                    }
+                                                    ?>
 
                                                 <div class="col-12 text-center mt-3 d-flex align-items-center justify-content-center">
                                                     <button type="submit" name="update" class="btn btn-warning">

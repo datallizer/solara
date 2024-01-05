@@ -80,7 +80,7 @@ if (isset($_SESSION['codigo'])) {
                                     <thead>
                                         <tr>
                                             <th>Actividad</th>
-                                            <th>Accion</th>
+                                            <th class="text-center">Accion</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -92,7 +92,7 @@ if (isset($_SESSION['codigo'])) {
                                         ?>
                                                 <tr>
                                                     <td><?= $registro['actividad']; ?></td>
-                                                    <td>
+                                                    <td class="text-center">
                                                             <a href="editaractividadmecanica.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                             <form action="codeactividades.php" method="POST" class="d-inline">
                                                                 <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
@@ -125,7 +125,7 @@ if (isset($_SESSION['codigo'])) {
                                     <thead>
                                         <tr>
                                             <th>Actividad</th>
-                                            <th>Accion</th>
+                                            <th class="text-center">Accion</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -137,7 +137,7 @@ if (isset($_SESSION['codigo'])) {
                                         ?>
                                                 <tr>
                                                     <td><?= $registro['actividad']; ?></td>
-                                                    <td>
+                                                    <td class="text-center">
                                                             <a href="editaractividadcontrol.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                             <form action="codeactividades.php" method="POST" class="d-inline">
                                                                 <button type="submit" name="deletecontrol" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>

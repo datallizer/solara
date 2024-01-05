@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <table class='table table-bordered table-striped' style='width: 100%;font-size:25px;'>
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>ID</th>
                                         <th>Material</th>
                                         <th>Piezas</th>
                                         <th>Proveedor</th>

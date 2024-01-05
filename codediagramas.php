@@ -27,19 +27,26 @@ if (isset($_POST['update'])) {
     $estatusplano = mysqli_real_escape_string($con, $_POST['estatusplano']);
     $actividad = mysqli_real_escape_string($con, $_POST['actividad']);
 
-    $query = "UPDATE `diagrama` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano', `actividad` = '$actividad' WHERE `diagrama`.`id` = '$id'";
+    $query = "UPDATE `diagrama` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano', `actividad` = '$actividad'";
+
+    if (isset($_FILES['medio']) && $_FILES['medio']['error'] == UPLOAD_ERR_OK) {
+        $medio = file_get_contents($_FILES['medio']['tmp_name']);
+        $query .= ", `medio` = '" . mysqli_real_escape_string($con, $medio) . "'";
+    }
+
+    $query .= " WHERE `diagrama`.`id` = '$id'";
+    
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
         $_SESSION['message'] = "Ensamble $nombreplano editado exitosamente";
-        header("Location: ensamble.php");
-        exit(0);
     } else {
-        $_SESSION['message'] = "Error al editar el ensamble $nombreplano, contácte a soporte";
-        header("Location: ensamble.php");
-        exit(0);
+        $_SESSION['message'] = "Error al editar el ensamble $nombreplano, contácte a soporte: " . mysqli_error($con);
     }
+    header("Location: ensamble.php");
+    exit(0);
 }
+
 
 if (isset($_POST['save'])) {
     // Escape other non-array POST values

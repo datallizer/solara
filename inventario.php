@@ -99,6 +99,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Bin</th>
                                             <th>Caja</th>
                                             <th>Número</th>
+                                            <th>Costo unitario</th>
                                             <th>Accion</th>
                                         </tr>
                                     </thead>
@@ -124,6 +125,7 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['bin']; ?></td>
                                                     <td><?= $registro['caja']; ?></td>
                                                     <td><?= $registro['numero']; ?></td>
+                                                    <td>$<?= $registro['costo']; ?></td>
                                                     <td>
                                                         <a href="editarinventario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 

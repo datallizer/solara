@@ -53,7 +53,7 @@ require 'dbcon.php';
 
                                 ?>
 
-                                        <form action="codemaquinados.php" method="POST">
+                                        <form action="codemaquinados.php" method="POST" enctype="multipart/form-data">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row mt-1">
@@ -78,6 +78,16 @@ require 'dbcon.php';
                                                     <input type="text" class="form-control" id="piezas" name="piezas" value="<?= $registro['piezas']; ?>">
                                                     <label for="piezas">Número de piezas</label>
                                                 </div>
+                                                
+                                                <div class="col-12 col-md-7 mt-3 form-floating">
+                                                    <select class="form-select" name="estatusplano" id="estatusplano">
+                                                        <option disabled>Seleccione un estatus</option>
+                                                        <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Terminado</option>
+                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Activo</option>
+                                                        <option value="2" <?= ($estatus_actual == 2) ? 'selected' : ''; ?>>Pausado</option>
+                                                    </select>
+                                                    <label style="margin-left: 10px;" for="estatusplano">Estatus del plano</label>
+                                                </div>
 
                                                 <?php
                                                 // Verifica si 'medio' está vacío o no
@@ -88,18 +98,16 @@ require 'dbcon.php';
                                                         <label for="actividad">Actividad</label>
                                                     </div>
                                                 <?php
+                                                } else {
+                                                ?>
+                                                    <div class="mt-3">
+                                                        <label for="medio" class="form-label">Diagrama PDF</label>
+                                                        <input class="form-control" type="file" id="medio" name="medio" max="100000">
+                                                    </div>
+                                                    <input type="hidden" class="form-control" id="actividad" name="actividad" value="">
+                                                <?php
                                                 }
                                                 ?>
-
-                                                <div class="col-12 col-md-7 mt-3 form-floating">
-                                                    <select class="form-select" name="estatusplano" id="estatusplano">
-                                                        <option disabled>Seleccione un estatus</option>
-                                                        <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Terminado</option>
-                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Activo</option>
-                                                        <option value="2" <?= ($estatus_actual == 2) ? 'selected' : ''; ?>>Pausado</option>
-                                                    </select>
-                                                    <label style="margin-left: 10px;" for="estatusplano">Estatus del plano</label>
-                                                </div>
 
                                                 <div class="col-12 text-center mt-3 d-flex align-items-center justify-content-center">
                                                     <button type="submit" name="update" class="btn btn-warning">
