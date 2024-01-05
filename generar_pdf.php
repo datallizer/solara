@@ -2,13 +2,14 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verificar si se recibieron los IDs seleccionados
     if (isset($_POST['idsSeleccionados'])) {
-        $idsSeleccionados = json_decode($_POST['idsSeleccionados']);
+        $idsSeleccionados = json_decode($_POST['idsSeleccionados'], true);
 
         // Lógica para obtener los detalles de los materiales seleccionados de la base de datos
         require 'dbcon.php'; // Asegúrate de incluir la conexión a tu base de datos
 
         // Construir la consulta SQL para obtener los detalles de los materiales seleccionados
-        $idString = implode(',', $idsSeleccionados); // Convertir el array de IDs a una cadena para usar en la consulta
+        $idArray = array_column($idsSeleccionados, 'id');
+        $idString = implode(',', $idArray); // Convertir el array de IDs a una cadena para usar en la consulta
         $query = "SELECT * FROM inventario WHERE id IN ($idString)";
         $result = mysqli_query($con, $query);
 
@@ -46,11 +47,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <tr>
                                         <th>#</th>
                                         <th>Material</th>
+                                        <th>Piezas</th>
                                         <th>Proveedor</th>
                                         <th>Descripcion</th>
                                         <th>Marca</th>
                                         <th>Condicion</th>
-                                        <th>Costo</th>
+                                        <th>Costo unitario</th>
+                                        <th>Costo total</th>
                                     </tr>
                                 </thead>
                                 <tbody>";
@@ -59,21 +62,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Iterar a través de los resultados y agregar filas a la tabla
             while ($row = mysqli_fetch_assoc($result)) {
-                $totalCosto += $row['costo']; // Sumar el costo actual al total
-                echo "<tr>
-                                        <td>{$row['id']}</td>
-                                        <td>{$row['nombre']}</td>
-                                        <td>{$row['proveedor']}</td>
-                                        <td>{$row['descripcion']}</td>
-                                        <td>{$row['marca']}</td>
-                                        <td>{$row['condicion']}</td>
-                                        <td>{$row['costo']}</td>
-                                    </tr>";
+                $materialId = $row['id'];
+                $materialData = array_filter($idsSeleccionados, function ($item) use ($materialId) {
+                    return $item['id'] == $materialId;
+                });
+
+                if (!empty($materialData)) {
+                    $material = reset($materialData);
+                    $piezas = $material['piezas'];
+                    $costoTotal = floatval(str_replace('$', '', $material['costoTotal'])); // Convertir a número y eliminar cualquier coma en el valor
+
+                    echo "<script>console.log('Costo Total:', " . json_encode($costoTotal) . ");</script>";
+
+                    $totalCosto += $costoTotal; // Sumar el costo actual al total
+                    echo "<tr>
+                            <td>{$row['id']}</td>
+                            <td>{$row['nombre']}</td>
+                            <td>{$piezas}</td>
+                            <td>{$row['proveedor']}</td>
+                            <td>{$row['descripcion']}</td>
+                            <td>{$row['marca']}</td>
+                            <td>{$row['condicion']}</td>
+                            <td>$ {$row['costo']}</td>
+                            <td>$ {$costoTotal}</td>
+                        </tr>";
+                }
             }
 
             echo "<tr>
-                                        <td class='text-end' colspan='6'>Total:</td>
-                                        <td>$totalCosto</td>
+                                        <td class='text-end' colspan='8'>Total:</td>
+                                        <td>$$totalCosto</td>
                                     </tr>";
 
             echo "</tbody>
@@ -109,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redireccionar al usuario a bom.php después de descargar el PDF
                 setTimeout(function() {
                     window.location.href = 'bom.php';
-                }, 1000); // Redirecciona después de 1 segundo (1000 milisegundos)
+                }, 9000); // Redirecciona después de 1 segundo (1000 milisegundos)
             });
         </script>
             </body>

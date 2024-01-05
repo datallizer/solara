@@ -89,11 +89,13 @@ if (isset($_SESSION['codigo'])) {
                                             <th></th>
                                             <th>#</th>
                                             <th>Material</th>
+                                            <th>Piezas</th>
                                             <th>Proveedor</th>
                                             <th>Descripcion</th>
                                             <th>Marca</th>
                                             <th>Condicion</th>
-                                            <th>Costo</th>
+                                            <th>Costo unitario</th>
+                                            <th>Costo total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -107,11 +109,13 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><input type="checkbox" name="seleccionados[]" value="<?= $registro['id']; ?>"></td>
                                                     <td><?= $registro['id']; ?></td>
                                                     <td><?= $registro['nombre']; ?></td>
+                                                    <td><input type="text" class="form-control piezas-container" name="piezas[]" id="piezasSeleccionadas_<?= $registro['id']; ?>" placeholder="Cantidad" autocomplete="off"></td>
                                                     <td><?= $registro['proveedor']; ?></td>
                                                     <td><?= $registro['descripcion']; ?></td>
                                                     <td><?= $registro['marca']; ?></td>
                                                     <td><?= $registro['condicion']; ?></td>
                                                     <td>$<?= $registro['costo']; ?></td>
+                                                    <td><input type="text" class="form-control costoTotal" name="costoTotal[]" id="costoTotal_<?= $registro['id']; ?>" readonly></td>
                                                 </tr>
                                         <?php
                                             }
@@ -130,44 +134,88 @@ if (isset($_SESSION['codigo'])) {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
-    function generarPDF() {
-        var seleccionados = document.getElementsByName('seleccionados[]');
-        var idsSeleccionados = [];
-        for (var i = 0; i < seleccionados.length; i++) {
-            if (seleccionados[i].checked) {
-                idsSeleccionados.push(seleccionados[i].value);
-            }
-        }
+        $(document).ready(function() {
+            // Ocultar inicialmente los campos de piezas y costoTotal
+            $('.piezas-container, .costoTotal').hide();
 
-        if (idsSeleccionados.length > 0) {
-            // Convertir el array de IDs a una cadena para enviarlo como valor del campo oculto
-            document.getElementById('idsSeleccionados').value = JSON.stringify(idsSeleccionados);
+            // Manejar el cambio en el checkbox
+            $('input[name="seleccionados[]"]').change(function() {
+                var isChecked = $(this).is(':checked');
+                var $row = $(this).closest('tr');
+                var $piezasInput = $row.find('.piezas-container');
+                var $costoTotalInput = $row.find('.costoTotal');
 
-            // Enviar el formulario
-            document.getElementById('generarPDFForm').submit();
-        } else {
-            // Mostrar SweetAlert2 en lugar de alert
-            Swal.fire({
-                title: 'Error',
-                text: 'Por favor, seleccione al menos un material para generar la propuesta.',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                // Mostrar u ocultar los campos según el estado del checkbox
+                if (isChecked) {
+                    $piezasInput.show();
+                    $costoTotalInput.show();
+                } else {
+                    $piezasInput.hide();
+                    $costoTotalInput.hide();
+                    $piezasInput.val(''); // Limpiar el valor del input de piezas
+                    $costoTotalInput.val(''); // Limpiar el valor del input de costoTotal
+                }
             });
+
+            // Manejar el evento 'input' en los campos de piezas para calcular el costo total
+            $('.piezas-container').on('input', function() {
+                var $row = $(this).closest('tr');
+                var $costoUnitario = parseFloat($row.find('td:nth-child(9)').text().replace('$', ''));
+                var piezas = parseFloat($(this).val());
+                var costoTotal = isNaN($costoUnitario) || isNaN(piezas) ? 0 : $costoUnitario * piezas;
+                $row.find('.costoTotal').val('$' + costoTotal.toFixed(2)); // Actualizar el valor del campo de costoTotal
+            });
+        });
+
+        function generarPDF() {
+    var seleccionados = document.getElementsByName('seleccionados[]');
+    var idsSeleccionados = [];
+
+    for (var i = 0; i < seleccionados.length; i++) {
+        if (seleccionados[i].checked) {
+            var id = seleccionados[i].value;
+            var piezas = document.getElementById('piezasSeleccionadas_' + id).value;
+            var costoTotal = document.getElementById('costoTotal_' + id).value;
+
+            console.log("ID:", id);
+            console.log("Piezas:", piezas);
+            console.log("Costo Total:", costoTotal);
+            
+            var item = {
+                id: id,
+                piezas: piezas,
+                costoTotal: costoTotal
+            };
+            idsSeleccionados.push(item);
         }
     }
-    
-    $(document).ready(function() {
-        $('#miTabla, #miTablaDos').DataTable({
-            "order": [
-                [1, "asc"]
-            ] // Ordenar la primera columna (índice 0) en orden descendente
-        });
-    });
-</script>
 
+    if (idsSeleccionados.length > 0) {
+        document.getElementById('idsSeleccionados').value = JSON.stringify(idsSeleccionados);
+        document.getElementById('generarPDFForm').submit();
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor, seleccione al menos un material para generar la propuesta.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
+
+        $(document).ready(function() {
+            $('#miTabla, #miTablaDos').DataTable({
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+        });
+    </script>
 </body>
 
 </html>

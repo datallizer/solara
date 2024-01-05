@@ -69,7 +69,7 @@ require 'dbcon.php';
                             <nav class="sb-sidenav-menu-nested nav">
                                 <?php
                                 // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 8, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 8])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="maquinados.php">Maquinados</a>';
                                 }
