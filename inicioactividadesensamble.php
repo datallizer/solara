@@ -161,11 +161,11 @@ if (isset($_SESSION['codigo'])) {
                                                 <?php
                                                 if ($registro['estatusplano'] === '1') {
                                                     echo '<div class="col-5 mt-3">
-                                                                <img src="images/progreso.gif" alt="">
+                                                                <img src="images/ensamble.gif" alt="">
                                                             </div>';
                                                 } else if ($registro['estatusplano'] === '2') {
                                                     echo '<div class="col-5 m-4">
-                                                                <img src="images/pausa.jpg" alt="">
+                                                                <img src="images/ensamble.png" alt="">
                                                             </div>';
                                                 } else {
                                                     echo "Error, contacte a soporte";
