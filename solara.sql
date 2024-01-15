@@ -145,6 +145,26 @@ CREATE TABLE `quotes` (
   `cotizacion` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+CREATE TABLE `bom` (
+  `id` int(255) NOT NULL,
+  `nombre` varchar(200) NOT NULL,
+  `piezas` int(255) NOT NULL,
+  `proveedor` varchar(200) NOT NULL,
+  `descripcion` varchar(1000) NOT NULL,
+  `marca` varchar(100) NOT NULL,
+  `condicion` varchar(100) NOT NULL,
+  `costo` float(100,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+ALTER TABLE `bom`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `bom`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+
 ALTER TABLE `quotes`
   ADD PRIMARY KEY (`id`);
 

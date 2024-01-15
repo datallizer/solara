@@ -34,8 +34,22 @@ if (isset($_POST['aprobar'])) {
                 header("Location: quotes.php");
                 exit(0);
             }
-}
+} elseif (isset($_POST['completar'])) {
+    $registro_id = mysqli_real_escape_string($con, $_POST['completar']);
 
+            $query = "UPDATE `quotes` SET `estatusq` = '2' WHERE `quotes`.`id` = '$registro_id'";
+            $query_run = mysqli_query($con, $query);
+
+            if ($query_run) {
+                $_SESSION['message'] = "Quote aprobado exitosamente";
+                header("Location: compras.php");
+                exit(0);
+            } else {
+                $_SESSION['message'] = "Error al aprobar el quote, contacte a soporte";
+                header("Location: compras.php");
+                exit(0);
+            }
+}
 
 
 if (isset($_POST['save'])) {
@@ -44,8 +58,9 @@ if (isset($_POST['save'])) {
     $proyecto = mysqli_real_escape_string($con, $_POST['proyecto']);
     $cotizacion = mysqli_real_escape_string($con, $_POST['cotizacion']);
     $medio = addslashes(file_get_contents($_FILES['medio']['tmp_name']));
+    $notas = mysqli_real_escape_string($con, $_POST['notas']);
 
-    $query = "INSERT INTO quotes SET solicitante='$solicitante', rol='$rol', proyecto='$proyecto', cotizacion='$cotizacion', estatusq='1', medio='$medio'";
+    $query = "INSERT INTO quotes SET solicitante='$solicitante', rol='$rol', proyecto='$proyecto', cotizacion='$cotizacion', estatusq='1', medio='$medio', notas='$notas'";
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
@@ -53,7 +68,7 @@ if (isset($_POST['save'])) {
         $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
         $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
 
-        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Registro un nuevo QUOTE: $cotizacion', hora='$hora_actual', fecha='$fecha_actual'";
+        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Registro un nuevo QUOTE: $cotizacion, detalles: $notas', hora='$hora_actual', fecha='$fecha_actual'";
         $query_rundos = mysqli_query($con, $querydos);
         $_SESSION['message'] = "Quote creado exitosamente";
         header("Location: quotes.php");

@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Construir la consulta SQL para obtener los detalles de los materiales seleccionados
         $idArray = array_column($idsSeleccionados, 'id');
         $idString = implode(',', $idArray); // Convertir el array de IDs a una cadena para usar en la consulta
-        $query = "SELECT * FROM inventario WHERE id IN ($idString)";
+        $query = "SELECT * FROM bom WHERE id IN ($idString)";
         $result = mysqli_query($con, $query);
 
         // Verificar si se obtuvieron resultados
@@ -122,12 +122,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save('bom.pdf');
+    pdf.save('propuestaBOM.pdf');
 
                 // Redireccionar al usuario a bom.php después de descargar el PDF
                 setTimeout(function() {
                     window.location.href = 'bom.php';
-                }, 9000); // Redirecciona después de 1 segundo (1000 milisegundos)
+                }, 1000); // Redirecciona después de 1 segundo (1000 milisegundos)
             });
         </script>
             </body>

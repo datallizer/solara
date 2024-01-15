@@ -76,8 +76,12 @@ if (isset($_SESSION['codigo'])) {
                                     <div class="col-6">
                                         <form id="generarPDFForm" action="generar_pdf.php" method="POST">
                                             <input type="hidden" id="idsSeleccionados" name="idsSeleccionados">
-                                            <button type="button" class="btn btn-sm btn-success float-end" onclick="generarPDF()">Propuesta</button>
+                                            <button type="button" class="btn btn-sm btn-success float-end m-1" onclick="generarPDF()">Propuesta</button>
                                         </form>
+                                        <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                            Nuevo BOM
+                                        </button>
+
                                     </div>
                                 </div>
                             </div>
@@ -96,11 +100,12 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Condicion</th>
                                             <th>Costo unitario</th>
                                             <th>Costo total</th>
+                                            <th>Acción</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM inventario ORDER BY id DESC";
+                                        $query = "SELECT * FROM bom ORDER BY id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
@@ -116,11 +121,14 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['condicion']; ?></td>
                                                     <td>$<?= $registro['costo']; ?></td>
                                                     <td><input type="text" class="form-control costoTotal" name="costoTotal[]" id="costoTotal_<?= $registro['id']; ?>" readonly></td>
+                                                    <td>
+                                                        <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
+                                                    </td>
                                                 </tr>
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='7'><p>No se encontró ningún registro</p></td></tr>";
+                                            echo "<tr><td colspan='11'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -128,6 +136,60 @@ if (isset($_SESSION['codigo'])) {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO BOM</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="codebom.php" method="POST" class="row">
+                        <div class="form-floating col-12 mt-1">
+                            <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" autocomplete="off" required>
+                            <label for="nombre">Nombre</label>
+                        </div>
+
+                        <div class="form-floating col-6 mt-3">
+                            <input type="text" class="form-control" name="proveedor" id="proveedor" placeholder="Proveedor" autocomplete="off" required>
+                            <label for="proveedor">Proveedor</label>
+                        </div>
+
+                        <div class="form-floating col-6 mt-3">
+                            <select class="form-select" name="condicion" id="condicion" autocomplete="off" required>
+                                <option selected disabled>Seleccione una opcion</option>
+                                <option value="Nuevo">Nuevo</option>
+                                <option value="Usado">Usado</option>
+                            </select>
+                            <label for="condicion">Condición</label>
+                        </div>
+
+                        <div class="form-floating col-7 mt-3">
+                            <input type="text" class="form-control" name="marca" id="marca" placeholder="Marca" autocomplete="off" required>
+                            <label for="marca">Marca</label>
+                        </div>
+
+                        <div class="form-floating col-5 mt-3">
+                            <input type="text" class="form-control" name="costo" id="costo" placeholder="Costo" autocomplete="off" required>
+                            <label for="costo">Costo unitario</label>
+                        </div>
+
+                        <div class="form-floating mb-3 mt-3">
+                            <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Descripción" style="min-height: 150px;"></textarea>
+                            <label for="descripcion" class="form-label">Descripción</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary" name="save">Guardar</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -172,40 +234,40 @@ if (isset($_SESSION['codigo'])) {
         });
 
         function generarPDF() {
-    var seleccionados = document.getElementsByName('seleccionados[]');
-    var idsSeleccionados = [];
+            var seleccionados = document.getElementsByName('seleccionados[]');
+            var idsSeleccionados = [];
 
-    for (var i = 0; i < seleccionados.length; i++) {
-        if (seleccionados[i].checked) {
-            var id = seleccionados[i].value;
-            var piezas = document.getElementById('piezasSeleccionadas_' + id).value;
-            var costoTotal = document.getElementById('costoTotal_' + id).value;
+            for (var i = 0; i < seleccionados.length; i++) {
+                if (seleccionados[i].checked) {
+                    var id = seleccionados[i].value;
+                    var piezas = document.getElementById('piezasSeleccionadas_' + id).value;
+                    var costoTotal = document.getElementById('costoTotal_' + id).value;
 
-            console.log("ID:", id);
-            console.log("Piezas:", piezas);
-            console.log("Costo Total:", costoTotal);
-            
-            var item = {
-                id: id,
-                piezas: piezas,
-                costoTotal: costoTotal
-            };
-            idsSeleccionados.push(item);
+                    console.log("ID:", id);
+                    console.log("Piezas:", piezas);
+                    console.log("Costo Total:", costoTotal);
+
+                    var item = {
+                        id: id,
+                        piezas: piezas,
+                        costoTotal: costoTotal
+                    };
+                    idsSeleccionados.push(item);
+                }
+            }
+
+            if (idsSeleccionados.length > 0) {
+                document.getElementById('idsSeleccionados').value = JSON.stringify(idsSeleccionados);
+                document.getElementById('generarPDFForm').submit();
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Por favor, seleccione al menos un material para generar la propuesta.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         }
-    }
-
-    if (idsSeleccionados.length > 0) {
-        document.getElementById('idsSeleccionados').value = JSON.stringify(idsSeleccionados);
-        document.getElementById('generarPDFForm').submit();
-    } else {
-        Swal.fire({
-            title: 'Error',
-            text: 'Por favor, seleccione al menos un material para generar la propuesta.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
-}
 
 
         $(document).ready(function() {
@@ -213,6 +275,45 @@ if (isset($_SESSION['codigo'])) {
                 "order": [
                     [1, "asc"]
                 ]
+            });
+        });
+
+        const deleteButtons = document.querySelectorAll('.deletebtn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                const id = e.target.value; // Obtener el valor del botón delete
+
+                // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
+                Swal.fire({
+                    title: '¿Estás seguro que deseas eliminar este registro?',
+                    text: '¡No podrás deshacer esta acción!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('delete', id);
+                        fetch('codebom.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => {
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    }
+                });
             });
         });
     </script>

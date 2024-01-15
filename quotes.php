@@ -78,6 +78,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Rol</th>
                                             <th>Proyecto</th>
                                             <th>PDF</th>
+                                            <th>Notas</th>
                                             <th>Estatus</th>
                                             <th>Acción</th>
                                         </tr>
@@ -96,7 +97,7 @@ if (isset($_SESSION['codigo'])) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
-                                                    <td><?= $registro['id']; ?></td>
+                                                    <td><?= $registro['id_quote']; ?></td>
                                                     <td><?= $registro['solicitante']; ?></td>
                                                     <td>
                                                         <?php
@@ -138,26 +139,27 @@ if (isset($_SESSION['codigo'])) {
                                                             </div>
                                                         </div>
                                                     </td>
+                                                    <td><?= $registro['notas']; ?></td>
                                                     <td><?php
                                                         if ($registro['estatusq'] === '0') {
                                                             echo "Aprobado";
                                                         } else if ($registro['estatusq'] === '1') {
                                                             echo "Pendiente";
-                                                        }  else {
+                                                        } else {
                                                             echo "Error, contacte a soporte";
                                                         }
                                                         ?></td>
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1  float-end"><i class="bi bi-trash-fill"></i></button>
-                                                            <button type="submit" name="aprobar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1 float-end"><i class="bi bi-check-lg"> Aprobar</i></button>
+                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1 float-end deletebtn"><i class="bi bi-trash-fill"></i></button>
+                                                            <button type="submit" name="aprobar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1 float-end "><i class="bi bi-check-lg"> Aprobar</i></button>
                                                         </form>
                                                     </td>
                                                 </tr>
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='7'><p>No se encontró ningún registro</p></td></tr>";
+                                            echo "<tr><td colspan='8'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -216,6 +218,11 @@ if (isset($_SESSION['codigo'])) {
                             <input class="form-control" type="file" id="medio" name="medio" max="100000">
                         </div>
 
+                        <div class="form-floating col-12 mt-3">
+                            <textarea type="text" class="form-control" name="notas" id="notas" placeholder="Notas" autocomplete="" style="min-height: 150px;"></textarea>
+                            <label for="notas">Notas</label>
+                        </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary" name="save">Guardar</button>
@@ -270,6 +277,46 @@ if (isset($_SESSION['codigo'])) {
                 console.error('Error al cargar el PDF:', error);
             });
         }
+
+        const deleteButtons = document.querySelectorAll('.deletebtn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                const id_quote = e.target.value; // Obtener el valor del botón delete
+
+                // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
+                Swal.fire({
+                    title: '¿Estás seguro que deseas eliminar este registro?',
+                    text: '¡No podrás deshacer esta acción!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('delete', id_quote);
+
+                        fetch('codequotes.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => {
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 500);
+
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    }
+                });
+            });
+        });
     </script>
 </body>
 

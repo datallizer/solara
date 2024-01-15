@@ -106,6 +106,7 @@ require 'dbcon.php';
                                         <a class="nav-link" href="inventario.php">Inventario</a>
                                             <a class="nav-link" href="reorden.php">Reorden</a>
                                             <a class="nav-link" href="quotes.php">Quotes</a>
+                                            <a class="nav-link" href="compras.php">Compras</a>
                                     </nav>
                                 </div>
                                 ';

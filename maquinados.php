@@ -140,9 +140,9 @@ if (isset($_SESSION['codigo'])) {
 
                                                             // Verifica si 'medio' está vacío o no
                                                             if (empty($registro['medio'])) {
-                                                                ?>
+                                                            ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
-                                                                <?php
+                                                            <?php
                                                             } else {
                                                             ?>
                                                                 <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
@@ -170,18 +170,18 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['piezas']; ?></td>
                                                     <td><?= $registro['prioridad']; ?></td>
                                                     <?php
-                                                        if ($registro['nivel'] === '1') {
-                                                            echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
-                                                        } elseif ($registro['nivel'] === '2') {
-                                                            echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
-                                                        } elseif ($registro['nivel'] === '3') {
-                                                            echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
-                                                        } elseif ($registro['nivel'] === '4') {
-                                                            echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
+                                                    if ($registro['nivel'] === '1') {
+                                                        echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
+                                                    } elseif ($registro['nivel'] === '2') {
+                                                        echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
+                                                    } elseif ($registro['nivel'] === '3') {
+                                                        echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
+                                                    } elseif ($registro['nivel'] === '4') {
+                                                        echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
+                                                    } else {
+                                                        echo "Error, contacte a soporte";
+                                                    }
+                                                    ?>
                                                     <td>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
@@ -201,7 +201,7 @@ if (isset($_SESSION['codigo'])) {
                                                             echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
                                                         <form action="codemaquinados.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
                                                         </form>';
                                                         }
                                                         ?>
@@ -504,10 +504,47 @@ if (isset($_SESSION['codigo'])) {
                 console.error('Error al cargar el PDF:', error);
             });
         }
+
+        const deleteButtons = document.querySelectorAll('.deletebtn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                const id = e.target.value; // Obtener el valor del botón delete
+
+                // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
+                Swal.fire({
+                    title: '¿Estás seguro que deseas eliminar este registro?',
+                    text: '¡No podrás deshacer esta acción!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('delete', id);
+
+                        fetch('codemaquinados.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => {
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 500);
+
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    }
+                });
+            });
+        });
     </script>
-
-
-
 </body>
 
 </html>

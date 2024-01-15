@@ -55,18 +55,11 @@ if (isset($_SESSION['codigo'])) {
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
-                <div class="row mb-5 mt-5"><div class="col-md-12 mt-3">
+                <div class="row mb-5 mt-5">
+                    <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
-                                <h4>COMPRAS
-                                    <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                                        echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    Nueva quote
-                                </button>';
-                                    }
-                                    ?>
-                                </h4>
+                                <h4>COMPRAS PENDIENTES</h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
                                 <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
@@ -77,6 +70,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Rol</th>
                                             <th>Proyecto</th>
                                             <th>PDF</th>
+                                            <th>Notas</th>
                                             <th>Estatus</th>
                                             <th>Acción</th>
                                         </tr>
@@ -95,7 +89,7 @@ if (isset($_SESSION['codigo'])) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
-                                                    <td><?= $registro['id']; ?></td>
+                                                    <td><?= $registro['id_quote']; ?></td>
                                                     <td><?= $registro['solicitante']; ?></td>
                                                     <td>
                                                         <?php
@@ -137,25 +131,135 @@ if (isset($_SESSION['codigo'])) {
                                                             </div>
                                                         </div>
                                                     </td>
+                                                    <td><?= $registro['notas']; ?></td>
                                                     <td><?php
                                                         if ($registro['estatusq'] === '0') {
                                                             echo "Aprobado";
-                                                        } else if ($registro['estatusq'] === '1') {
+                                                        } elseif ($registro['estatusq'] === '1') {
                                                             echo "Pendiente";
-                                                        }  else {
+                                                        } elseif ($registro['estatusq'] === '2') {
+                                                            echo "Completada";
+                                                        } else {
                                                             echo "Error, contacte a soporte";
                                                         }
-                                                        ?></td>
+                                                        ?>
+                                                    </td>
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            <button type="submit" name="completar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-box-fill"></i> Completar</i></button>
                                                         </form>
                                                     </td>
                                                 </tr>
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='7'><p>No se encontró ningún registro</p></td></tr>";
+                                            echo "<tr><td colspan='8'><p>No se encontró ningún registro</p></td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>COMPRAS FINALIZADAS</h4>
+                            </div>
+                            <div class="card-body" style="overflow-y:scroll;">
+                                <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Solicitante</th>
+                                            <th>Rol</th>
+                                            <th>Proyecto</th>
+                                            <th>PDF</th>
+                                            <th>Notas</th>
+                                            <th>Estatus</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $query = "SELECT quotes.*, proyecto.*, quotes.id AS id_quote
+                                            FROM quotes 
+                                            JOIN proyecto ON quotes.proyecto = proyecto.id
+                                            WHERE estatusq = 2
+                                            ORDER BY quotes.id ASC";
+
+
+                                        $query_run = mysqli_query($con, $query);
+                                        if (mysqli_num_rows($query_run) > 0) {
+                                            foreach ($query_run as $registro) {
+                                        ?>
+                                                <tr>
+                                                    <td><?= $registro['id_quote']; ?></td>
+                                                    <td><?= $registro['solicitante']; ?></td>
+                                                    <td>
+                                                        <?php
+                                                        if ($registro['rol'] === '1') {
+                                                            echo "Administrador";
+                                                        } else if ($registro['rol'] === '2') {
+                                                            echo "Gerencia";
+                                                        } else if ($registro['rol'] === '4') {
+                                                            echo "Técnico controles";
+                                                        } else if ($registro['rol'] === '5') {
+                                                            echo "Ing. Diseño";
+                                                        } else if ($registro['rol'] === '6') {
+                                                            echo "Compras";
+                                                        } else if ($registro['rol'] === '7') {
+                                                            echo "Almacenista";
+                                                        } else if ($registro['rol'] === '8') {
+                                                            echo "Técnico mecanico";
+                                                        } else if ($registro['rol'] === '9') {
+                                                            echo "Ing. Control";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                    <td><?= $registro['nombre']; ?></td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Cotizacion <?= $registro['cotizacion']; ?></button>
+                                                        <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="pdfModalLabel">Cotización <?= $registro['cotizacion']; ?></h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><?= $registro['notas']; ?></td>
+                                                    <td><?php
+                                                        if ($registro['estatusq'] === '0') {
+                                                            echo "Aprobado";
+                                                        } elseif ($registro['estatusq'] === '1') {
+                                                            echo "Pendiente";
+                                                        } elseif ($registro['estatusq'] === '2') {
+                                                            echo "Completada";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                    <td>
+                                                        <form action="codequotes.php" method="POST" class="d-inline">
+                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></i></button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='8'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -167,62 +271,7 @@ if (isset($_SESSION['codigo'])) {
             </div>
         </div>
     </div>
-    <!-- Modal Mecanica-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">NUEVO QUOTE</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="codequotes.php" method="POST" class="row" enctype="multipart/form-data">
-                        <div class="form-floating col-12 mb-3">
-                            <select class="form-select" name="proyecto" id="proyecto">
-                                <option disabled selected>Seleccione un proyecto</option>
-                                <?php
-                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
-                                $result = mysqli_query($con, $query);
-                                if (mysqli_num_rows($result) > 0) {
-                                    while ($proyecto = mysqli_fetch_assoc($result)) {
-                                        $opcion = $proyecto['nombre'];
-                                        $idProyecto = $proyecto['id'];
-                                        echo "<option value='$idProyecto'>$opcion</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                            <label for="proyecto">Proyecto asociado</label>
-                        </div>
 
-                        <div class="form-floating col-12 mt-1">
-                            <input type="text" class="form-control" name="solicitante" id="solicitante" placeholder="Solicitante" autocomplete="off" value="<?php echo $_SESSION['nombre'] . ' ' . $_SESSION['apellidop'] . ' ' . $_SESSION['apellidom']; ?>" readonly>
-                            <label for="solicitante">Solicitante</label>
-                        </div>
-
-                        <div class="form-floating col-12 mt-3">
-                            <input type="hidden" class="form-control" name="rol" id="rol" placeholder="Rol" value="<?php echo $_SESSION['rol']; ?>" readonly>
-                        </div>
-
-                        <div class="form-floating col-12 mt-3">
-                            <input type="text" class="form-control" name="cotizacion" id="cotizacion" placeholder="Nombre cotización" autocomplete="" required>
-                            <label for="cotizacion">Nombre cotización</label>
-                        </div>
-
-                        <div class="mt-3">
-                            <label for="medio" class="form-label">Cotización (PDF)</label>
-                            <input class="form-control" type="file" id="medio" name="medio" max="100000">
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="save">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <!-- Incluir los archivos de PDF.js -->
