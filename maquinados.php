@@ -80,6 +80,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
+                                            <th>Estatus</th>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>
@@ -182,6 +183,15 @@ if (isset($_SESSION['codigo'])) {
                                                         echo "Error, contacte a soporte";
                                                     }
                                                     ?>
+                                                    <?php
+                                                        if ($registro['estatus'] === '1') {
+                                                            echo "<td>Asignado</td>";
+                                                        } elseif ($registro['estatus'] === '2') {
+                                                            echo "<td>En pausa</td>";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
                                                     <td>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
@@ -210,7 +220,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='7'><p>No se encontró ningún registro</p></td></tr>";
+                                            echo "<tr><td colspan='8'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
                                     </tbody>

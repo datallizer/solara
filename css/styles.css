@@ -30,3 +30,28 @@ img{
 .mayor-cuarto {
     background-color: #aaffaa !important;
 }
+
+.cardstats{
+    border: 1px solid #2c5b87;
+    border-radius: 12px;
+    background-color: #fff;
+    color: #000000;
+}
+
+.cardstats h3{
+    font-size: 20px;
+    color: #000;
+}
+
+.cardstats p{
+    font-size: 35px;
+    color: #000;
+}
+
+.cardstats i{
+    font-size: 20px;
+    color: #ffffff;
+    padding: 2px 5px;
+    border-radius: 10px;
+    background-color: #2c5b87;
+}

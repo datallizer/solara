@@ -116,7 +116,7 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <?php
                                                     if ($registro['prioridad'] == 1) {
-                                                        echo "<td style='background-color: #ff0000;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
+                                                        echo "<td style='background-color: #ff0000;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
                                                     } elseif ($registro['prioridad'] == 2) {
                                                         echo "<td style='background-color: #ff1a1a;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
                                                     } elseif ($registro['prioridad'] == 3) {

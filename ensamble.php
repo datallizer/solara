@@ -80,6 +80,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
+                                            <th>Estatus</th>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>
@@ -167,13 +168,22 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['prioridad']; ?></td>
                                                     <?php
                                                         if ($registro['nivel'] === '1') {
-                                                            echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
+                                                            echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
                                                         } elseif ($registro['nivel'] === '2') {
                                                             echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
                                                         } elseif ($registro['nivel'] === '3') {
                                                             echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
                                                         } elseif ($registro['nivel'] === '4') {
                                                             echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
+                                                        <?php
+                                                        if ($registro['estatusplano'] === '1') {
+                                                            echo "<td>Asignado</td>";
+                                                        } elseif ($registro['estatusplano'] === '2') {
+                                                            echo "<td>En pausa</td>";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
@@ -206,7 +216,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='7'><p>No se encontró ningún registro</p></td></tr>";
+                                            echo "<tr><td colspan='8'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -279,7 +289,7 @@ if (isset($_SESSION['codigo'])) {
                                                 <td><?= $registro['prioridad']; ?></td>
                                                 <?php
                                                         if ($registro['nivel'] === '1') {
-                                                            echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
+                                                            echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
                                                         } elseif ($registro['nivel'] === '2') {
                                                             echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
                                                         } elseif ($registro['nivel'] === '3') {

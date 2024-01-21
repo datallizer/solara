@@ -165,7 +165,6 @@ require 'dbcon.php';
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Usuario:</div>
                     <?php
                     if (isset($_SESSION['codigo'])) {
                         $registro_id = $_SESSION['codigo'];
@@ -174,8 +173,15 @@ require 'dbcon.php';
                         if (mysqli_num_rows($query_run) > 0) {
                             $registro = mysqli_fetch_array($query_run);
                     ?>
-                            <p class="mb-2"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></p>
-                            <img style="width: 40%;border-radius:10px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                     <div class="row">
+                        <div class="col-6"><img style="width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                            </div>
+                            <div class="col">
+                            <p style="margin-left: -10px;"><?= $registro['nombre']; ?><br>
+                            <?= $registro['apellidop']; ?><br>
+                            <?= $registro['apellidom']; ?></p>
+                            </div>
+                     </div>       
                     <?php
                         } else {
                             echo "<p>Error contacte a soporte</p>";
