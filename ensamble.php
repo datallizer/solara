@@ -37,6 +37,7 @@ if (isset($_SESSION['codigo'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,6 +49,7 @@ if (isset($_SESSION['codigo'])) {
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">
@@ -71,7 +73,7 @@ if (isset($_SESSION['codigo'])) {
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped text-center" style="width: 100%;">
+                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Proyecto</th>
@@ -80,7 +82,11 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
-                                            <th>Estatus</th>
+                                            <?php
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                echo '<th>Estatus</th>';
+                                            }
+                                            ?>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>
@@ -93,13 +99,13 @@ if (isset($_SESSION['codigo'])) {
                                                 JOIN asignaciondiagrama ON asignaciondiagrama.idplano = diagrama.id 
                                                 JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
                                                 WHERE asignaciondiagrama.codigooperador = $codigo 
-                                                AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2)
+                                                AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2 OR diagrama.estatusplano = 3)
                                                 ORDER BY proyecto.prioridad ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id
-                                                WHERE (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2)
+                                                WHERE (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2 OR diagrama.estatusplano = 3)
                                                 ORDER BY proyecto.prioridad asc";
                                         }
                                         $query_run = mysqli_query($con, $query);
@@ -110,34 +116,34 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4,8])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8])) {
                                                             if (empty($registro['medio'])) {
-                                                                ?>
+                                                        ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
                                                             <?php
                                                             } else {
-                                                                ?>
+                                                            ?>
                                                                 <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Diagrama <?= $registro['nombreplano']; ?></button>
-                                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-                                                                <div class="modal-dialog modal-lg">
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
-                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                    <div class="modal-dialog modal-lg">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
                                                             <?php
                                                             }
-                                                        ?>
+                                                            ?>
                                                             <?php
                                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             if (empty($registro['medio'])) {
-                                                                ?>
+                                                            ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
                                                             <?php
                                                             } else {
@@ -160,41 +166,51 @@ if (isset($_SESSION['codigo'])) {
                                                                 echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
                                                             }
                                                         } else {
-                                                            echo 'No asignado';
+                                                            echo '-';
                                                         }
                                                         ?>
                                                     </td>
-                                                    <td><?= $registro['piezas']; ?></td>
-                                                    <td><?= $registro['prioridad']; ?></td>
+                                                    <td class="text-center"><?= $registro['piezas']; ?></td>
+                                                    <td class="text-center"><?= $registro['prioridad']; ?></td>
                                                     <?php
-                                                        if ($registro['nivel'] === '1') {
-                                                            echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
-                                                        } elseif ($registro['nivel'] === '2') {
-                                                            echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
-                                                        } elseif ($registro['nivel'] === '3') {
-                                                            echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
-                                                        } elseif ($registro['nivel'] === '4') {
-                                                            echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                                        <?php
+                                                    if ($registro['nivel'] === '1') {
+                                                        echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
+                                                    } elseif ($registro['nivel'] === '2') {
+                                                        echo "<td style='background-color:#e56f00 !important;color:#fff;'>Nivel 2</td>";
+                                                    } elseif ($registro['nivel'] === '3') {
+                                                        echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
+                                                    } elseif ($registro['nivel'] === '4') {
+                                                        echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
+                                                    } else {
+                                                        echo "Error, contacte a soporte";
+                                                    }
+                                                    ?>
+                                                    <?php
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                                         if ($registro['estatusplano'] === '1') {
                                                             echo "<td>Asignado</td>";
                                                         } elseif ($registro['estatusplano'] === '2') {
-                                                            echo "<td>En pausa</td>";
+                                                            echo "<td>Pausado</td>";
+                                                        } elseif ($registro['estatusplano'] === '3') {
+                                                            echo "<td style='background-color:#e5da00 !important'>En progreso</td>";
                                                         } else {
-                                                            echo "Error, contacte a soporte";
+                                                            ?>
+                                                            <td class="text-center"><?= $registro['estatusplano']; ?></td>
+                                                            <?php
                                                         }
-                                                        ?>
+                                                    }
+
+                                                    ?>
                                                     <td>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8])) {
                                                             $id = $registro['id'];
                                                             if ($registro['estatusplano'] === '1') {
-                                                                echo '<a href="inicioactividadesensamble.php?id=' . $id . '" class="btn btn-success btn-sm m-1">Iniciar</a>';
-                                                            } else if ($registro['estatusplano'] === '2') {
+                                                                echo '<form action="codeactividad.php" method="post">
+                                                                <input type="hidden" value="' . $id . '" name="id">
+                                                                <button type="submit" name="startensamble" class="btn btn-sm btn-success">Iniciar</button>
+                                                                </form>';
+                                                            } else if ($registro['estatusplano'] === '2' || $registro['estatusplano'] === '3') {
                                                                 echo '<form action="codeactividad.php" method="post">
                                                                 <input type="hidden" value="' . $id . '" name="id">
                                                                 <button type="submit" name="restartensamble" class="btn btn-sm btn-primary">Seguimiento</button>
@@ -207,7 +223,7 @@ if (isset($_SESSION['codigo'])) {
                                                             echo '<a href="editardiagrama.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
                                                         <form action="codediagramas.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
                                                         </form>';
                                                         }
                                                         ?>
@@ -228,35 +244,37 @@ if (isset($_SESSION['codigo'])) {
                     ?>
                         <div class="col-12 mt-3">
                             <div class="card">
-                            <div class="card-header"><h4>ENSAMBLES FINALIZADOS</h4></div>
-                            <div class="card-body">
-                            <table id="miTablaDos" class="table table-bordered table-striped text-center" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>Proyecto</th>
-                                        <th>Diagrama / actividad asociados</th>
-                                        <th>Número de piezas</th>
-                                        <th>Técnicos asignados</th>
-                                        <th>Prioridad</th>
-                                        <th>Nivel de pieza</th>
-                                        <th>Accion</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $query = "SELECT proyecto.*, diagrama.*
+                                <div class="card-header">
+                                    <h4>ENSAMBLES FINALIZADOS</h4>
+                                </div>
+                                <div class="card-body">
+                                    <table id="miTablaDos" class="table table-bordered table-striped text-center" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Proyecto</th>
+                                                <th>Diagrama / actividad asociados</th>
+                                                <th>Número de piezas</th>
+                                                <th>Técnicos asignados</th>
+                                                <th>Prioridad</th>
+                                                <th>Nivel de pieza</th>
+                                                <th>Accion</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $query = "SELECT proyecto.*, diagrama.*
                                         FROM diagrama 
                                         JOIN proyecto ON diagrama.idproyecto = proyecto.id
                                         WHERE estatusplano = 0 
                                         ORDER BY proyecto.prioridad asc";
-                                    $query_run = mysqli_query($con, $query);
-                                    if (mysqli_num_rows($query_run) > 0) {
-                                        foreach ($query_run as $registro) {
-                                    ?>
-                                            <tr>
-                                                <td><?= $registro['nombre']; ?></td>
-                                                <td>
-                                                    <?php
+                                            $query_run = mysqli_query($con, $query);
+                                            if (mysqli_num_rows($query_run) > 0) {
+                                                foreach ($query_run as $registro) {
+                                            ?>
+                                                    <tr>
+                                                        <td><?= $registro['nombre']; ?></td>
+                                                        <td>
+                                                            <?php
                                                             if (empty($registro['medio'])) {
                                                             ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
@@ -264,30 +282,30 @@ if (isset($_SESSION['codigo'])) {
                                                             } else {
                                                             ?>
                                                                 <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Diagrama <?= $registro['nombreplano']; ?></a>
-                                                        <?php
+                                                            <?php
                                                             }
                                                             ?>
-                                                </td>
-                                                <td><?= $registro['piezas']; ?></td>
-                                                <td>
-                                                    <?php
-                                                    $queryAsignacion = "SELECT asignaciondiagrama.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+                                                        </td>
+                                                        <td><?= $registro['piezas']; ?></td>
+                                                        <td>
+                                                            <?php
+                                                            $queryAsignacion = "SELECT asignaciondiagrama.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                             FROM asignaciondiagrama
                                                             JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
                                                             WHERE asignaciondiagrama.idplano = " . $registro['id'];
-                                                    $query_run_asignacion = mysqli_query($con, $queryAsignacion);
+                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 
-                                                    if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                        foreach ($query_run_asignacion as $asignacion) {
-                                                            echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
-                                                        }
-                                                    } else {
-                                                        echo '-';
-                                                    }
-                                                    ?>
-                                                </td>
-                                                <td><?= $registro['prioridad']; ?></td>
-                                                <?php
+                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
+                                                                foreach ($query_run_asignacion as $asignacion) {
+                                                                    echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
+                                                                }
+                                                            } else {
+                                                                echo '-';
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                        <td><?= $registro['prioridad']; ?></td>
+                                                        <?php
                                                         if ($registro['nivel'] === '1') {
                                                             echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
                                                         } elseif ($registro['nivel'] === '2') {
@@ -300,23 +318,23 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Error, contacte a soporte";
                                                         }
                                                         ?>
-                                                <td>
-                                                    <a href="editardiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                        <td>
+                                                            <a href="editardiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                    <!-- <form action="codediagramas.php" method="POST" class="d-inline">
+                                                            <!-- <form action="codediagramas.php" method="POST" class="d-inline">
                                                         <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                     </form> -->
-                                                </td>
-                                            </tr>
-                                    <?php
-                                        }
-                                    } else {
-                                        echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
-                            </div>
+                                                        </td>
+                                                    </tr>
+                                            <?php
+                                                }
+                                            } else {
+                                                echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
+                                            }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     <?php
@@ -357,7 +375,7 @@ if (isset($_SESSION['codigo'])) {
 
                         <div class="col-4 mb-3">
                             <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onchange="toggleElements()">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onchange="toggleElements()">
                                 <label class="form-check-label" for="flexSwitchCheckDefault" id="labelPlano">Diagrama</label>
                                 <label class="form-check-label" for="flexSwitchCheckDefault" id="labelActividad" style="display: none;">Actividad</label>
                             </div>
@@ -431,8 +449,8 @@ if (isset($_SESSION['codigo'])) {
         </div>
     </div>
 
-     <!-- Modal Control-->
-     <div class="modal fade" id="exampleModalDos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal Control-->
+    <div class="modal fade" id="exampleModalDos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -462,7 +480,7 @@ if (isset($_SESSION['codigo'])) {
 
                         <div class="col-4 mb-3">
                             <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefaultDos" onchange="toggleElementsDos()">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefaultDos" onchange="toggleElementsDos()">
                                 <label class="form-check-label" for="flexSwitchCheckDefaultDos" id="labelPlanoDos">Diagrama</label>
                                 <label class="form-check-label" for="flexSwitchCheckDefaultDos" id="labelActividadDos" style="display: none;">Actividad</label>
                             </div>
@@ -543,62 +561,63 @@ if (isset($_SESSION['codigo'])) {
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         function toggleElements() {
-        var switchElement = document.getElementById('flexSwitchCheckDefault');
-        var tituloPlano = document.getElementById('tituloPlano');
-        var tituloActividad = document.getElementById('tituloActividad');
-        var nombrePlano = document.getElementById('nombrePlano');
-        var nombreActividad = document.getElementById('nombreActividad');
-        var planoElements = document.getElementById('planoElements');
-        var actividadElements = document.getElementById('actividadElements');
+            var switchElement = document.getElementById('flexSwitchCheckDefault');
+            var tituloPlano = document.getElementById('tituloPlano');
+            var tituloActividad = document.getElementById('tituloActividad');
+            var nombrePlano = document.getElementById('nombrePlano');
+            var nombreActividad = document.getElementById('nombreActividad');
+            var planoElements = document.getElementById('planoElements');
+            var actividadElements = document.getElementById('actividadElements');
 
-        if (switchElement.checked) {
-            tituloPlano.style.display = 'none';
-            tituloActividad.style.display = 'block';
-            nombrePlano.style.display = 'none';
-            nombreActividad.style.display = 'block';
-            planoElements.style.display = 'none';
-            actividadElements.style.display = 'block';
-            labelPlano.style.display = 'none';
-            labelActividad.style.display = 'block';
-        } else {
-            tituloPlano.style.display = 'block';
-            tituloActividad.style.display = 'none';
-            nombrePlano.style.display = 'block';
-            nombreActividad.style.display = 'none';
-            planoElements.style.display = 'block';
-            actividadElements.style.display = 'none';
-            labelPlano.style.display = 'block';
-            labelActividad.style.display = 'none';
+            if (switchElement.checked) {
+                tituloPlano.style.display = 'none';
+                tituloActividad.style.display = 'block';
+                nombrePlano.style.display = 'none';
+                nombreActividad.style.display = 'block';
+                planoElements.style.display = 'none';
+                actividadElements.style.display = 'block';
+                labelPlano.style.display = 'none';
+                labelActividad.style.display = 'block';
+            } else {
+                tituloPlano.style.display = 'block';
+                tituloActividad.style.display = 'none';
+                nombrePlano.style.display = 'block';
+                nombreActividad.style.display = 'none';
+                planoElements.style.display = 'block';
+                actividadElements.style.display = 'none';
+                labelPlano.style.display = 'block';
+                labelActividad.style.display = 'none';
+            }
         }
-    }
-    function toggleElementsDos() {
-        var switchElement = document.getElementById('flexSwitchCheckDefaultDos');
-        var tituloPlanoDos = document.getElementById('tituloPlanoDos');
-        var tituloActividadDos = document.getElementById('tituloActividadDos');
-        var nombrePlanoDos = document.getElementById('nombrePlanoDos');
-        var nombreActividadDos = document.getElementById('nombreActividadDos');
-        var planoElementsDos = document.getElementById('planoElementsDos');
-        var actividadElementsDos = document.getElementById('actividadElementsDos');
-        if (switchElement.checked) {
-            tituloPlanoDos.style.display = 'none';
-            tituloActividadDos.style.display = 'block';
-            nombrePlanoDos.style.display = 'none';
-            nombreActividadDos.style.display = 'block';
-            planoElementsDos.style.display = 'none';
-            actividadElementsDos.style.display = 'block';
-            labelPlanoDos.style.display = 'none';
-            labelActividadDos.style.display = 'block';
-        } else {
-            tituloPlanoDos.style.display = 'block';
-            tituloActividadDos.style.display = 'none';
-            nombrePlanoDos.style.display = 'block';
-            nombreActividadDos.style.display = 'none';
-            planoElementsDos.style.display = 'block';
-            actividadElementsDos.style.display = 'none';
-            labelPlanoDos.style.display = 'block';
-            labelActividadDos.style.display = 'none';
+
+        function toggleElementsDos() {
+            var switchElement = document.getElementById('flexSwitchCheckDefaultDos');
+            var tituloPlanoDos = document.getElementById('tituloPlanoDos');
+            var tituloActividadDos = document.getElementById('tituloActividadDos');
+            var nombrePlanoDos = document.getElementById('nombrePlanoDos');
+            var nombreActividadDos = document.getElementById('nombreActividadDos');
+            var planoElementsDos = document.getElementById('planoElementsDos');
+            var actividadElementsDos = document.getElementById('actividadElementsDos');
+            if (switchElement.checked) {
+                tituloPlanoDos.style.display = 'none';
+                tituloActividadDos.style.display = 'block';
+                nombrePlanoDos.style.display = 'none';
+                nombreActividadDos.style.display = 'block';
+                planoElementsDos.style.display = 'none';
+                actividadElementsDos.style.display = 'block';
+                labelPlanoDos.style.display = 'none';
+                labelActividadDos.style.display = 'block';
+            } else {
+                tituloPlanoDos.style.display = 'block';
+                tituloActividadDos.style.display = 'none';
+                nombrePlanoDos.style.display = 'block';
+                nombreActividadDos.style.display = 'none';
+                planoElementsDos.style.display = 'block';
+                actividadElementsDos.style.display = 'none';
+                labelPlanoDos.style.display = 'block';
+                labelActividadDos.style.display = 'none';
+            }
         }
-    }
 
         $(document).ready(function() {
             $('#miTabla, #miTablaDos').DataTable({
@@ -637,6 +656,47 @@ if (isset($_SESSION['codigo'])) {
                 console.error('Error al cargar el PDF:', error);
             });
         }
+
+        const deleteButtons = document.querySelectorAll('.deletebtn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                const id = e.target.value; // Obtener el valor del botón delete
+
+                // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
+                Swal.fire({
+                    title: '¿Estás seguro que deseas eliminar este registro?',
+                    text: '¡No podrás deshacer esta acción!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('delete', id);
+
+                        fetch('codediagramas.php', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => {
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 500);
+
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    }
+                });
+            });
+        });
     </script>
 </body>
+
 </html>

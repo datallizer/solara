@@ -93,26 +93,30 @@ require 'dbcon.php';
                             </nav>
                         </div>
 
-                        <?php
-                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])) {
-                            echo '
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                                    Almacen
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Almacen
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <?php
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5,6, 7, 8, 9])) {
+                                    echo '
                                         <a class="nav-link" href="inventario.php">Inventario</a>
+                                ';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])) {
+                                    echo '
                                             <a class="nav-link" href="reorden.php">Reorden</a>
                                             <a class="nav-link" href="quotes.php">Quotes</a>
                                             <a class="nav-link" href="compras.php">Compras</a>
-                                    </nav>
-                                </div>
+                                    
                                 ';
-                        }
-                        ?>
-
+                                }
+                                ?>
+                            </nav>
+                        </div>
                         <?php
                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                             // Mostrar el enlace HTML solo si la condición se cumple
@@ -173,15 +177,15 @@ require 'dbcon.php';
                         if (mysqli_num_rows($query_run) > 0) {
                             $registro = mysqli_fetch_array($query_run);
                     ?>
-                     <div class="row">
-                        <div class="col-6"><img style="width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                            <div class="row">
+                                <div class="col-6"><img style="width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                </div>
+                                <div class="col">
+                                    <p style="margin-left: -10px;"><?= $registro['nombre']; ?><br>
+                                        <?= $registro['apellidop']; ?><br>
+                                        <?= $registro['apellidom']; ?></p>
+                                </div>
                             </div>
-                            <div class="col">
-                            <p style="margin-left: -10px;"><?= $registro['nombre']; ?><br>
-                            <?= $registro['apellidop']; ?><br>
-                            <?= $registro['apellidom']; ?></p>
-                            </div>
-                     </div>       
                     <?php
                         } else {
                             echo "<p>Error contacte a soporte</p>";

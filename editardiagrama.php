@@ -83,8 +83,9 @@ require 'dbcon.php';
                                                     <select class="form-select" name="estatusplano" id="estatusplano">
                                                         <option disabled>Seleccione un estatus</option>
                                                         <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Terminado</option>
-                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Activo</option>
+                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Asignado</option>
                                                         <option value="2" <?= ($estatus_actual == 2) ? 'selected' : ''; ?>>Pausado</option>
+                                                        <option value="3" <?= ($estatus_actual == 3) ? 'selected' : ''; ?>>En proceso</option>
                                                     </select>
                                                     <label style="margin-left: 10px;" for="estatusplano">Estatus del plano</label>
                                                 </div>

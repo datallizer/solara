@@ -252,7 +252,7 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></i></button>
+                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill deletebtn"></i></button>
                                                         </form>
                                                     </td>
                                                 </tr>
@@ -317,6 +317,45 @@ if (isset($_SESSION['codigo'])) {
                 console.error('Error al cargar el PDF:', error);
             });
         }
+        const deleteButtons = document.querySelectorAll('.deletebtn');
+
+deleteButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const id = e.target.value; // Obtener el valor del botón delete
+
+        // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
+        Swal.fire({
+            title: '¿Estás seguro que deseas eliminar este registro?',
+            text: '¡No podrás deshacer esta acción!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('delete', id);
+
+                fetch('codequotes.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    });
+});
     </script>
 </body>
 

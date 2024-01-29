@@ -121,12 +121,10 @@ if (isset($_SESSION['codigo'])) {
                                 <div class="card">
                                     <div class="card-header pt-3">
                                         <?php
-                                        if ($registro['estatusplano'] === '1') {
+                                        if ($registro['estatusplano'] === '3') {
                                             echo '<h4>MAQUINADO EN PROGRESO</h4>';
-                                        } else if ($registro['estatusplano'] === '2') {
+                                        } else{
                                             echo '<h4>MAQUINADO EN PAUSA</h4>';
-                                        } else {
-                                            echo "Error, contacte a soporte";
                                         }
                                         ?>
 
@@ -158,31 +156,27 @@ if (isset($_SESSION['codigo'])) {
                                                 </div>
 
                                                 <?php
-                                                if ($registro['estatusplano'] === '1') {
+                                                if ($registro['estatusplano'] === '3') {
                                                     echo '<div class="col-5 mt-3">
                                                                 <img src="images/progreso.gif" alt="">
                                                             </div>';
-                                                } else if ($registro['estatusplano'] === '2') {
+                                                } else {
                                                     echo '<div class="col-5 m-4">
                                                                 <img src="images/pausa.jpg" alt="">
                                                             </div>';
-                                                } else {
-                                                    echo "Error, contacte a soporte";
                                                 }
                                                 ?>
 
                                                 <div class="col-6 text-center mt-3 d-flex align-items-center justify-content-center">
                                                     <?php
-                                                    if ($registro['estatusplano'] === '1') {
+                                                    if ($registro['estatusplano'] === '3') {
                                                         echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3'>
                                                                 Detener actividad
                                                             </button>";
-                                                    } else if ($registro['estatusplano'] === '2') {
+                                                    } else{
                                                         echo '<form action="codeactividad.php" method="post">
                                                                 <button type="submit" name="restart" class="btn btn-success m-3">Reiniciar actividad</button>
                                                             </form>';
-                                                    } else {
-                                                        echo "Error, contacte a soporte";
                                                     }
                                                     ?>
 

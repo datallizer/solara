@@ -97,6 +97,7 @@ if (isset($_SESSION['codigo'])) {
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="sb-nav-fixed" style="background-color: #e7e7e7;">
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
@@ -122,12 +123,10 @@ if (isset($_SESSION['codigo'])) {
                                 <div class="card">
                                     <div class="card-header pt-3">
                                         <?php
-                                        if ($registro['estatusplano'] === '1') {
+                                        if ($registro['estatusplano'] === '3') {
                                             echo '<h4>ENSAMBLE EN PROGRESO</h4>';
-                                        } else if ($registro['estatusplano'] === '2') {
-                                            echo '<h4>ENSAMBLE EN PAUSA</h4>';
                                         } else {
-                                            echo "Error, contacte a soporte";
+                                            echo '<h4>ENSAMBLE EN PAUSA</h4>';
                                         }
                                         ?>
 
@@ -159,31 +158,23 @@ if (isset($_SESSION['codigo'])) {
                                                 </div>
 
                                                 <?php
-                                                if ($registro['estatusplano'] === '1') {
+                                                if ($registro['estatusplano'] === '3') {
                                                     echo '<div class="col-5 mt-3">
                                                                 <img src="images/ensamble.gif" alt="">
                                                             </div>';
-                                                } else if ($registro['estatusplano'] === '2') {
+                                                } else {
                                                     echo '<div class="col-5 m-4">
                                                                 <img src="images/ensamble.png" alt="">
                                                             </div>';
-                                                } else {
-                                                    echo "Error, contacte a soporte";
                                                 }
                                                 ?>
 
                                                 <div class="col-6 text-center mt-3 d-flex align-items-center justify-content-center">
                                                     <?php
-                                                    if ($registro['estatusplano'] === '1') {
-                                                        echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3'>
-                                                                Detener actividad
-                                                            </button>";
-                                                    } else if ($registro['estatusplano'] === '2') {
-                                                        echo '<form action="codeactividad.php" method="post">
-                                                                <button type="submit" name="restartensamble" class="btn btn-success m-3">Reiniciar actividad</button>
-                                                            </form>';
-                                                    } else {
-                                                        echo "Error, contacte a soporte";
+                                                    if ($registro['estatusplano'] === '3') {
+                                                        echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3'>Detener actividad</button>";
+                                                    } else{
+                                                        echo '<button type="submit" name="restartensamble" class="btn btn-success m-3">Reiniciar actividad</button>';
                                                     }
                                                     ?>
 

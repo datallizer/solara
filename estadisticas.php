@@ -318,7 +318,75 @@ if (isset($_SESSION['codigo'])) {
                                                 echo "<td>Error al obtener la suma de piezas, contacte a soporte</td>";
                                             }
                                             ?>
-                                            <td><div class="progreso text-center" style="border: 1px solid #828282;"></div></td>
+                                            <td>
+                                                <div class="progreso text-center" style="border: 1px solid #828282;"></div>
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
+                                } else {
+                                    echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6 mt-3">
+                    <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="background-color: #2c5b87;color:#fff;">PLANOS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $query = "SELECT * FROM plano";
+                                $query_run = mysqli_query($con, $query);
+                                if (mysqli_num_rows($query_run) > 0) {
+                                    foreach ($query_run as $registro) {
+                                ?>
+                                        <tr>
+                                            <td>
+                                                <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaplano.php?id=<?= $registro['id']; ?>">
+                                                    <div class="row">
+                                                        <div class="col-8"><?= $registro['nombreplano']; ?></div>
+                                                        <div class="col-4"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
+                                                    </div>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
+                                } else {
+                                    echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6 mt-3">
+                    <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="background-color: #2c5b87;color:#fff;">ENSAMBLES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $query = "SELECT * FROM diagrama";
+                                $query_run = mysqli_query($con, $query);
+                                if (mysqli_num_rows($query_run) > 0) {
+                                    foreach ($query_run as $registro) {
+                                ?>
+                                        <tr>
+                                            <td>
+                                                <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaensamble.php?id=<?= $registro['id']; ?>">
+                                                    <div class="row">
+                                                        <div class="col-8"><?= $registro['nombreplano']; ?></div>
+                                                        <div class="col-4"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
+                                                    </div>
+                                                </a>
+                                            </td>
                                         </tr>
                                 <?php
                                     }
@@ -340,42 +408,43 @@ if (isset($_SESSION['codigo'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
 
     <script>
-  $(document).ready(function () {
-    $('#miTabla').DataTable({
+        $(document).ready(function() {
+            $('#miTabla').DataTable({
                 "order": [
-                    [0, "asc"]
-                ] // Ordenar la primera columna (índice 0) en orden descendente
+                    [0, "desc"]
+                ],
+                "pageLength": 25
             });
-    // Itera sobre cada fila de la tabla
-    $('#miTabla tbody tr').each(function () {
-      // Obtiene los valores de las columnas "piezas terminadas" y "piezas totales" en la fila actual
-      var piezasTerminadas = parseFloat($(this).find('td:eq(5)').text());
-      var piezasTotales = parseFloat($(this).find('td:eq(3)').text());
+            // Itera sobre cada fila de la tabla
+            $('#miTabla tbody tr').each(function() {
+                // Obtiene los valores de las columnas "piezas terminadas" y "piezas totales" en la fila actual
+                var piezasTerminadas = parseFloat($(this).find('td:eq(5)').text());
+                var piezasTotales = parseFloat($(this).find('td:eq(3)').text());
 
-      // Verifica si los valores son numéricos y si el denominador (piezasTotales) no es cero
-      if (!isNaN(piezasTerminadas) && !isNaN(piezasTotales) && piezasTotales !== 0) {
-        // Calcula el porcentaje
-        var porcentaje = (piezasTerminadas / piezasTotales) * 100;
+                // Verifica si los valores son numéricos y si el denominador (piezasTotales) no es cero
+                if (!isNaN(piezasTerminadas) && !isNaN(piezasTotales) && piezasTotales !== 0) {
+                    // Calcula el porcentaje
+                    var porcentaje = (piezasTerminadas / piezasTotales) * 100;
 
-        // Crea un nuevo elemento span para mostrar el número de porcentaje
-        var spanPorcentaje = $('<span>').text(porcentaje.toFixed(2) + '%').css('color', '#000000');
+                    // Crea un nuevo elemento span para mostrar el número de porcentaje
+                    var spanPorcentaje = $('<span>').text(porcentaje.toFixed(2) + '%').css('color', '#000000');
 
-        // Crea un nuevo div con la clase "progreso" y añade el span con el porcentaje
-        var divProgreso = $('<div>').addClass('progreso p-2').css({
-          'width': porcentaje + '%',
-          'background-color': '#829bd1', // Cambia 'blue' al color azul que desees
-          'position': 'relative'
-        }).append(spanPorcentaje);
+                    // Crea un nuevo div con la clase "progreso" y añade el span con el porcentaje
+                    var divProgreso = $('<div>').addClass('progreso p-2').css({
+                        'width': porcentaje + '%',
+                        'background-color': '#829bd1', // Cambia 'blue' al color azul que desees
+                        'position': 'relative'
+                    }).append(spanPorcentaje);
 
-        // Limpia el contenido de la columna "Progreso" y añade el nuevo div
-        $(this).find('.progreso').empty().append(divProgreso);
-      } else {
-        // Si hay algún problema con los valores, puedes manejarlo de acuerdo a tus necesidades
-        $(this).find('.progreso').text('0%');
-      }
-    });
-  });
-</script>
+                    // Limpia el contenido de la columna "Progreso" y añade el nuevo div
+                    $(this).find('.progreso').empty().append(divProgreso);
+                } else {
+                    // Si hay algún problema con los valores, puedes manejarlo de acuerdo a tus necesidades
+                    $(this).find('.progreso').text('0%');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -103,6 +103,29 @@ if (isset($_POST['save'])) {
             header("Location: ensamble.php");
             exit(0);
         }
+    }else {
+        $query = "INSERT INTO diagrama (idproyecto, nombreplano, medio, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, ?, '1')";
+        $stmt = mysqli_prepare($con, $query);
+
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, 'ssssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $actividad);
+            mysqli_stmt_execute($stmt);
+
+            $idcodigo = $_SESSION['codigo'];
+            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo ensamble: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+            $query_rundos = mysqli_query($con, $querydos);
+
+            $_SESSION['message'] = "Ensamble creado exitosamente";
+            header("Location: ensamble.php");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al crear el ensamble, contacte a soporte";
+            header("Location: ensamble.php");
+            exit(0);
+        }
     }
 }
 ?>

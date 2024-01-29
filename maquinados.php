@@ -80,7 +80,11 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
-                                            <th>Estatus</th>
+                                            <?php
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                echo '<th>Estatus</th>';
+                                            }
+                                            ?>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>
@@ -93,13 +97,13 @@ if (isset($_SESSION['codigo'])) {
                                                 JOIN asignacionplano ON asignacionplano.idplano = plano.id 
                                                 JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                                 WHERE asignacionplano.codigooperador = $codigo 
-                                                AND (plano.estatusplano = 1 OR plano.estatusplano = 2)
+                                                AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
                                                 ORDER BY proyecto.prioridad ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                             $query = "SELECT proyecto.*, plano.*
                                                 FROM plano 
                                                 JOIN proyecto ON plano.idproyecto = proyecto.id
-                                                WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2)
+                                                WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
                                                 ORDER BY proyecto.prioridad asc";
                                         }
                                         $query_run = mysqli_query($con, $query);
@@ -164,17 +168,17 @@ if (isset($_SESSION['codigo'])) {
                                                                 echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
                                                             }
                                                         } else {
-                                                            echo 'No asignado';
+                                                            echo '-';
                                                         }
                                                         ?>
                                                     </td>
-                                                    <td><?= $registro['piezas']; ?></td>
-                                                    <td><?= $registro['prioridad']; ?></td>
+                                                    <td class="text-center"><?= $registro['piezas']; ?></td>
+                                                    <td class="text-center"><?= $registro['prioridad']; ?></td>
                                                     <?php
                                                     if ($registro['nivel'] === '1') {
-                                                        echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
+                                                        echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
                                                     } elseif ($registro['nivel'] === '2') {
-                                                        echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
+                                                        echo "<td style='background-color:#e56f00 !important;color:#fff;'>Nivel 2</td>";
                                                     } elseif ($registro['nivel'] === '3') {
                                                         echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
                                                     } elseif ($registro['nivel'] === '4') {
@@ -184,21 +188,31 @@ if (isset($_SESSION['codigo'])) {
                                                     }
                                                     ?>
                                                     <?php
-                                                        if ($registro['estatus'] === '1') {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                        if ($registro['estatusplano'] === '1') {
                                                             echo "<td>Asignado</td>";
-                                                        } elseif ($registro['estatus'] === '2') {
-                                                            echo "<td>En pausa</td>";
+                                                        } elseif ($registro['estatusplano'] === '2') {
+                                                            echo "<td>Pausado</td>";
+                                                        } elseif ($registro['estatusplano'] === '3') {
+                                                            echo "<td style='background-color:#e5da00 !important'>En progreso</td>";
                                                         } else {
-                                                            echo "Error, contacte a soporte";
+                                                            ?>
+                                                            <td class="text-center"><?= $registro['estatusplano']; ?></td>
+                                                            <?php
                                                         }
-                                                        ?>
+                                                    }
+
+                                                    ?>
                                                     <td>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                                                             $id = $registro['id'];
                                                             if ($registro['estatusplano'] === '1') {
-                                                                echo '<a href="inicioactividades.php?id=' . $id . '" class="btn btn-success btn-sm m-1">Iniciar</a>';
-                                                            } else if ($registro['estatusplano'] === '2') {
+                                                                echo '<form action="codeactividad.php" method="post">
+                                                                <input type="hidden" value="' . $id . '" name="id">
+                                                                <button type="submit" name="start" class="btn btn-sm btn-success">Iniciar</button>
+                                                                </form>';
+                                                            } else if ($registro['estatusplano'] === '2' || $registro['estatusplano'] === '3') {
                                                                 echo '<form action="codeactividad.php" method="post">
                                                                 <input type="hidden" value="' . $id . '" name="id">
                                                                 <button type="submit" name="restart" class="btn btn-sm btn-primary">Seguimiento</button>
@@ -228,6 +242,7 @@ if (isset($_SESSION['codigo'])) {
                             </div>
                         </div>
                     </div>
+
                     <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                     ?>
                         <div class="col-12 mt-3">
@@ -275,7 +290,7 @@ if (isset($_SESSION['codigo'])) {
                                                             }
                                                             ?>
                                                         </td>
-                                                        <td><?= $registro['piezas']; ?></td>
+                                                        <td class="text-center"><?= $registro['piezas']; ?></td>
                                                         <td>
                                                             <?php
                                                             $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
@@ -293,12 +308,12 @@ if (isset($_SESSION['codigo'])) {
                                                             }
                                                             ?>
                                                         </td>
-                                                        <td><?= $registro['prioridad']; ?></td>
+                                                        <td class="text-center"><?= $registro['prioridad']; ?></td>
                                                         <?php
                                                         if ($registro['nivel'] === '1') {
-                                                            echo "<td style='background-color:#e50000 !important'>Nivel 1</td>";
+                                                            echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
                                                         } elseif ($registro['nivel'] === '2') {
-                                                            echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
+                                                            echo "<td style='background-color:#e56f00 !important;color:#fff;'>Nivel 2</td>";
                                                         } elseif ($registro['nivel'] === '3') {
                                                             echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
                                                         } elseif ($registro['nivel'] === '4') {
@@ -318,7 +333,7 @@ if (isset($_SESSION['codigo'])) {
                                             <?php
                                                 }
                                             } else {
-                                                echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td><td></td><td></td><td></td>";
+                                                echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
                                             }
                                             ?>
                                         </tbody>

@@ -20,8 +20,6 @@ CREATE TABLE `historial` (
   `fecha` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
-
 CREATE TABLE `plano` (
   `id` int(100) NOT NULL,
   `idproyecto` int(100) DEFAULT NULL,
@@ -157,6 +155,39 @@ CREATE TABLE `bom` (
   `costo` float(100,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `historialoperadores` (
+  `id` int(255) NOT NULL,
+  `idcodigo` int(255) NOT NULL,
+  `idplano` int(255) NOT NULL,
+  `motivoactividad` varchar(1000) NOT NULL,
+  `fecha` date NOT NULL,
+  `hora` varchar(30) NOT NULL,
+  `fechareinicio` date DEFAULT NULL,
+  `horareinicio` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `historialoperadores`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `historialoperadores`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE `historialensamble` (
+  `id` int(255) NOT NULL,
+  `idcodigo` int(255) NOT NULL,
+  `idplano` int(255) NOT NULL,
+  `motivoactividad` varchar(1000) NOT NULL,
+  `fecha` date NOT NULL,
+  `hora` varchar(30) NOT NULL,
+  `fechareinicio` date DEFAULT NULL,
+  `horareinicio` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `historialensamble`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `historialensamble`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `bom`
   ADD PRIMARY KEY (`id`);
