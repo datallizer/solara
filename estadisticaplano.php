@@ -92,30 +92,44 @@ require 'dbcon.php';
                         <canvas id="myChart"></canvas>
                     </div>
                     <div class="col-6 text-center mt-5">
-                        <?php
-                        $query = "SELECT 
-                                         motivoactividad,
-                                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                                       FROM historialoperadores 
-                                       WHERE idplano ='$registro_id'
-                                       AND motivoactividad = 'Inicio'";
+    <?php
+    // Consulta para obtener el tiempo total de "Inicio"
+    $query_inicio = "SELECT 
+                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio
+                     FROM historialoperadores 
+                     WHERE idplano ='$registro_id'
+                     AND motivoactividad = 'Inicio'";
+    
+    $query_run_inicio = mysqli_query($con, $query_inicio);
+    
+    // Consulta para obtener el tiempo total de "Fin de jornada laboral"
+    $query_fin = "SELECT 
+                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
+                 FROM historialoperadores 
+                 WHERE idplano ='$registro_id'
+                 AND motivoactividad = 'Fin de jornada laboral'";
+    
+    $query_run_fin = mysqli_query($con, $query_fin);
+    
+    // Verificar si se encontraron registros para ambas consultas
+    if (mysqli_num_rows($query_run_inicio) > 0 && mysqli_num_rows($query_run_fin) > 0) {
+        $registro_inicio = mysqli_fetch_assoc($query_run_inicio);
+        $registro_fin = mysqli_fetch_assoc($query_run_fin);
+        
+        // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
+        $tiempo_maquinado = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+        ?>
 
-                        $query_run = mysqli_query($con, $query);
+        <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
+        <p style="font-size: 80px;"><?= $tiempo_maquinado; ?></p>
 
-                        if (mysqli_num_rows($query_run) > 0) {
-                            foreach ($query_run as $registro) {
-                        ?>
+    <?php
+    } else {
+        echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
+    }
+    ?>
+</div>
 
-                                <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
-                                <p style="font-size: 80px;"><?= $registro['tiempo_total']; ?></p>
-
-                        <?php
-                            }
-                        } else {
-                            echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
-                        }
-                        ?>
-                    </div>
                 </div>
             </div>
         </div>
