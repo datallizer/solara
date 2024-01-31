@@ -325,27 +325,29 @@ if (isset($_SESSION['codigo'])) {
                                 <?php
                                     }
                                 } else {
-                                    echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td>";
+                                    echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
                                 }
                                 ?>
                             </tbody>
                         </table>
                     </div>
                     <div class="col-6 mt-3">
-                    <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                        <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                             <thead>
                                 <tr>
+                                    <th style="background-color: #2c5b87;color:#fff;width: 10px;">ID</th>
                                     <th style="background-color: #2c5b87;color:#fff;">PLANOS</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                $query = "SELECT * FROM plano";
+                                $query = "SELECT * FROM plano WHERE estatusplano <> 1 ORDER BY id DESC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
                                 ?>
                                         <tr>
+                                            <td><?= $registro['id']; ?></td>
                                             <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaplano.php?id=<?= $registro['id']; ?>">
                                                     <div class="row">
@@ -358,27 +360,29 @@ if (isset($_SESSION['codigo'])) {
                                 <?php
                                     }
                                 } else {
-                                    echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td>";
+                                    echo "<td colspan='2'><p>No se encontro ningun registro</p></td>";
                                 }
                                 ?>
                             </tbody>
                         </table>
                     </div>
                     <div class="col-6 mt-3">
-                    <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                        <table id="miTablaTres" class="table table-bordered table-striped" style="width: 100%;">
                             <thead>
                                 <tr>
+                                    <th style="background-color: #2c5b87;color:#fff;width: 10px;">ID</th>
                                     <th style="background-color: #2c5b87;color:#fff;">ENSAMBLES</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                $query = "SELECT * FROM diagrama";
+                                $query = "SELECT * FROM diagrama WHERE estatusplano <> 1 ORDER BY id DESC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
                                 ?>
                                         <tr>
+                                        <td><?= $registro['id']; ?></td>
                                             <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaensamble.php?id=<?= $registro['id']; ?>">
                                                     <div class="row">
@@ -391,7 +395,7 @@ if (isset($_SESSION['codigo'])) {
                                 <?php
                                     }
                                 } else {
-                                    echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td>";
+                                    echo "<td colspan='2'><p>No se encontro ningun registro</p></td>";
                                 }
                                 ?>
                             </tbody>
@@ -409,7 +413,7 @@ if (isset($_SESSION['codigo'])) {
 
     <script>
         $(document).ready(function() {
-            $('#miTabla').DataTable({
+            $('#miTabla, #miTablaDos, #miTablaTres').DataTable({
                 "order": [
                     [0, "desc"]
                 ],

@@ -48,12 +48,12 @@ require 'dbcon.php';
                                     <thead>
                                         <tr>
                                             <th>Motivo/Actividad</th>
-                                            <th>Tiempo total (minutos)</th>
+                                            <th>Tiempo en paro (minutos)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                         $query = "SELECT 
+                                        $query = "SELECT 
                                          motivoactividad,
                                          SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                                        FROM historialensamble 
@@ -62,54 +62,60 @@ require 'dbcon.php';
                                        GROUP BY motivoactividad";
 
                                         $query_run = mysqli_query($con, $query);
+                                        $total_paro = 0;
 
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
-                                                ?>
+                                        ?>
                                                 <tr>
                                                     <td><?= $registro['motivoactividad']; ?></td>
                                                     <td><?= $registro['tiempo_total']; ?></td>
                                                 </tr>
-                                            <?php
+                                        <?php
                                             }
                                         } else {
                                             echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
                                         }
+                                        $total_paro += $registro['tiempo_total'];
                                         ?>
+                                        <tr style="background-color: #c9c9c9;">
+                                            <td><b class="float-end small">Tiempo de paro total:</b></td>
+                                            <td id="paro"><?= $total_paro; ?></td>
+                                        </tr>
                                     </tbody>
                                 </table>
 
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 mt-5">
-        <canvas id="myChart"></canvas>
-    </div>
-    <div class="col-6 text-center mt-5">
-    <?php
-                                         $query = "SELECT 
+                    <div class="col-4 mt-5">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    <div class="col-6 text-center mt-5">
+                        <?php
+                        $query = "SELECT 
                                          motivoactividad,
                                          SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                                        FROM historialensamble 
                                        WHERE idplano ='$registro_id'
                                        AND motivoactividad = 'Inicio'";
 
-                                        $query_run = mysqli_query($con, $query);
+                        $query_run = mysqli_query($con, $query);
 
-                                        if (mysqli_num_rows($query_run) > 0) {
-                                            foreach ($query_run as $registro) {
-                                                ?>
-                                               
-                                                    <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
-                                                    <p style="font-size: 80px;"><?= $registro['tiempo_total']; ?></p>
-                                                
-                                            <?php
-                                            }
-                                        } else {
-                                            echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
-                                        }
-                                        ?>
-    </div>
+                        if (mysqli_num_rows($query_run) > 0) {
+                            foreach ($query_run as $registro) {
+                        ?>
+
+                                <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
+                                <p style="font-size: 80px;"><?= $registro['tiempo_total']; ?></p>
+
+                        <?php
+                            }
+                        } else {
+                            echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
+                        }
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,74 +124,74 @@ require 'dbcon.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    // Obtener los datos para el gráfico
-    var motivos = [];
-    var tiempos = [];
-    <?php
-     $query = "SELECT 
+        // Obtener los datos para el gráfico
+        var motivos = [];
+        var tiempos = [];
+        <?php
+        $query = "SELECT 
      motivoactividad,
      SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
    FROM historialensamble 
    WHERE idplano ='$registro_id'
    AND motivoactividad <> 'Inicio'
    GROUP BY motivoactividad";
-    $query_run = mysqli_query($con, $query);
-    if (mysqli_num_rows($query_run) > 0) {
-        foreach ($query_run as $registro) {
-            ?>
-            motivos.push("<?php echo $registro['motivoactividad']; ?>");
-            tiempos.push(<?php echo $registro['tiempo_total']; ?>);
+        $query_run = mysqli_query($con, $query);
+        if (mysqli_num_rows($query_run) > 0) {
+            foreach ($query_run as $registro) {
+        ?>
+                motivos.push("<?php echo $registro['motivoactividad']; ?>");
+                tiempos.push(<?php echo $registro['tiempo_total']; ?>);
         <?php
-        }
-    }
-    ?>
-
-    // Calcular el tiempo total
-    var tiempoTotal = tiempos.reduce((total, tiempo) => total + tiempo, 0);
-
-    // Calcular el porcentaje de tiempo para cada motivo de actividad
-    var porcentajes = tiempos.map(tiempo => tiempo / tiempoTotal * 100);
-
-    // Crear el gráfico
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: motivos,
-            datasets: [{
-                data: porcentajes,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.7)',
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(255, 206, 86, 0.7)',
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(153, 102, 255, 0.7)',
-                    'rgba(255, 159, 64, 0.7)',
-                    'rgba(255, 99, 132, 0.7)',
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(255, 206, 86, 0.7)',
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(153, 102, 255, 0.7)',
-                    'rgba(255, 159, 64, 0.7)'
-                    // Puedes agregar más colores si tienes más motivos de actividad
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                },
-                title: {
-                    display: true,
-                    text: 'Distribución del tiempo por motivo de actividad'
-                }
             }
         }
-    });
-</script>
+        ?>
+
+        // Calcular el tiempo total
+        var tiempoTotal = tiempos.reduce((total, tiempo) => total + tiempo, 0);
+
+        // Calcular el porcentaje de tiempo para cada motivo de actividad
+        var porcentajes = tiempos.map(tiempo => tiempo / tiempoTotal * 100);
+
+        // Crear el gráfico
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: motivos,
+                datasets: [{
+                    data: porcentajes,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)'
+                        // Puedes agregar más colores si tienes más motivos de actividad
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribución del tiempo por motivo de actividad'
+                    }
+                }
+            }
+        });
+    </script>
 
 
 </body>
