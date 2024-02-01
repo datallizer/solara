@@ -125,7 +125,8 @@ if (isset($_SESSION['codigo'])) {
             $('#miTabla').DataTable({
                 "order": [
                     [0, "asc"]
-                ]
+                ],
+                "pageLength": 100
             });
 
             // Obtener todas las filas de la tabla y procesar cada una

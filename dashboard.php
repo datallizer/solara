@@ -44,6 +44,53 @@ if (isset($_SESSION['codigo'])) {
     header('Location: login.php');
     exit(); // Finalizar el script después de la redirección
 }
+
+// use PHPMailer\PHPMailer\PHPMailer;
+// use PHPMailer\PHPMailer\Exception;
+
+// require 'PHPMailer/src/PHPMailer.php';
+// require 'PHPMailer/src/Exception.php';
+// require 'PHPMailer/src/SMTP.php';
+
+// $mail = new PHPMailer();
+// $mail->SMTPDebug = 2;
+// $query = "SELECT * FROM inventario WHERE tipo = 'Consumible'";
+// $query_run = mysqli_query($con, $query);
+
+// while ($registro = mysqli_fetch_assoc($query_run)) {
+//     // Obtener los valores de cantidad, máximo y mínimo
+//     $cantidad = $registro['cantidad'];
+//     $minimo = $registro['minimo'];
+//     $maximo = $registro['maximo'];
+
+//     // Evaluar si la cantidad es menor o igual al mínimo y reorden es igual a "1"
+//     if ($cantidad <= $minimo && $registro['reorden'] == 1) {
+//         // Enviar correo electrónico
+        
+//         $mail->isSMTP();
+//         $mail->Host = 'mail.solara-industries.com';
+//         $mail->SMTPAuth = true;
+//         $mail->Username = 'solara.ai@solara-industries.com';
+//         $mail->Password = 'tD0c#480s';
+//         $mail->SMTPSecure = 'tls';
+//         $mail->Port = 587;
+
+//         $mail->setFrom('solara.ai@solara-industries.com', 'Solara IA');
+//         $mail->addAddress('davidaguilar@datallizer.com');
+//         $mail->Subject = 'Material en inventario por debajo del mínimo';
+//         $mail->Body = 'La cantidad de ' . ($maximo - $cantidad) . ' unidades de ' . $registro['nombre'] . ' está por debajo del mínimo en el inventario.';
+
+//         if ($mail->send()) {
+//             $_SESSION['message'] = "Reorden exitosamente";
+//             mysqli_query($con, "UPDATE inventario SET reorden = 0 WHERE id = " . $registro['id']);
+//         } else {
+//             $_SESSION['message'] = "Error al solicitar reorden";
+//         }
+//     } elseif ($cantidad > $minimo && $registro['reorden'] == 0) {
+//         // Actualizar reorden a "1"
+//         mysqli_query($con, "UPDATE inventario SET reorden = 1 WHERE id = " . $registro['id']);
+//     }
+// }
 ?>
 <!DOCTYPE html>
 <html lang="en">

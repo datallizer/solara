@@ -29,17 +29,21 @@ require 'dbcon.php';
                                 <h4 style="text-transform: uppercase;">ESTADÍSTICA ENSAMBLE
                                     <?php
                                     $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                    $query = "SELECT nombreplano FROM diagrama WHERE id ='$registro_id'";
+                                    $query = "SELECT * FROM diagrama WHERE id ='$registro_id'";
                                     $query_run = mysqli_query($con, $query);
                                     if (mysqli_num_rows($query_run) > 0) {
                                         $registro = mysqli_fetch_assoc($query_run);
                                         echo $registro['nombreplano'];
+                                        $siguiente_id = $registro['id'] + 1;
+                                        $anterior_id = $registro['id'] - 1; // Obtener el siguiente registro id
+                                        echo '<a href="estadisticaplano.php?id=' . $siguiente_id . '" class="btn btn-primary btn-sm float-end m-1">Siguiente</a>';
+                                        echo '<a href="estadisticaplano.php?id=' . $anterior_id . '" class="btn btn-secondary btn-sm float-end m-1">Anterior</a>';
                                     } else {
                                         echo "Nombre del Plano"; // Si no se encuentra un nombre de plano, muestra un texto predeterminado
                                     }
                                     ?>
-                                    <a href="estadisticas.php" class="btn btn-danger btn-sm float-end">
-                                        Regresar
+                                    <a href="estadisticas.php" class="btn btn-danger btn-sm float-end m-1">
+                                        Inicio
                                     </a>
                                 </h4>
                             </div>
@@ -72,11 +76,11 @@ require 'dbcon.php';
                                                     <td><?= $registro['tiempo_total']; ?></td>
                                                 </tr>
                                         <?php
+                                        $total_paro += $registro['tiempo_total'];
                                             }
                                         } else {
                                             echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
                                         }
-                                        $total_paro += $registro['tiempo_total'];
                                         ?>
                                         <tr style="background-color: #c9c9c9;">
                                             <td><b class="float-end small">Tiempo de paro total:</b></td>
@@ -93,26 +97,39 @@ require 'dbcon.php';
                     </div>
                     <div class="col-6 text-center mt-5">
                         <?php
-                        $query = "SELECT 
-                                         motivoactividad,
-                                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                                       FROM historialensamble 
-                                       WHERE idplano ='$registro_id'
-                                       AND motivoactividad = 'Inicio'";
+                        // Consulta para obtener el tiempo total de "Inicio"
+                        $query_inicio = "SELECT 
+                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio
+                     FROM historialensamble 
+                     WHERE idplano ='$registro_id'
+                     AND motivoactividad = 'Inicio'";
 
-                        $query_run = mysqli_query($con, $query);
+                        $query_run_inicio = mysqli_query($con, $query_inicio);
 
-                        if (mysqli_num_rows($query_run) > 0) {
-                            foreach ($query_run as $registro) {
+                        // Consulta para obtener el tiempo total de "Fin de jornada laboral"
+                        $query_fin = "SELECT 
+                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
+                 FROM historialensamble 
+                 WHERE idplano ='$registro_id'
+                 AND motivoactividad = 'Fin de jornada laboral'";
+
+                        $query_run_fin = mysqli_query($con, $query_fin);
+
+                        // Verificar si se encontraron registros para ambas consultas
+                        if (mysqli_num_rows($query_run_inicio) > 0 && mysqli_num_rows($query_run_fin) > 0) {
+                            $registro_inicio = mysqli_fetch_assoc($query_run_inicio);
+                            $registro_fin = mysqli_fetch_assoc($query_run_fin);
+
+                            // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
+                            $tiempo_maquinado = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
                         ?>
 
-                                <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
-                                <p style="font-size: 80px;"><?= $registro['tiempo_total']; ?></p>
+                            <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
+                            <p style="font-size: 80px;"><?= $tiempo_maquinado - $total_paro; ?></p>
 
                         <?php
-                            }
                         } else {
-                            echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
+                            echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
                         }
                         ?>
                     </div>

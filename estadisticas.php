@@ -69,10 +69,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-12">
                         <h2 class="mb-3">ESTADÍSTICAS</h2>
                     </div>
-                    <div class="col-3 p-3 cardstats m-1">
+                    <div class="col-2 p-3 cardstats m-1">
                         <div class="row">
-                            <div class="col-10">
-                                <h3>PROYECTOS ACTIVOS</h3>
+                            <div class="col-9">
+                                <h3>PROYECTOS<br>ACTIVOS</h3>
                             </div>
                             <div class="col-1"><i class="bi bi-briefcase-fill"></i></div>
                             <div class="col-12 text-center">
@@ -98,15 +98,15 @@ if (isset($_SESSION['codigo'])) {
                     </div>
                     <div class="col p-3 cardstats m-1">
                         <div class="row">
-                            <div class="col-10">
-                                <h3>USUARIOS</h3>
+                            <div class="col-9">
+                                <h3>PLANOS<br>ACTIVOS</h3>
                             </div>
-                            <div class="col-1"><i class="bi bi-person-fill"></i></div>
+                            <div class="col-1"><i class="bi bi-easel-fill"></i></div>
                             <div class="col-12 text-center">
                                 <p>
                                     <?php
                                     // Consulta para obtener el número total de proyectos con estatus 1
-                                    $query = "SELECT COUNT(*) as total_proyectos FROM usuarios";
+                                    $query = "SELECT COUNT(*) as total_proyectos FROM plano WHERE estatusplano <> 0";
                                     $result = mysqli_query($con, $query);
 
                                     if ($result->num_rows >= 0) {
@@ -123,10 +123,37 @@ if (isset($_SESSION['codigo'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-3 p-3 cardstats m-1">
+                    <div class="col p-3 cardstats m-1">
                         <div class="row">
-                            <div class="col-10">
-                                <h3>QUOTES A REVISAR</h3>
+                            <div class="col-9">
+                                <h3>ENSAMBLES<br>ACTIVOS</h3>
+                            </div>
+                            <div class="col-1"><i class="bi bi-gear-wide-connected"></i></div>
+                            <div class="col-12 text-center">
+                                <p>
+                                    <?php
+                                    // Consulta para obtener el número total de proyectos con estatus 1
+                                    $query = "SELECT COUNT(*) as total_proyectos FROM diagrama WHERE estatusplano <> 0";
+                                    $result = mysqli_query($con, $query);
+
+                                    if ($result->num_rows >= 0) {
+                                        // Obtener el resultado de la consulta
+                                        $row = $result->fetch_assoc();
+
+                                        // Mostrar el resultado en un párrafo
+                                        echo $row["total_proyectos"];
+                                    } else {
+                                        echo "Error";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 p-3 cardstats m-1">
+                        <div class="row">
+                            <div class="col-9">
+                                <h3>QUOTES A<br>REVISAR</h3>
                             </div>
                             <div class="col-1"><i class="bi bi-clipboard-check-fill"></i></div>
                             <div class="col-12 text-center">
@@ -153,7 +180,7 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-3 p-3 cardstats m-1">
                         <div class="row">
                             <div class="col-10">
-                                <h3>COMPRAS PENDIENTES</h3>
+                                <h3>COMPRAS<br>PENDIENTES</h3>
                             </div>
                             <div class="col-1"><i class="bi bi-cart-check-fill"></i></div>
                             <div class="col-12 text-center">
@@ -336,23 +363,61 @@ if (isset($_SESSION['codigo'])) {
                             <thead>
                                 <tr>
                                     <th style="background-color: #2c5b87;color:#fff;width: 10px;">ID</th>
-                                    <th style="background-color: #2c5b87;color:#fff;">PLANOS</th>
+                                    <th style="background-color: #2c5b87;color:#fff;">TIEMPO</th>
+                                    <th style="background-color: #2c5b87;color:#fff;">PLANOS/ACTIVIDAD</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
+
                                 $query = "SELECT * FROM plano WHERE estatusplano <> 1 ORDER BY id DESC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
+                                        $registro_id = $registro['id'];
                                 ?>
                                         <tr>
                                             <td><?= $registro['id']; ?></td>
                                             <td>
+                                                <?php
+                                                // Consulta para obtener el tiempo total de "Inicio"
+                                                $query_inicio = "SELECT 
+                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio FROM historialoperadores WHERE idplano ='$registro_id' AND motivoactividad = 'Inicio'";
+
+                                                $query_run_inicio = mysqli_query($con, $query_inicio);
+
+                                                // Consulta para obtener el tiempo total de "Fin de jornada laboral"
+                                                $query_fin = "SELECT 
+                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
+                 FROM historialoperadores 
+                 WHERE idplano ='$registro_id'
+                 AND motivoactividad = 'Fin de jornada laboral'";
+
+                                                $query_run_fin = mysqli_query($con, $query_fin);
+
+                                                // Verificar si se encontraron registros para ambas consultas
+                                                if (mysqli_num_rows($query_run_inicio) > 0 && mysqli_num_rows($query_run_fin) > 0) {
+                                                    $registro_inicio = mysqli_fetch_assoc($query_run_inicio);
+                                                    $registro_fin = mysqli_fetch_assoc($query_run_fin);
+
+                                                    // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
+                                                    $tiempo_maquinado = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+                                                ?>
+
+
+                                                    <p><?= $tiempo_maquinado; ?> min</p>
+
+                                                <?php
+                                                } else {
+                                                    echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
+                                                }
+                                                ?>
+                                            </td>
+                                            <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaplano.php?id=<?= $registro['id']; ?>">
                                                     <div class="row">
-                                                        <div class="col-8"><?= $registro['nombreplano']; ?></div>
-                                                        <div class="col-4"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
+                                                        <div class="col"><?= $registro['nombreplano']; ?></div>
+                                                        <div class="col"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
                                                     </div>
                                                 </a>
                                             </td>
@@ -371,23 +436,60 @@ if (isset($_SESSION['codigo'])) {
                             <thead>
                                 <tr>
                                     <th style="background-color: #2c5b87;color:#fff;width: 10px;">ID</th>
-                                    <th style="background-color: #2c5b87;color:#fff;">ENSAMBLES</th>
+                                    <th style="background-color: #2c5b87;color:#fff;">TIEMPO</th>
+                                    <th style="background-color: #2c5b87;color:#fff;">DIAGRAMA/ACTIVIDAD</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
+
                                 $query = "SELECT * FROM diagrama WHERE estatusplano <> 1 ORDER BY id DESC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
+                                        $registro_id = $registro['id'];
                                 ?>
                                         <tr>
-                                        <td><?= $registro['id']; ?></td>
+                                            <td><?= $registro['id']; ?></td>
+                                            <td>
+                                                <?php
+                                                // Consulta para obtener el tiempo total de "Inicio"
+                                                $query_inicio = "SELECT 
+                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio FROM historialensamble WHERE idplano ='$registro_id' AND motivoactividad = 'Inicio'";
+
+                                                $query_run_inicio = mysqli_query($con, $query_inicio);
+
+                                                // Consulta para obtener el tiempo total de "Fin de jornada laboral"
+                                                $query_fin = "SELECT 
+                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
+                                                FROM historialensamble WHERE idplano ='$registro_id'
+                                                AND motivoactividad = 'Fin de jornada laboral'";
+
+                                                $query_run_fin = mysqli_query($con, $query_fin);
+
+                                                // Verificar si se encontraron registros para ambas consultas
+                                                if (mysqli_num_rows($query_run_inicio) > 0 && mysqli_num_rows($query_run_fin) > 0) {
+                                                    $registro_inicio = mysqli_fetch_assoc($query_run_inicio);
+                                                    $registro_fin = mysqli_fetch_assoc($query_run_fin);
+
+                                                    // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
+                                                    $tiempo_maquinado = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+                                                ?>
+
+
+                                                    <p><?= $tiempo_maquinado; ?> min</p>
+
+                                                <?php
+                                                } else {
+                                                    echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
+                                                }
+                                                ?>
+                                            </td>
                                             <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaensamble.php?id=<?= $registro['id']; ?>">
                                                     <div class="row">
-                                                        <div class="col-8"><?= $registro['nombreplano']; ?></div>
-                                                        <div class="col-4"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
+                                                        <div class="col"><?= $registro['nombreplano']; ?></div>
+                                                        <div class="col"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
                                                     </div>
                                                 </a>
                                             </td>
@@ -400,6 +502,64 @@ if (isset($_SESSION['codigo'])) {
                                 ?>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <div class="row justify-content-evenly align-items-top bg-dark p-4" id="operadores">
+                            <?php
+
+                            $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 4 ORDER BY id DESC";
+                            $query_run = mysqli_query($con, $query);
+                            if (mysqli_num_rows($query_run) > 0) {
+                                foreach ($query_run as $registro) {
+                                    $registro_id = $registro['id'];
+                            ?>
+                                    <div class="col">
+                                        <div class="card" style="width: 100%;">
+                                            <img class="card-img-top" style="width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
+                                                <p class="card-text"><td>
+                                                        <?php
+                                                        if ($registro['rol'] === '1') {
+                                                            echo "Administrador";
+                                                        } else if ($registro['rol'] === '2') {
+                                                            echo "Gerencia";
+                                                        }  else if ($registro['rol'] === '4') {
+                                                            echo "Técnico controles";
+                                                        } else if ($registro['rol'] === '5') {
+                                                            echo "Ing. Diseño";
+                                                        } else if ($registro['rol'] === '6') {
+                                                            echo "Compras";
+                                                        } else if ($registro['rol'] === '7') {
+                                                            echo "Almacenista";
+                                                        } else if ($registro['rol'] === '8') {
+                                                            echo "Técnico mecanico";
+                                                        } else if ($registro['rol'] === '9') {
+                                                            echo "Ing. Control";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
+                                                    </td></p>
+                                                    <?php
+                                                        if ($registro['rol'] === '4') {
+                                                            ?><a href="estadisticacontrol.php?id=<?= $registro['id']; ?>" class="btn btn-secondary">Ver analítica</a><?php
+                                                        } else if ($registro['rol'] === '8') {
+                                                            ?><a href="estadisticaoperadores.php?id=<?= $registro['id']; ?>" class="btn btn-dark">Ver analítica</a><?php
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                            <?php
+                                }
+                            } else {
+                                echo "Error";
+                            }
+                            ?>
+                        </div>
                     </div>
                 </div>
             </div>
