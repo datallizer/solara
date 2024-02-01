@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 require 'dbcon.php';
 $message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
@@ -23,7 +24,7 @@ if (!empty($message)) {
     unset($_SESSION['message']); // Limpiar el mensaje de la sesión
 }
 
-// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
+//Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
 if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
@@ -45,53 +46,77 @@ if (isset($_SESSION['codigo'])) {
     exit(); // Finalizar el script después de la redirección
 }
 
-// use PHPMailer\PHPMailer\PHPMailer;
-// use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-// require 'PHPMailer/src/PHPMailer.php';
-// require 'PHPMailer/src/Exception.php';
-// require 'PHPMailer/src/SMTP.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+require 'PHPMailer/src/Exception.php';
 
-// $mail = new PHPMailer();
-// $mail->SMTPDebug = 2;
-// $query = "SELECT * FROM inventario WHERE tipo = 'Consumible'";
-// $query_run = mysqli_query($con, $query);
+// Configuracion SMTP
+$host = 'smtp.gmail.com';
+$port = 587;
+$username = 'solarasystemai@gmail.com';
+$password = 'owwd pbtr bpfh brff';
+$security = 'tls';
 
-// while ($registro = mysqli_fetch_assoc($query_run)) {
-//     // Obtener los valores de cantidad, máximo y mínimo
-//     $cantidad = $registro['cantidad'];
-//     $minimo = $registro['minimo'];
-//     $maximo = $registro['maximo'];
+$query = "SELECT * FROM inventario WHERE tipo = 'Consumible'";
+$query_run = mysqli_query($con, $query);
 
-//     // Evaluar si la cantidad es menor o igual al mínimo y reorden es igual a "1"
-//     if ($cantidad <= $minimo && $registro['reorden'] == 1) {
-//         // Enviar correo electrónico
-        
-//         $mail->isSMTP();
-//         $mail->Host = 'mail.solara-industries.com';
-//         $mail->SMTPAuth = true;
-//         $mail->Username = 'solara.ai@solara-industries.com';
-//         $mail->Password = 'tD0c#480s';
-//         $mail->SMTPSecure = 'tls';
-//         $mail->Port = 587;
+while ($registro = mysqli_fetch_assoc($query_run)) {
+    // Obtener valores
+    $cantidad = $registro['cantidad'];
+    $minimo = $registro['minimo'];
+    $maximo = $registro['maximo'];
 
-//         $mail->setFrom('solara.ai@solara-industries.com', 'Solara IA');
-//         $mail->addAddress('davidaguilar@datallizer.com');
-//         $mail->Subject = 'Material en inventario por debajo del mínimo';
-//         $mail->Body = 'La cantidad de ' . ($maximo - $cantidad) . ' unidades de ' . $registro['nombre'] . ' está por debajo del mínimo en el inventario.';
+    // Evaluar si la cantidad es menor o igual al mínimo y reorden es igual a "1"
+    if ($cantidad <= $minimo && $registro['reorden'] == 1) {
 
-//         if ($mail->send()) {
-//             $_SESSION['message'] = "Reorden exitosamente";
-//             mysqli_query($con, "UPDATE inventario SET reorden = 0 WHERE id = " . $registro['id']);
-//         } else {
-//             $_SESSION['message'] = "Error al solicitar reorden";
-//         }
-//     } elseif ($cantidad > $minimo && $registro['reorden'] == 0) {
-//         // Actualizar reorden a "1"
-//         mysqli_query($con, "UPDATE inventario SET reorden = 1 WHERE id = " . $registro['id']);
-//     }
-// }
+        // Crear instancia PHPMailer
+        $mail = new PHPMailer(true);
+
+
+        // Configurar SMTP
+        $mail->isSMTP();
+        $mail->Host = $host;
+        $mail->Port = $port;
+        $mail->SMTPAuth = true;
+        $mail->Username = $username;
+        $mail->Password = $password;
+        $mail->SMTPSecure = $security;
+        $mail->SMTPDebug = 2; // Enable detailed logging
+
+
+
+        // Configurar correo
+        $mail->setFrom('solarasystemai@gmail.com', 'SOLARA AI');
+        $mail->addAddress('storage@solara-industries.com');
+        $mail->Subject = 'Alerta: Stock de ' . $registro['nombre'] . ' bajo en inventario';
+
+        // Cuerpo del mensaje
+        $body = '
+            El producto ' . $registro['nombre'] . ' tiene un stock bajo.
+            Cantidad actual: ' . $cantidad . '
+            Minimo recomendado: ' . $minimo . '
+            Maximo recomendado: ' . $maximo . '
+            ';
+        $mail->Body = $body;
+
+        // Enviar correo
+        if ($mail->send()) {
+
+            mysqli_query($con, "UPDATE inventario SET reorden = 0 WHERE id = " . $registro['id']);
+        } else {
+            $_SESSION['message'] = "Error al solicitar reorden";
+        }
+    } elseif ($cantidad > $minimo && $registro['reorden'] == 0) {
+        mysqli_query($con, "UPDATE inventario SET reorden = 1 WHERE id = " . $registro['id']);
+    }
+}
+
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 

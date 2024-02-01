@@ -513,11 +513,11 @@ if (isset($_SESSION['codigo'])) {
                                 foreach ($query_run as $registro) {
                                     $registro_id = $registro['id'];
                             ?>
-                                    <div class="col">
+                                    <div class="col-4 mt-3">
                                         <div class="card" style="width: 100%;">
-                                            <img class="card-img-top" style="width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                            <img class="card-img-top" style="object-fit:cover;height:250px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                                             <div class="card-body">
-                                                <h5 class="card-title"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
+                                                <h5 class="card-title" style="min-height:50px;"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
                                                 <p class="card-text"><td>
                                                         <?php
                                                         if ($registro['rol'] === '1') {
