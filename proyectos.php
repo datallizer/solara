@@ -74,12 +74,12 @@ if (isset($_SESSION['codigo'])) {
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         Nuevo proyecto
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
+                                        Asignar encargado
                                         </button>';
                                     }
                                     ?>
-                                    <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
-                                        Asignar encargado
-                                    </button>
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
@@ -100,17 +100,37 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM proyecto ORDER BY prioridad ASC";
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9])) {
+                                            $query = "SELECT proyecto.*
+                                                FROM proyecto 
+                                                JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
+                                                JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
+                                                WHERE encargadoproyecto.codigooperador = $codigo 
+                                                AND proyecto.estatus = 1
+                                                ORDER BY proyecto.prioridad ASC";
+                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                            $query = "SELECT * FROM proyecto ORDER BY prioridad ASC";
+                                        }
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
-                                                    <td><p class="text-center"><?= $registro['id']; ?></p></td>
-                                                    <td><p class="text-center"><?= $registro['nombre']; ?></p></td>
-                                                    <td><p class="text-center"><?= $registro['cliente']; ?></p></td>
+                                                    <td>
+                                                        <p class="text-center"><?= $registro['id']; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-center"><?= $registro['nombre']; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-center"><?= $registro['cliente']; ?></p>
+                                                    </td>
                                                     <td style="min-width: 250px;">
-                                                        <p><b>Presupuesto: </b>$<?= $registro['presupuesto']; ?></p>
+                                                        <?php
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                            echo '<p><b>Presupuesto: </b>$' . $registro['presupuesto'] . '</p>';
+                                                        }
+                                                        ?>
                                                         <p><b>Fecha de inicio:</b> <?= $registro['fechainicio']; ?></p>
                                                         <p><b>Fecha finalización:</b> <?= $registro['fechafin']; ?></p>
                                                     </td>
