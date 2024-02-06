@@ -55,6 +55,8 @@ if (isset($_SESSION['codigo'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" href="css/slickslider.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <title>Estadísticas | Solara</title>
@@ -503,8 +505,7 @@ if (isset($_SESSION['codigo'])) {
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-12 mt-3">
-                        <div class="row justify-content-evenly align-items-top bg-dark p-4" id="operadores">
+                    <div class="col-12 mt-3 slickcard bg-dark" id="operadores">
                             <?php
 
                             $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 4 ORDER BY id DESC";
@@ -513,34 +514,22 @@ if (isset($_SESSION['codigo'])) {
                                 foreach ($query_run as $registro) {
                                     $registro_id = $registro['id'];
                             ?>
-                                    <div class="col-4 mt-3">
+                                    <div class="slickc">
                                         <div class="card" style="width: 100%;">
-                                            <img class="card-img-top" style="object-fit:cover;height:250px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                            <img class="card-img-top" style="object-fit:cover;height:350px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                                             <div class="card-body">
-                                                <h5 class="card-title" style="min-height:50px;"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
-                                                <p class="card-text"><td>
+                                                <h5 class="card-title"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
+                                                <p style="color: #000;" class="card-text">
                                                         <?php
-                                                        if ($registro['rol'] === '1') {
-                                                            echo "Administrador";
-                                                        } else if ($registro['rol'] === '2') {
-                                                            echo "Gerencia";
-                                                        }  else if ($registro['rol'] === '4') {
+                                                        if ($registro['rol'] === '4') {
                                                             echo "Técnico controles";
-                                                        } else if ($registro['rol'] === '5') {
-                                                            echo "Ing. Diseño";
-                                                        } else if ($registro['rol'] === '6') {
-                                                            echo "Compras";
-                                                        } else if ($registro['rol'] === '7') {
-                                                            echo "Almacenista";
                                                         } else if ($registro['rol'] === '8') {
                                                             echo "Técnico mecanico";
-                                                        } else if ($registro['rol'] === '9') {
-                                                            echo "Ing. Control";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
                                                         ?>
-                                                    </td></p>
+                                                    </p>
                                                     <?php
                                                         if ($registro['rol'] === '4') {
                                                             ?><a href="estadisticacontrol.php?id=<?= $registro['id']; ?>" class="btn btn-secondary">Ver analítica</a><?php
@@ -559,7 +548,6 @@ if (isset($_SESSION['codigo'])) {
                                 echo "Error";
                             }
                             ?>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -570,7 +558,8 @@ if (isset($_SESSION['codigo'])) {
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script src="js/slickslider.js"></script>
     <script>
         $(document).ready(function() {
             $('#miTabla, #miTablaDos, #miTablaTres').DataTable({
