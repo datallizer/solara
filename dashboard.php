@@ -91,14 +91,22 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
         // Configurar correo
         $mail->setFrom('solarasystemai@gmail.com', 'SOLARA AI');
         $mail->addAddress('storage@solara-industries.com');
-        $mail->Subject = 'Alerta: Stock de ' . $registro['nombre'] . ' bajo en inventario';
+        $mail->Subject = 'Reorden: Inventario de ' . $registro['id'] . ' ' . $registro['nombre'] . ' bajo en stock';
 
         // Cuerpo del mensaje
         $body = '
-            El producto ' . $registro['nombre'] . ' tiene un stock bajo.
+            El producto' . $registro['id'] . ' ' . $registro['nombre'] . ' tiene un stock bajo.
             Cantidad actual: ' . $cantidad . '
             Minimo recomendado: ' . $minimo . '
             Maximo recomendado: ' . $maximo . '
+
+            Detalles
+            Proveedor: ' . $registro['proveedor'] . '
+            Parte: ' . $registro['parte'] . ' 
+            Marca: ' . $registro['marca'] . ' 
+            Condición: ' . $registro['condicion'] . '
+            Costo: ' . $registro['costo'] . ' 
+    
             ';
         $mail->Body = $body;
 
