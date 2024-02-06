@@ -77,6 +77,7 @@ if (isset($_SESSION['codigo'])) {
                                         <tr>
                                             <th>#</th>
                                             <th>Material</th>
+                                            <th>Parte</th>
                                             <th>Cantidad actual</th>
                                             <th>Maximo</th>
                                             <th>Minimo</th>
@@ -93,6 +94,7 @@ if (isset($_SESSION['codigo'])) {
                                                 <tr>
                                                     <td><?= $registro['id']; ?></td>
                                                     <td><?= $registro['nombre']; ?></td>
+                                                    <td><?= $registro['parte']; ?></td>
                                                     <td><p><?= $registro['cantidad']; ?></p></td>
                                                     <td><p><?= $registro['maximo']; ?></p></td>
                                                     <td><p><?= $registro['minimo']; ?></p></td>
@@ -131,19 +133,19 @@ if (isset($_SESSION['codigo'])) {
 
             // Obtener todas las filas de la tabla y procesar cada una
             $('#miTabla tbody tr').each(function() {
-                var cantidad = parseInt($(this).find('td:eq(2)').text()); // Obtener el valor de cantidad (columna 3)
+                var cantidad = parseInt($(this).find('td:eq(3)').text()); // Obtener el valor de cantidad (columna 3)
 
                 // Obtener los valores de máximo y mínimo de la misma fila
-                var minimo = parseInt($(this).find('td:eq(4)').text());
-                var maximo = parseInt($(this).find('td:eq(3)').text());
+                var minimo = parseInt($(this).find('td:eq(5)').text());
+                var maximo = parseInt($(this).find('td:eq(4)').text());
 
                 // Evaluar las condiciones y aplicar la clase correspondiente al <td> de cantidad
                 if (cantidad <= minimo) {
-                    $(this).find('td:eq(2)').addClass('menor-minimo');
+                    $(this).find('td:eq(3)').addClass('menor-minimo');
                 } else if (cantidad <= (maximo / 4)) {
-                    $(this).find('td:eq(2)').addClass('menor-cuarto');
+                    $(this).find('td:eq(3)').addClass('menor-cuarto');
                 } else {
-                    $(this).find('td:eq(2)').addClass('mayor-cuarto');
+                    $(this).find('td:eq(3)').addClass('mayor-cuarto');
                 }
             });
         });
