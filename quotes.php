@@ -89,7 +89,7 @@ if (isset($_SESSION['codigo'])) {
                                             FROM quotes 
                                             JOIN proyecto ON quotes.proyecto = proyecto.id
                                             WHERE estatusq = 1
-                                            ORDER BY quotes.id ASC";
+                                            ORDER BY id_quote ASC";
 
 
                                         $query_run = mysqli_query($con, $query);
@@ -152,7 +152,11 @@ if (isset($_SESSION['codigo'])) {
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
                                                             <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1 float-end deletebtn"><i class="bi bi-trash-fill"></i></button>
-                                                            <button type="submit" name="aprobar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1 float-end "><i class="bi bi-check-lg"> Aprobar</i></button>
+                                                            <?php
+                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])){
+                                                                echo '<button type="submit" name="aprobar" value="' . $registro['id_quote'] . '" class="btn btn-success btn-sm m-1 float-end"><i class="bi bi-check-lg"> Aprobar</i></button>';
+                                                            }
+                                                            ?>                                                          
                                                         </form>
                                                     </td>
                                                 </tr>

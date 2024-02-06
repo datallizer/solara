@@ -84,7 +84,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
         $mail->Username = $username;
         $mail->Password = $password;
         $mail->SMTPSecure = $security;
-        $mail->SMTPDebug = 2; // Enable detailed logging
+        //$mail->SMTPDebug = 2;
 
 
 

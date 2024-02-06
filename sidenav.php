@@ -100,9 +100,11 @@ require 'dbcon.php';
                                         <a class="nav-link" href="inventario.php">Inventario</a>
                                 ';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])){
+                                    echo'<a class="nav-link" href="reorden.php">Reorden</a>';
+                                }
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 6, 7, 9])) {
                                     echo '
-                                            <a class="nav-link" href="reorden.php">Reorden</a>
                                             <a class="nav-link" href="quotes.php">Quotes</a>
                                             <a class="nav-link" href="compras.php">Compras</a>
                                     
