@@ -72,45 +72,52 @@ require 'dbcon.php';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php
-                                        $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
-                                        $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : null;
-                                        $query_paro = "SELECT 
-                                                            motivoactividad,
-                                                            SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                                                        FROM historialoperadores 
-                                                        WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral'";
+    <?php
+    $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
+    $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : null;
+    $query_paro = "SELECT 
+                        motivoactividad,
+                        SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
+                    FROM historialoperadores 
+                    WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral'";
 
-                                        // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
-                                        if ($fecha_inicio && $fecha_fin) {
-                                            // Agregar condiciones de rango de fecha
-                                            $query_paro .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
-                                        }
+    // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
+    if ($fecha_inicio && $fecha_fin) {
+        // Agregar condiciones de rango de fecha
+        $query_paro .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
+    }
 
-                                        $query_paro .= " GROUP BY motivoactividad";
+    $query_paro .= " GROUP BY motivoactividad";
 
-                                        $query_run_paro = mysqli_query($con, $query_paro);
-                                        $total_paro = 0;
+    $query_run_paro = mysqli_query($con, $query_paro);
+    $total_paro = 0;
 
-                                        if (mysqli_num_rows($query_run_paro) > 0) {
-                                            foreach ($query_run_paro as $registro) {
-                                        ?>
-                                                <tr>
-                                                    <td><?= $registro['motivoactividad']; ?></td>
-                                                    <td><?= $registro['tiempo_total']; ?></td>
-                                                </tr>
-                                        <?php
-                                                $total_paro += $registro['tiempo_total'];
-                                            }
-                                        } else {
-                                            echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
-                                        }
-                                        ?>
-                                        <tr style="background-color: #c9c9c9;">
-                                            <td><b class="float-end small">Tiempo de paro total:</b></td>
-                                            <td id="paro"><?= $total_paro; ?></td>
-                                        </tr>
-                                    </tbody>
+    if (mysqli_num_rows($query_run_paro) > 0) {
+        foreach ($query_run_paro as $registro) {
+            // Convertir minutos totales a horas y minutos
+            $horas = floor($registro['tiempo_total'] / 60);
+            $minutos = $registro['tiempo_total'] % 60;
+    ?>
+            <tr>
+                <td><?= $registro['motivoactividad']; ?></td>
+                <td><?= $horas . " h " . $minutos . " min"; ?></td>
+            </tr>
+    <?php
+            $total_paro += $registro['tiempo_total'];
+        }
+    } else {
+        echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
+    }
+    // Convertir el tiempo total de paro a horas y minutos
+    $total_horas = floor($total_paro / 60);
+    $total_minutos = $total_paro % 60;
+    ?>
+    <tr style="background-color: #c9c9c9;">
+        <td><b class="float-end small">Tiempo de paro total:</b></td>
+        <td id="paro"><?= $total_horas . " horas " . $total_minutos . " minutos"; ?></td>
+    </tr>
+</tbody>
+
                                 </table>
 
                             </div>
@@ -120,66 +127,71 @@ require 'dbcon.php';
                         <canvas id="myChart"></canvas>
                     </div>
                     <div class="col-6 text-center mt-5">
-                        <?php
-                        // Consulta para obtener el tiempo total de "Inicio"
-                        $query_maquinado = "SELECT 
-                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_maquinado
-                                            FROM historialoperadores 
-                                            WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio'";
+    <?php
+    // Consulta para obtener el tiempo total de "Inicio"
+    $query_maquinado = "SELECT 
+                            SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_maquinado
+                        FROM historialoperadores 
+                        WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio'";
 
-                        // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
-                        if ($fecha_inicio && $fecha_fin) {
-                            // Agregar condiciones de rango de fecha
-                            $query_maquinado .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
-                        }
+    // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
+    if ($fecha_inicio && $fecha_fin) {
+        // Agregar condiciones de rango de fecha
+        $query_maquinado .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
+    }
 
-                        $query_run_maquinado = mysqli_query($con, $query_maquinado);
-                        $tiempo_maquinado = 0;
+    $query_run_maquinado = mysqli_query($con, $query_maquinado);
+    $tiempo_maquinado = 0;
 
-                        // Verificar si se encontraron registros para la consulta de maquinado
-                        if (mysqli_num_rows($query_run_maquinado) > 0) {
-                            $registro_maquinado = mysqli_fetch_assoc($query_run_maquinado);
-                            $tiempo_maquinado = $registro_maquinado['tiempo_maquinado'];
+    // Verificar si se encontraron registros para la consulta de maquinado
+    if (mysqli_num_rows($query_run_maquinado) > 0) {
+        $registro_maquinado = mysqli_fetch_assoc($query_run_maquinado);
+        $tiempo_maquinado = $registro_maquinado['tiempo_maquinado'];
 
-                            // Consulta para obtener el tiempo total de paro
-                            $query_paro = "SELECT 
-                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                                            FROM historialoperadores 
-                                            WHERE idcodigo ='$codigouser'
-                                                AND motivoactividad <> 'Inicio' 
-                                                AND motivoactividad <> 'Fin de jornada laboral'";
+        // Consulta para obtener el tiempo total de paro
+        $query_paro = "SELECT 
+                            SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
+                        FROM historialoperadores 
+                        WHERE idcodigo ='$codigouser'
+                            AND motivoactividad <> 'Inicio' 
+                            AND motivoactividad <> 'Fin de jornada laboral'";
 
-                            // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
-                            if ($fecha_inicio && $fecha_fin) {
-                                // Agregar condiciones de rango de fecha
-                                $query_paro .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
-                            }
+        // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
+        if ($fecha_inicio && $fecha_fin) {
+            // Agregar condiciones de rango de fecha
+            $query_paro .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
+        }
 
-                            $query_paro .= " GROUP BY motivoactividad";
+        $query_paro .= " GROUP BY motivoactividad";
 
-                            $query_run_paro = mysqli_query($con, $query_paro);
-                            $total_paro = 0;
+        $query_run_paro = mysqli_query($con, $query_paro);
+        $total_paro = 0;
 
-                            // Verificar si se encontraron registros para la consulta de paro
-                            if (mysqli_num_rows($query_run_paro) > 0) {
-                                foreach ($query_run_paro as $registro) {
-                                    $total_paro += $registro['tiempo_total'];
-                                }
-                            }
+        // Verificar si se encontraron registros para la consulta de paro
+        if (mysqli_num_rows($query_run_paro) > 0) {
+            foreach ($query_run_paro as $registro) {
+                $total_paro += $registro['tiempo_total'];
+            }
+        }
 
-                            // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
-                            $tiempo_maquinado = $tiempo_maquinado - $total_paro;
-                        ?>
+        // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
+        $tiempo_maquinado = $tiempo_maquinado - $total_paro;
 
-                            <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
-                            <p style="font-size: 80px;"><?= $tiempo_maquinado; ?></p>
+        // Convertir minutos a horas y minutos
+        $horas = floor($tiempo_maquinado / 60);
+        $minutos = $tiempo_maquinado % 60;
+    ?>
 
-                        <?php
-                        } else {
-                            echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
-                        }
-                        ?>
-                    </div>
+        <p><b>TIEMPO TOTAL DE MAQUINADO</b></p>
+        <p style="font-size: 80px;"><?= $horas; ?> h <?= $minutos; ?> min</p>
+
+    <?php
+    } else {
+        echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
+    }
+    ?>
+</div>
+
                     <?php
 
                     // Calcular piezas totales

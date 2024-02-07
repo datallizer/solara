@@ -37,7 +37,7 @@ if (isset($_POST['codigo'])) {
         $_SESSION['apellidom'] = $apellidom;
         $_SESSION['codigo'] = $row['codigo'];
         $_SESSION['rol'] = $row['rol'];
-        if ($_SESSION['rol'] == 8) {
+        if ($_SESSION['rol'] == 5 || $_SESSION['rol'] == 8) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");
             $hora_actual = date("H:i");
@@ -47,7 +47,7 @@ if (isset($_POST['codigo'])) {
             $_SESSION['message'] = $message;
             header("Location: maquinados.php");
             exit();
-        } elseif ($_SESSION['rol'] == 4) {
+        } elseif ($_SESSION['rol'] == 4 || $_SESSION['rol'] == 9) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");
             $hora_actual = date("H:i");
@@ -57,8 +57,18 @@ if (isset($_POST['codigo'])) {
             $_SESSION['message'] = $message;
             header("Location: ensamble.php");
             exit();
-        } else {
+        } elseif ($_SESSION['rol'] == 1 || $_SESSION['rol'] == 2) {
             $hora_actual = date("H:i");
+            $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
+            $_SESSION['message'] = $message;
+            header("Location: estadisticas.php");
+            exit();
+        } else {
+            $idcodigo = $_SESSION['codigo'];
+            $fecha_actual = date("Y-m-d");
+            $hora_actual = date("H:i");
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema', hora='$hora_actual', fecha='$fecha_actual'";
+            $query_rundos = mysqli_query($con, $querydos);
             $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             $_SESSION['message'] = $message;
             header("Location: dashboard.php");

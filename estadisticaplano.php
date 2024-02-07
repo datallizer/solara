@@ -52,39 +52,46 @@ require 'dbcon.php';
                                     <thead>
                                         <tr>
                                             <th>Motivo/Actividad</th>
-                                            <th>Tiempo en paro (minutos)</th>
+                                            <th>Tiempo en paro</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
                                         $query = "SELECT 
-                                         motivoactividad,
-                                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                                       FROM historialoperadores 
-                                       WHERE idplano ='$registro_id'
-                                       AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral'
-                                       GROUP BY motivoactividad";
+                                        motivoactividad,
+                                        SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
+                                        FROM historialoperadores 
+                                        WHERE idplano ='$registro_id'
+                                        AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral'
+                                        GROUP BY motivoactividad";
 
                                         $query_run = mysqli_query($con, $query);
                                         $total_paro = 0;
 
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
+                                                // Convertir los minutos a horas y minutos
+                                                $horas = floor($registro['tiempo_total'] / 60);
+                                                $minutos = $registro['tiempo_total'] % 60;
                                         ?>
                                                 <tr>
                                                     <td><?= $registro['motivoactividad']; ?></td>
-                                                    <td><?= $registro['tiempo_total']; ?></td>
+                                                    <td><?= $horas . "h " . $minutos . "m"; ?></td>
                                                 </tr>
                                         <?php
+                                                // Incrementar el total de paro
                                                 $total_paro += $registro['tiempo_total'];
                                             }
                                         } else {
                                             echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
                                         }
+                                        // Convertir el total de paro a horas y minutos
+                                        $total_horas = floor($total_paro / 60);
+                                        $total_minutos = $total_paro % 60;
                                         ?>
                                         <tr style="background-color: #c9c9c9;">
                                             <td><b class="float-end small">Tiempo de paro total:</b></td>
-                                            <td id="paro"><?= $total_paro; ?></td>
+                                            <td id="paro"><?= $total_horas . "h " . $total_minutos . "m"; ?></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -99,7 +106,7 @@ require 'dbcon.php';
                         <?php
                         // Consulta para obtener el tiempo total de "Inicio"
                         $query_inicio = "SELECT 
-                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio
+                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio
                      FROM historialoperadores 
                      WHERE idplano ='$registro_id'
                      AND motivoactividad = 'Inicio'";
@@ -108,7 +115,7 @@ require 'dbcon.php';
 
                         // Consulta para obtener el tiempo total de "Fin de jornada laboral"
                         $query_fin = "SELECT 
-                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
+                 SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
                  FROM historialoperadores 
                  WHERE idplano ='$registro_id'
                  AND motivoactividad = 'Fin de jornada laboral'";
@@ -121,11 +128,15 @@ require 'dbcon.php';
                             $registro_fin = mysqli_fetch_assoc($query_run_fin);
 
                             // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
-                            $tiempo_maquinado = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+                            $tiempo_maquinado_minutos = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+
+                            // Convertir minutos a horas y minutos
+                            $horas = floor($tiempo_maquinado_minutos / 60);
+                            $minutos = $tiempo_maquinado_minutos % 60;
                         ?>
 
-                            <p><b>TIEMPO TOTAL DE MAQUINADO</b><br>(Minutos)</p>
-                            <p style="font-size: 80px;"><?= $tiempo_maquinado - $total_paro; ?></p>
+                            <p><b>TIEMPO TOTAL DE MAQUINADO</b></p>
+                            <p style="font-size: 40px;"><?= $horas ?> h <?= $minutos ?> min</p>
 
                         <?php
                         } else {
@@ -133,6 +144,7 @@ require 'dbcon.php';
                         }
                         ?>
                     </div>
+
 
                 </div>
             </div>

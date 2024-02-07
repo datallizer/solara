@@ -396,24 +396,24 @@ if (isset($_SESSION['codigo'])) {
                  AND motivoactividad = 'Fin de jornada laboral'";
 
                                                 $query_run_fin = mysqli_query($con, $query_fin);
-
-                                                // Verificar si se encontraron registros para ambas consultas
                                                 if (mysqli_num_rows($query_run_inicio) > 0 && mysqli_num_rows($query_run_fin) > 0) {
                                                     $registro_inicio = mysqli_fetch_assoc($query_run_inicio);
                                                     $registro_fin = mysqli_fetch_assoc($query_run_fin);
 
-                                                    // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
-                                                    $tiempo_maquinado = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+                                                    // Calcular la diferencia en minutos entre el tiempo de inicio y el tiempo de fin
+                                                    $diferencia_minutos = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+
+                                                    // Convertir minutos a horas y minutos
+                                                    $horas = floor($diferencia_minutos / 60);
+                                                    $minutos = $diferencia_minutos % 60;
                                                 ?>
-
-
-                                                    <p><?= $tiempo_maquinado; ?> min</p>
-
+                                                    <p><?= $horas ?> h <?= $minutos ?> min</p>
                                                 <?php
                                                 } else {
                                                     echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
                                                 }
                                                 ?>
+
                                             </td>
                                             <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaplano.php?id=<?= $registro['id']; ?>">
@@ -468,24 +468,24 @@ if (isset($_SESSION['codigo'])) {
                                                 AND motivoactividad = 'Fin de jornada laboral'";
 
                                                 $query_run_fin = mysqli_query($con, $query_fin);
-
-                                                // Verificar si se encontraron registros para ambas consultas
                                                 if (mysqli_num_rows($query_run_inicio) > 0 && mysqli_num_rows($query_run_fin) > 0) {
                                                     $registro_inicio = mysqli_fetch_assoc($query_run_inicio);
                                                     $registro_fin = mysqli_fetch_assoc($query_run_fin);
 
-                                                    // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
-                                                    $tiempo_maquinado = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+                                                    // Calcular la diferencia en minutos entre el tiempo de inicio y el tiempo de fin
+                                                    $diferencia_minutos = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+
+                                                    // Convertir minutos a horas y minutos
+                                                    $horas = floor($diferencia_minutos / 60);
+                                                    $minutos = $diferencia_minutos % 60;
                                                 ?>
-
-
-                                                    <p><?= $tiempo_maquinado; ?> min</p>
-
+                                                    <p><?= $horas ?> h <?= $minutos ?> min</p>
                                                 <?php
                                                 } else {
                                                     echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
                                                 }
                                                 ?>
+
                                             </td>
                                             <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaensamble.php?id=<?= $registro['id']; ?>">
@@ -506,48 +506,48 @@ if (isset($_SESSION['codigo'])) {
                         </table>
                     </div>
                     <div class="col-12 mt-3 slickcard bg-dark" id="operadores">
-                            <?php
+                        <?php
 
-                            $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 4 ORDER BY id DESC";
-                            $query_run = mysqli_query($con, $query);
-                            if (mysqli_num_rows($query_run) > 0) {
-                                foreach ($query_run as $registro) {
-                                    $registro_id = $registro['id'];
-                            ?>
-                                    <div class="slickc">
-                                        <div class="card" style="width: 100%;">
-                                            <img class="card-img-top" style="object-fit:cover;height:350px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
-                                            <div class="card-body">
-                                                <h5 class="card-title"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
-                                                <p style="color: #000;" class="card-text">
-                                                        <?php
-                                                        if ($registro['rol'] === '4') {
-                                                            echo "Técnico controles";
-                                                        } else if ($registro['rol'] === '8') {
-                                                            echo "Técnico mecanico";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                                    </p>
-                                                    <?php
-                                                        if ($registro['rol'] === '4') {
-                                                            ?><a href="estadisticacontrol.php?id=<?= $registro['id']; ?>" class="btn btn-secondary">Ver analítica</a><?php
-                                                        } else if ($registro['rol'] === '8') {
-                                                            ?><a href="estadisticaoperadores.php?id=<?= $registro['id']; ?>" class="btn btn-dark">Ver analítica</a><?php
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                            </div>
+                        $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 4 ORDER BY id DESC";
+                        $query_run = mysqli_query($con, $query);
+                        if (mysqli_num_rows($query_run) > 0) {
+                            foreach ($query_run as $registro) {
+                                $registro_id = $registro['id'];
+                        ?>
+                                <div class="slickc">
+                                    <div class="card" style="width: 100%;">
+                                        <img class="card-img-top" style="object-fit:cover;height:350px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
+                                            <p style="color: #000;" class="card-text">
+                                                <?php
+                                                if ($registro['rol'] === '4') {
+                                                    echo "Técnico controles";
+                                                } else if ($registro['rol'] === '8') {
+                                                    echo "Técnico mecanico";
+                                                } else {
+                                                    echo "Error, contacte a soporte";
+                                                }
+                                                ?>
+                                            </p>
+                                            <?php
+                                            if ($registro['rol'] === '4') {
+                                            ?><a href="estadisticacontrol.php?id=<?= $registro['id']; ?>" class="btn btn-secondary">Ver analítica</a><?php
+                                                                                                                                                    } else if ($registro['rol'] === '8') {
+                                                                                                                                                        ?><a href="estadisticaoperadores.php?id=<?= $registro['id']; ?>" class="btn btn-dark">Ver analítica</a><?php
+                                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                                echo "Error, contacte a soporte";
+                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                ?>
                                         </div>
                                     </div>
-                            <?php
-                                }
-                            } else {
-                                echo "Error";
+                                </div>
+                        <?php
                             }
-                            ?>
+                        } else {
+                            echo "Error";
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -559,7 +559,7 @@ if (isset($_SESSION['codigo'])) {
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-  <script src="js/slickslider.js"></script>
+    <script src="js/slickslider.js"></script>
     <script>
         $(document).ready(function() {
             $('#miTabla, #miTablaDos, #miTablaTres').DataTable({
