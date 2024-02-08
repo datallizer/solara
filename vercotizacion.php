@@ -30,7 +30,7 @@ if (isset($_GET['id'])) {
     $plano_id = $_GET['id'];
 
     // Consulta para obtener el PDF según el ID del plano
-    $query = "SELECT * FROM plano WHERE id = $plano_id";
+    $query = "SELECT * FROM quotes WHERE id = $plano_id";
     $result = mysqli_query($con, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -47,7 +47,7 @@ if (isset($_GET['id'])) {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-                <title>Ver plano | Solara</title>
+                <title>Ver cotización | Solara</title>
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
                 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">

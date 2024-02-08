@@ -92,27 +92,39 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
         $mail->setFrom('solarasystemai@gmail.com', 'SOLARA AI');
         $mail->addAddress('storage@solara-industries.com');
         $mail->Subject = 'Reorden: Inventario de ' . $registro['id'] . ' ' . $registro['nombre'] . ' bajo en stock';
-
+        $mail->CharSet = 'UTF-8';
+        $mail->isHTML(true);
         // Cuerpo del mensaje
         $body = '
-            El producto' . $registro['id'] . ' ' . $registro['nombre'] . ' tiene un stock bajo.
-            Cantidad actual: ' . $cantidad . '
-            Minimo recomendado: ' . $minimo . '
-            Maximo recomendado: ' . $maximo . '
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body>
+            <img style="width:100%;" src="https://datallizer.com/images/solarasuperior.jpg" alt="">
+            <h1 style="font-size:25px;margin-top:30px;text-align:left;margin-bottom:30px;"><b>REORDEN</b></h1>
+            <p>El producto id ' . $registro['id'] . ' ' . $registro['nombre'] . ' tiene un stock bajo.</p>
+            <p><b>Cantidad actual:</b> ' . $cantidad . '</p>
+            <p><b>Minimo recomendado:</b> ' . $minimo . '</p>
+            <p><b>Maximo recomendado:</b> ' . $maximo . '</p>
 
-            Detalles
-            Proveedor: ' . $registro['proveedor'] . '
-            Parte: ' . $registro['parte'] . ' 
-            Marca: ' . $registro['marca'] . ' 
-            Condición: ' . $registro['condicion'] . '
-            Costo: ' . $registro['costo'] . ' 
-    
+            <p style="margin-top:30px;"><b>Detalles</b></p>
+            <p><b>Proveedor:</b> ' . $registro['proveedor'] . '</p>
+            <p><b>Parte:</b> ' . $registro['parte'] . '</p>
+            <p><b>Marca:</b> ' . $registro['marca'] . '</p>
+            <p><b>Condición:</b> ' . $registro['condicion'] . '</p>
+            <p><b>Costo:</b> $' . $registro['costo'] . '</p>
+
+            <p style="font-size:10px;">Este es un email enviado automaticamente por el sistema de planificación de recursos empresariales SOLARA AI, la información previa a sido generada utilizando datos históricos almacenados en la base de datos de SOLARA, es importante tener en cuenta que las cantidades, materiales u otros detalles presentados en esta propuesta podrían estar desactualizados, descontinuados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos desde los submódulos "Inventario" y "Reorden".</p>
+            </body>
+            </html>
             ';
         $mail->Body = $body;
 
         // Enviar correo
         if ($mail->send()) {
-
             mysqli_query($con, "UPDATE inventario SET reorden = 0 WHERE id = " . $registro['id']);
         } else {
             $_SESSION['message'] = "Error al solicitar reorden";
@@ -123,7 +135,6 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
 }
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

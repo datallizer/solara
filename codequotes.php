@@ -2,6 +2,9 @@
 require 'dbcon.php';
 session_start();
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
 
@@ -22,33 +25,128 @@ if (isset($_POST['delete'])) {
 if (isset($_POST['aprobar'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['aprobar']);
 
-            $query = "UPDATE `quotes` SET `estatusq` = '0' WHERE `quotes`.`id` = '$registro_id'";
-            $query_run = mysqli_query($con, $query);
+    require 'PHPMailer/src/PHPMailer.php';
+    require 'PHPMailer/src/SMTP.php';
+    require 'PHPMailer/src/Exception.php';
 
-            if ($query_run) {
-                $_SESSION['message'] = "Quote aprobado exitosamente";
-                header("Location: quotes.php");
-                exit(0);
-            } else {
-                $_SESSION['message'] = "Error al aprobar el quote, contacte a soporte";
-                header("Location: quotes.php");
-                exit(0);
-            }
+    // Configuracion SMTP
+    $host = 'smtp.gmail.com';
+    $port = 587;
+    $username = 'solarasystemai@gmail.com';
+    $password = 'owwd pbtr bpfh brff';
+    $security = 'tls';
+    // Obtener los datos de la fila aprobada
+    $query = "SELECT * FROM quotes WHERE id = '$registro_id'";
+    $query_run = mysqli_query($con, $query);
+    $registro_aprobado = mysqli_fetch_assoc($query_run);
+
+    // Construir el contenido HTML del correo electrónico
+    $html_content = "
+        <html>
+        <head>
+            <title>Quote Aprobado</title>
+        </head>
+        <style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        border: 1px solid #000;
+        text-align: center;
+        vertical-align: middle;
+        padding: 8px;
+    }
+</style>
+        <body>
+        <img style='width:100%;' src='https://datallizer.com/images/solarasuperior.jpg' alt=''>
+            <h2>DETALLES DEL QUOTE APROBADO</h2>
+            <table style='margin-top:30px; margin-bottom:80px;'>
+                <tr>
+                    <th>Id</th>
+                    <th>Solicitante</th>
+                    <th>Rol</th>
+                    <th>Proyecto</th>
+                    <th> Ver PDF</th>
+                    <th>Notas</th>
+                    <th>Estatus</th>
+                </tr>
+                <tr>
+                    <td>{$registro_aprobado['id']}</td>
+                    <td>{$registro_aprobado['solicitante']}</td>
+                    <td>{$registro_aprobado['rol']}</td>
+                    <td>{$registro_aprobado['cotizacion']}</td>
+                    <td><a href='http://192.168.1.38:81//vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
+                    <td>{$registro_aprobado['notas']}</td>
+                    <td>Aprobado</td>
+                </tr>
+            </table>
+
+            <p style='font-size:10px;'>Este es un email enviado automaticamente por el sistema de planificación de recursos empresariales SOLARA AI, la información previa a sido generada utilizando datos históricos almacenados en la base de datos de SOLARA, es importante tener en cuenta que la información u otros detalles presentados en este email podrían estar desactualizados, descontinuados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos desde el submódulo 'Compras'</p>
+        </body>
+        </html>
+    ";
+
+    // Crear instancia PHPMailer
+    $mail = new PHPMailer(true);
+
+
+    // Configurar SMTP
+    $mail->isSMTP();
+    $mail->Host = $host;
+    $mail->Port = $port;
+    $mail->SMTPAuth = true;
+    $mail->Username = $username;
+    $mail->Password = $password;
+    $mail->SMTPSecure = $security;
+    //$mail->SMTPDebug = 2;
+
+
+
+    // Configurar correo
+    $mail->setFrom('solarasystemai@gmail.com', 'SOLARA AI');
+    $mail->addAddress('purchasing@solara-industries.com');
+    $mail->Subject = 'Compra aprobada id ' . $registro_aprobado['id'] . ' ' . $registro_aprobado['cotizacion'];
+    $mail->CharSet = 'UTF-8';
+    $mail->isHTML(true);
+    $mail->Body = $html_content;
+
+    // Enviar correo electrónico
+    if ($mail->send()) {
+        // Actualizar el estado del quote a 'aprobado'
+        $query_update = "UPDATE `quotes` SET `estatusq` = '0' WHERE `quotes`.`id` = '$registro_id'";
+        $query_run_update = mysqli_query($con, $query_update);
+
+        if ($query_run_update) {
+            $_SESSION['message'] = "Quote aprobado exitosamente, se envió la notificación a compras";
+            header("Location: quotes.php");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al aprobar el quote, contacte a soporte";
+            header("Location: quotes.php");
+            exit(0);
+        }
+    } else {
+        $_SESSION['message'] = "Error al enviar la notificación a compras";
+        header("Location: quotes.php");
+        exit(0);
+    }
 } elseif (isset($_POST['completar'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['completar']);
 
-            $query = "UPDATE `quotes` SET `estatusq` = '2' WHERE `quotes`.`id` = '$registro_id'";
-            $query_run = mysqli_query($con, $query);
+    $query = "UPDATE `quotes` SET `estatusq` = '2' WHERE `quotes`.`id` = '$registro_id'";
+    $query_run = mysqli_query($con, $query);
 
-            if ($query_run) {
-                $_SESSION['message'] = "Quote aprobado exitosamente";
-                header("Location: compras.php");
-                exit(0);
-            } else {
-                $_SESSION['message'] = "Error al aprobar el quote, contacte a soporte";
-                header("Location: compras.php");
-                exit(0);
-            }
+    if ($query_run) {
+        $_SESSION['message'] = "Compra completada exitosamente";
+        header("Location: compras.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al aprobar el quote, contacte a soporte";
+        header("Location: compras.php");
+        exit(0);
+    }
 }
 
 

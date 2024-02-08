@@ -61,7 +61,7 @@ if (isset($_POST['codigo'])) {
             $hora_actual = date("H:i");
             $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             $_SESSION['message'] = $message;
-            header("Location: estadisticas.php");
+            header("Location: dashboard.php");
             exit();
         } else {
             $idcodigo = $_SESSION['codigo'];
