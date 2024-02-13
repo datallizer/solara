@@ -128,7 +128,7 @@ if (isset($_SESSION['codigo'])) {
                 "order": [
                     [0, "asc"]
                 ],
-                "pageLength": 500
+                "pageLength": 100
             });
 
             // Obtener todas las filas de la tabla y procesar cada una

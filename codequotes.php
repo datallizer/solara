@@ -77,7 +77,7 @@ if (isset($_POST['aprobar'])) {
                     <td>{$registro_aprobado['solicitante']}</td>
                     <td>{$registro_aprobado['rol']}</td>
                     <td>{$registro_aprobado['cotizacion']}</td>
-                    <td><a href='http://192.168.1.38:81//vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
+                    <td><a href='http://192.168.1.38:81/solara/vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
                     <td>{$registro_aprobado['notas']}</td>
                     <td>Aprobado</td>
                 </tr>
@@ -90,7 +90,6 @@ if (isset($_POST['aprobar'])) {
 
     // Crear instancia PHPMailer
     $mail = new PHPMailer(true);
-
 
     // Configurar SMTP
     $mail->isSMTP();
