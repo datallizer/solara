@@ -105,7 +105,7 @@ if (isset($_SESSION['codigo'])) {
                                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                                         FROM historialoperadores 
                                         WHERE idplano ='$registro_id'
-                                        AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral'
+                                        AND motivoactividad <> 'Inicio' 
                                         GROUP BY motivoactividad";
 
                                         $query_run = mysqli_query($con, $query);
@@ -149,19 +149,19 @@ if (isset($_SESSION['codigo'])) {
                         <?php
                         // Consulta para obtener el tiempo total de "Inicio"
                         $query_inicio = "SELECT 
-                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio
+                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fecha, ' ', hora))) AS tiempo_inicio
                      FROM historialoperadores 
                      WHERE idplano ='$registro_id'
                      AND motivoactividad = 'Inicio'";
 
                         $query_run_inicio = mysqli_query($con, $query_inicio);
 
-                        // Consulta para obtener el tiempo total de "Fin de jornada laboral"
+                        // Consulta para obtener el tiempo total de "Fin de Inicio"
                         $query_fin = "SELECT 
                  SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
                  FROM historialoperadores 
                  WHERE idplano ='$registro_id'
-                 AND motivoactividad = 'Fin de jornada laboral'";
+                 AND motivoactividad = 'Inicio'";
 
                         $query_run_fin = mysqli_query($con, $query_fin);
 
@@ -170,8 +170,8 @@ if (isset($_SESSION['codigo'])) {
                             $registro_inicio = mysqli_fetch_assoc($query_run_inicio);
                             $registro_fin = mysqli_fetch_assoc($query_run_fin);
 
-                            // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
-                            $tiempo_maquinado_minutos = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+                            // Calcular el tiempo total de maquinado restando el tiempo de "Fin de Inicio" del tiempo de "Inicio"
+                            $tiempo_maquinado_minutos = $registro_fin['tiempo_fin'] - $registro_inicio['tiempo_inicio'] - $total_paro;
 
                             // Convertir minutos a horas y minutos
                             $horas = floor($tiempo_maquinado_minutos / 60);

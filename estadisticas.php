@@ -384,16 +384,22 @@ if (isset($_SESSION['codigo'])) {
                                                 <?php
                                                 // Consulta para obtener el tiempo total de "Inicio"
                                                 $query_inicio = "SELECT 
-                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_inicio FROM historialoperadores WHERE idplano ='$registro_id' AND motivoactividad = 'Inicio'";
+                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fecha, ' ', hora))) AS tiempo_inicio FROM historialoperadores WHERE idplano ='$registro_id' AND motivoactividad = 'Inicio'";
 
                                                 $query_run_inicio = mysqli_query($con, $query_inicio);
 
                                                 // Consulta para obtener el tiempo total de "Fin de jornada laboral"
-                                                $query_fin = "SELECT 
-                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin
-                 FROM historialoperadores 
-                 WHERE idplano ='$registro_id'
-                 AND motivoactividad = 'Fin de jornada laboral'";
+                                                $query_fin = "SELECT SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_fin FROM historialoperadores WHERE idplano ='$registro_id' AND motivoactividad = 'Inicio'";
+
+                                                $query_motivo = "SELECT motivoactividad, SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total FROM historialoperadores WHERE idplano ='$registro_id' AND motivoactividad <> 'Inicio' GROUP BY motivoactividad";
+
+                                                $query_run_motivo = mysqli_query($con, $query_motivo);
+                                                $total_paro = 0;
+                                                if (mysqli_num_rows($query_run_motivo) > 0) {
+                                                    foreach ($query_run_motivo as $registro_m) {
+                                                        $total_paro += $registro_m['tiempo_total'];
+                                                    }
+                                                }
 
                                                 $query_run_fin = mysqli_query($con, $query_fin);
                                                 if (mysqli_num_rows($query_run_inicio) > 0 && mysqli_num_rows($query_run_fin) > 0) {
@@ -401,7 +407,7 @@ if (isset($_SESSION['codigo'])) {
                                                     $registro_fin = mysqli_fetch_assoc($query_run_fin);
 
                                                     // Calcular la diferencia en minutos entre el tiempo de inicio y el tiempo de fin
-                                                    $diferencia_minutos = $registro_inicio['tiempo_inicio'] - $registro_fin['tiempo_fin'];
+                                                    $diferencia_minutos = $registro_fin['tiempo_fin'] - $registro_inicio['tiempo_inicio'] - $total_paro;
 
                                                     // Convertir minutos a horas y minutos
                                                     $horas = floor($diferencia_minutos / 60);

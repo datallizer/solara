@@ -200,8 +200,7 @@ $total_minutos = $total_paro % 60;
                                                 SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                                             FROM historialensamble 
                                             WHERE idcodigo ='$codigouser'
-                                                AND motivoactividad <> 'Inicio' 
-                                                AND motivoactividad <> 'Fin de jornada laboral'";
+                                                AND motivoactividad <> 'Inicio'";
 
                             // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                             if ($fecha_inicio && $fecha_fin) {

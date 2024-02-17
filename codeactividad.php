@@ -53,6 +53,19 @@ if (isset($_POST['restart'])) {
             header("Location: maquinados.php");
             exit(0);
         }
+    } else {
+        $querydos = "UPDATE `plano` SET `estatusplano` = '3' WHERE `plano`.`id` = '$id'";
+        $querydos_run = mysqli_query($con, $querydos);
+
+        if ($querydos_run) {
+            $_SESSION['message'] = "Error al actualizar la actividad";
+            header("Location: inicioactividades.php?id=$id");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al reiniciar el maquinado, contacte a soporte";
+            header("Location: maquinados.php");
+            exit(0);
+        }
     }
 }
 
@@ -204,6 +217,19 @@ if (isset($_POST['restartensamble'])) {
 
         if ($querydos_run) {
             $_SESSION['message'] = "Reiniciaste actividades de ensamble exitosamente";
+            header("Location: inicioactividadesensamble.php?id=$id");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al reiniciar el paro, contacte a soporte";
+            header("Location: ensamble.php");
+            exit(0);
+        }
+    } else{
+        $querydos = "UPDATE `diagrama` SET `estatusplano` = '3' WHERE `diagrama`.`id` = '$id'";
+        $querydos_run = mysqli_query($con, $querydos);
+
+        if ($querydos_run) {
+            $_SESSION['message'] = "Error al actualizar la actividad";
             header("Location: inicioactividadesensamble.php?id=$id");
             exit(0);
         } else {

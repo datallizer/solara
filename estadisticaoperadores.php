@@ -122,7 +122,7 @@ if (isset($_SESSION['codigo'])) {
                         motivoactividad,
                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                     FROM historialoperadores 
-                    WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral'";
+                    WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad'";
 
     // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
     if ($fecha_inicio && $fecha_fin) {
@@ -196,8 +196,7 @@ if (isset($_SESSION['codigo'])) {
                             SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                         FROM historialoperadores 
                         WHERE idcodigo ='$codigouser'
-                            AND motivoactividad <> 'Inicio' 
-                            AND motivoactividad <> 'Fin de jornada laboral'";
+                            AND motivoactividad <> 'Inicio'";
 
         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
         if ($fecha_inicio && $fecha_fin) {
@@ -289,7 +288,7 @@ if (isset($_SESSION['codigo'])) {
                         motivoactividad,
                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                     FROM historialoperadores 
-                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral'";
+                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad'";
 
         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
         if ($fecha_inicio && $fecha_fin) {
