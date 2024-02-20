@@ -61,7 +61,7 @@ if (isset($_SESSION['codigo'])) {
                             <div class="card-header">
                                 <h4>QUOTES
                                     <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 9])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Nueva quote
                                 </button>';
