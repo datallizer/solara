@@ -8,7 +8,10 @@ use PHPMailer\PHPMailer\Exception;
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
 
-    $query = "DELETE FROM quotes WHERE id='$registro_id' ";
+    // Depuración: Mostrar el ID de la cita antes de ejecutar la consulta de eliminación
+    echo "ID de la cita a eliminar: " . $registro_id;
+
+    $query = "DELETE FROM quotes WHERE id='$registro_id'";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
@@ -16,11 +19,14 @@ if (isset($_POST['delete'])) {
         header("Location: quotes.php");
         exit(0);
     } else {
+        // Mostrar cualquier error de MySQL que pueda ocurrir
+        echo mysqli_error($con);
         $_SESSION['message'] = "Error al eliminar el quote, contácte a soporte";
         header("Location: quotes.php");
         exit(0);
     }
 }
+
 
 if (isset($_POST['aprobar'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['aprobar']);

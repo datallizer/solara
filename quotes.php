@@ -124,8 +124,8 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
-                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Cotizacion <?= $registro['cotizacion']; ?></button>
-                                                        <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id_quote']; ?>">Cotizacion <?= $registro['cotizacion']; ?></button>
+                                                        <div class="modal fade" id="pdfModal<?= $registro['id_quote']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
@@ -288,7 +288,7 @@ if (isset($_SESSION['codigo'])) {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
 
-                const id_quote = e.target.value; // Obtener el valor del botón delete
+                const id = e.target.value; // Obtener el valor del botón delete
 
                 // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
                 Swal.fire({
@@ -302,7 +302,7 @@ if (isset($_SESSION['codigo'])) {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const formData = new FormData();
-                        formData.append('delete', id_quote);
+                        formData.append('delete', id);
 
                         fetch('codequotes.php', {
                                 method: 'POST',
