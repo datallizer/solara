@@ -151,8 +151,10 @@ if (isset($_SESSION['codigo'])) {
                                                         ?></td>
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1 float-end deletebtn"><i class="bi bi-trash-fill"></i></button>
                                                             <?php
+                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2,3,4,5,6,7,8,9])){
+                                                                echo '<button type="submit" name="delete" value="' . $registro['id_quote'] . '" class="btn btn-danger btn-sm m-1 float-end deletebtn"><i class="bi bi-trash-fill"></i></button>';
+                                                            }
                                                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])){
                                                                 echo '<button type="submit" name="aprobar" value="' . $registro['id_quote'] . '" class="btn btn-success btn-sm m-1 float-end"><i class="bi bi-check-lg"> Aprobar</i></button>';
                                                             }
@@ -282,45 +284,45 @@ if (isset($_SESSION['codigo'])) {
             });
         }
 
-        const deleteButtons = document.querySelectorAll('.deletebtn');
+        // const deleteButtons = document.querySelectorAll('.deletebtn');
 
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
+        // deleteButtons.forEach(button => {
+        //     button.addEventListener('click', (e) => {
+        //         e.preventDefault();
 
-                const id = e.target.value; // Obtener el valor del botón delete
+        //         const id = e.target.value; // Obtener el valor del botón delete
 
-                // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
-                Swal.fire({
-                    title: '¿Estás seguro que deseas eliminar este registro?',
-                    text: '¡No podrás deshacer esta acción!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const formData = new FormData();
-                        formData.append('delete', id);
+        //         // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
+        //         Swal.fire({
+        //             title: '¿Estás seguro que deseas eliminar este registro?',
+        //             text: '¡No podrás deshacer esta acción!',
+        //             icon: 'warning',
+        //             showCancelButton: true,
+        //             confirmButtonColor: '#d33',
+        //             cancelButtonColor: '#3085d6',
+        //             confirmButtonText: 'Sí, eliminar'
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 const formData = new FormData();
+        //                 formData.append('delete', id);
 
-                        fetch('codequotes.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => {
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 500);
+        //                 fetch('codequotes.php', {
+        //                         method: 'POST',
+        //                         body: formData
+        //                     })
+        //                     .then(response => {
+        //                         setTimeout(() => {
+        //                             window.location.reload();
+        //                         }, 500);
 
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                            });
-                    }
-                });
-            });
-        });
+        //                     })
+        //                     .catch(error => {
+        //                         console.error('Error:', error);
+        //                     });
+        //             }
+        //         });
+        //     });
+        // });
     </script>
 </body>
 
