@@ -61,7 +61,7 @@ if (isset($_SESSION['codigo'])) {
                         </a>
                     </div>
                     <div class="col-12 col-md-3 mb-3">
-                        <a class="card text-center p-5" style="text-decoration: none;" href="wa.me/524493854039">
+                        <a class="card text-center p-5" style="text-decoration: none;" href="https://wa.me/524493854039">
                             <i class="bi bi-whatsapp" style="font-size: 45px;color:#309c49"></i>
                             <p style="color: #000000;">449 385 4039</p>
                         </a>

@@ -1,10 +1,9 @@
 <?php
 session_start();
 require 'dbcon.php';
-$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; 
 
 if (!empty($message)) {
-    // HTML y JavaScript para mostrar la alerta...
     echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 const message = " . json_encode($message) . ";
@@ -20,29 +19,24 @@ if (!empty($message)) {
                 });
             });
         </script>";
-    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
+    unset($_SESSION['message']);
 }
 
-// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
 if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
-    // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
     $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
     $result = mysqli_query($con, $query);
 
-    // Si se encuentra un registro coincidente, el usuario está autorizado
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
     } else {
-        // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');
-        exit(); // Finalizar el script después de la redirección
+        exit();
     }
 } else {
-    // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
     header('Location: login.php');
-    exit(); // Finalizar el script después de la redirección
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -224,7 +218,6 @@ if (isset($_SESSION['codigo'])) {
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>

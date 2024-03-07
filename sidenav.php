@@ -37,18 +37,25 @@ require 'dbcon.php';
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Inicio
                         </a>
-
                         <?php
-                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                            // Mostrar el enlace HTML solo si la condición se cumple
-                            echo '<a class="nav-link" href="usuarios.php">
-                            <div class="sb-nav-link-icon"><i class="bi bi-person-fill"></i></div>
-                            Usuarios
-                        </a>';
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])){
+                            echo'<div class="sb-sidenav-menu-heading">Modulos</div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePagesFour" aria-expanded="false" aria-controls="collapsePagesFour">
+                                <div class="sb-nav-link-icon"><i class="bi bi-person-arms-up"></i></div>
+                                RRHH
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapsePagesFour" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <a class="nav-link" href="usuarios.php">Usuarios</a>
+                                    <a class="nav-link" href="asistencia.php">Asistencia</a>
+                                    <a class="nav-link" href="dashboard.php">Movimientos</a>
+                                    <a class="nav-link" href="dashboard.php">Permisos</a>
+                                </nav>
+                            </div>';
                         }
                         ?>
-
-                        <div class="sb-sidenav-menu-heading">Modulos</div>
+                        
                         <?php
                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 8, 9])) {
                             // Mostrar el enlace HTML solo si la condición se cumple
@@ -95,13 +102,13 @@ require 'dbcon.php';
                         <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
                                 <?php
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5,6, 7, 8, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 6, 7, 8, 9])) {
                                     echo '
                                         <a class="nav-link" href="inventario.php">Inventario</a>
                                 ';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])){
-                                    echo'<a class="nav-link" href="reorden.php">Reorden</a>';
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])) {
+                                    echo '<a class="nav-link" href="reorden.php">Reorden</a>';
                                 }
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 6, 7, 9])) {
                                     echo '
@@ -113,6 +120,7 @@ require 'dbcon.php';
                                 ?>
                             </nav>
                         </div>
+                        
                         <?php
                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                             // Mostrar el enlace HTML solo si la condición se cumple
