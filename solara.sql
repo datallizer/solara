@@ -76,6 +76,23 @@ CREATE TABLE `inventario` (
   `numero` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `asistencia` (
+  `id` int(255) NOT NULL,
+  `idcodigo` int(255) NOT NULL,
+  `entrada` varchar(10) NOT NULL,
+  `salida` varchar(10) DEFAULT NULL,
+  `fecha` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+ALTER TABLE `asistencia`
+  ADD PRIMARY KEY (`id`);
+
+
+ALTER TABLE `asistencia`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+
 ALTER TABLE `inventario`
   ADD PRIMARY KEY (`id`);
 

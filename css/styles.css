@@ -4,6 +4,10 @@ label{
 img{
     width: 100%;
 }
+a{
+    text-decoration: none !important;
+    color: #000000;
+}
 .loginform{
     background-color: #e3e3e3;
 }

@@ -372,7 +372,7 @@ if (isset($_SESSION['codigo'])) {
                             <tbody>
                                 <?php
 
-                                $query = "SELECT * FROM plano WHERE estatusplano <> 1 ORDER BY id DESC";
+                                $query = "SELECT * FROM plano WHERE estatusplano = 2 ORDER BY id DESC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
@@ -433,7 +433,7 @@ if (isset($_SESSION['codigo'])) {
                                 <?php
                                     }
                                 } else {
-                                    echo "<td colspan='2'><p>No se encontro ningun registro</p></td>";
+                                    echo "<td colspan='3'><p>No se encontro ningun registro</p></td>";
                                 }
                                 ?>
                             </tbody>
@@ -451,7 +451,7 @@ if (isset($_SESSION['codigo'])) {
                             <tbody>
                                 <?php
 
-                                $query = "SELECT * FROM diagrama WHERE estatusplano <> 1 ORDER BY id DESC";
+                                $query = "SELECT * FROM diagrama WHERE estatusplano = 2 ORDER BY id DESC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {

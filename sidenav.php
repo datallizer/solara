@@ -38,7 +38,7 @@ require 'dbcon.php';
                             Inicio
                         </a>
                         <?php
-                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])){
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 10])){
                             echo'<div class="sb-sidenav-menu-heading">Modulos</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePagesFour" aria-expanded="false" aria-controls="collapsePagesFour">
                                 <div class="sb-nav-link-icon"><i class="bi bi-person-arms-up"></i></div>
@@ -50,7 +50,7 @@ require 'dbcon.php';
                                     <a class="nav-link" href="usuarios.php">Usuarios</a>
                                     <a class="nav-link" href="asistencia.php">Asistencia</a>
                                     <a class="nav-link" href="dashboard.php">Movimientos</a>
-                                    <a class="nav-link" href="dashboard.php">Permisos</a>
+                                    <a class="nav-link" href="permisos.php">Permisos</a>
                                 </nav>
                             </div>';
                         }

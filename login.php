@@ -41,7 +41,7 @@ if (isset($_POST['codigo'])) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");
             $hora_actual = date("H:i");
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema', hora='$hora_actual', fecha='$fecha_actual'";
+            $querydos = "INSERT INTO asistencia SET idcodigo='$idcodigo', entrada='$hora_actual', fecha='$fecha_actual'";
             $query_rundos = mysqli_query($con, $querydos);
             $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             $_SESSION['message'] = $message;
@@ -51,7 +51,7 @@ if (isset($_POST['codigo'])) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");
             $hora_actual = date("H:i");
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema', hora='$hora_actual', fecha='$fecha_actual'";
+            $querydos = "INSERT INTO asistencia SET idcodigo='$idcodigo', entrada='$hora_actual', fecha='$fecha_actual'";
             $query_rundos = mysqli_query($con, $querydos);
             $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             $_SESSION['message'] = $message;
@@ -67,7 +67,7 @@ if (isset($_POST['codigo'])) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");
             $hora_actual = date("H:i");
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Ingreso al sistema', hora='$hora_actual', fecha='$fecha_actual'";
+            $querydos = "INSERT INTO asistencia SET idcodigo='$idcodigo', entrada='$hora_actual', fecha='$fecha_actual'";
             $query_rundos = mysqli_query($con, $querydos);
             $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
             $_SESSION['message'] = $message;

@@ -203,6 +203,7 @@ if (isset($_SESSION['codigo'])) {
                                 <option value="7">Almacenista</option>
                                 <option value="8">Técnico mecanico</option>
                                 <option value="9">Ing. Control</option>
+                                <option value="10">Recursos humanos</option>
                             </select>
                             <label for="rol">Rol</label>
                         </div>
@@ -226,7 +227,8 @@ if (isset($_SESSION['codigo'])) {
             $('#miTabla').DataTable({
                 "order": [
                     [0, "desc"]
-                ] // Ordenar la primera columna (índice 0) en orden descendente
+                ],
+                "pageLength": 25
             });
         });
 
