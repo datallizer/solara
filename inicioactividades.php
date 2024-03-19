@@ -271,7 +271,10 @@ if (isset($_SESSION['codigo'])) {
                                                                         <button type="submit" class="btn btn-warning" name="finish">Terminar</button>
                                                                     </div>
                                                                     <div id="botonMenu" style="display: none;">
-                                                                        <button type="submit" class="btn btn-primary" name="pausar">Regresar a maquinados</button>
+                                                                        <button type="submit" class="btn btn-primary" name="pausar">Regresar</button>
+                                                                    </div>
+                                                                    <div id="botonLunch" style="display: none;">
+                                                                        <button type="submit" class="btn btn-primary" name="lunchEnd">Salir a Lunch</button>
                                                                     </div>
                                                                 </div>
                                         </form>
@@ -299,6 +302,7 @@ if (isset($_SESSION['codigo'])) {
         const divBotonTerminar = document.getElementById('botonTerminar');
         const divBotonPausar = document.getElementById('botonPausar');
         const divBotonMenu = document.getElementById('botonMenu');
+        const divBotonLunch = document.getElementById('botonLunch');
 
         // Escuchar el evento de cambio en los radio buttons
         radioButtons.forEach(radioButton => {
@@ -310,14 +314,22 @@ if (isset($_SESSION['codigo'])) {
                     divBotonTerminar.style.display = 'block'; // Mostrar el botón "Terminar"
                     divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
                     divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
+                    divBotonLunch.style.display = 'none';
                 } else if (valorSeleccionado === 'Atención a otra prioridad' || valorSeleccionado === 'Fin de jornada laboral') {
                     divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
                     divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
                     divBotonMenu.style.display = 'block'; // Mostrar el botón "Menú"
+                    divBotonLunch.style.display = 'none';
+                } else if (valorSeleccionado === 'Lunch') {
+                    divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
+                    divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
+                    divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
+                    divBotonLunch.style.display = 'block';
                 } else {
                     divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
                     divBotonPausar.style.display = 'block'; // Mostrar el botón "Pausar"
                     divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
+                    divBotonLunch.style.display = 'none';
                 }
             });
         });

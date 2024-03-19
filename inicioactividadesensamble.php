@@ -271,6 +271,9 @@ if (isset($_SESSION['codigo'])) {
                                                                     <div id="botonMenu" style="display: none;">
                                                                         <button type="submit" class="btn btn-primary" name="pausarensamble">Regresar a ensamble</button>
                                                                     </div>
+                                                                    <div id="botonLunch" style="display: none;">
+                                                                        <button type="submit" class="btn btn-primary" name="lunchEndEnsamble">Salir a Lunch</button>
+                                                                    </div>
                                                                 </div>
                                         </form>
                                     </div>
@@ -297,6 +300,7 @@ if (isset($_SESSION['codigo'])) {
         const divBotonTerminar = document.getElementById('botonTerminar');
         const divBotonPausar = document.getElementById('botonPausar');
         const divBotonMenu = document.getElementById('botonMenu');
+        const divBotonLunch = document.getElementById('botonLunch');
 
         // Escuchar el evento de cambio en los radio buttons
         radioButtons.forEach(radioButton => {
@@ -312,10 +316,16 @@ if (isset($_SESSION['codigo'])) {
                     divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
                     divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
                     divBotonMenu.style.display = 'block'; // Mostrar el botón "Menú"
+                } else if (valorSeleccionado === 'Lunch') {
+                    divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
+                    divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
+                    divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
+                    divBotonLunch.style.display = 'block';
                 } else {
                     divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
                     divBotonPausar.style.display = 'block'; // Mostrar el botón "Pausar"
                     divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
+                    divBotonLunch.style.display = 'none';
                 }
             });
         });

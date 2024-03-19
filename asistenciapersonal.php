@@ -135,7 +135,7 @@ if (mysqli_num_rows($query_run) > 0) {
                 <p><?= $registro['salida_latest']; ?></p>
             </td>
             <td>
-                <p><?= $registro['horas_trabajadas_total']; ?></p>
+                <p><?= $registro['horas_trabajadas_total']; ?> <small>hrs</small></p>
             </td>
             <td>
                 <p><?= $registro['fecha']; ?></p>

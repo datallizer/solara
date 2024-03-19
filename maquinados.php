@@ -184,7 +184,7 @@ if (isset($_SESSION['codigo'])) {
                                                     } elseif ($registro['nivel'] === '4') {
                                                         echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
                                                     } else {
-                                                        echo "Error, contacte a soporte";
+                                                        echo "<td>Error, contacte a soporte</td>";
                                                     }
                                                     ?>
                                                     <?php
@@ -319,7 +319,7 @@ if (isset($_SESSION['codigo'])) {
                                                         } elseif ($registro['nivel'] === '4') {
                                                             echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
                                                         } else {
-                                                            echo "Error, contacte a soporte";
+                                                            echo "<td>Error, contacte a soporte</td>";
                                                         }
                                                         ?>
                                                         <td>

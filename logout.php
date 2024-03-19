@@ -4,6 +4,8 @@ require 'dbcon.php';
 
 if (isset($_SESSION['rol']) && ($_SESSION['rol'] != 1 && $_SESSION['rol'] != 2)) {
     $idcodigo = $_SESSION['codigo'];
+    $nombre = $_SESSION['nombre'];
+    $apellidop = $_SESSION['apellidop'];
     $fecha_actual = date("Y-m-d");
     $hora_actual = date("H:i");
     $query_verificar = "SELECT * FROM asistencia WHERE idcodigo='$idcodigo' AND salida IS NULL";

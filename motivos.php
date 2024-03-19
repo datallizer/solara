@@ -147,7 +147,7 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['motivosparo']; ?></td>
                                                     <td class="text-center">
                                                         <?php
-                                                        if ($registro['motivosparo'] !== "Trabajo terminado" && $registro['motivosparo'] !== "Atención a otra prioridad" && $registro['motivosparo'] !== "Fin de jornada laboral") {
+                                                        if ($registro['motivosparo'] !== "Trabajo terminado" && $registro['motivosparo'] !== "Atención a otra prioridad" && $registro['motivosparo'] !== "Fin de jornada laboral" && $registro['motivosparo'] !== "Lunch") {
                                                             // Muestra los elementos HTML (botones de editar y eliminar) si el motivo de paro no es "Pieza terminada" ni "Atención a otra prioridad"
                                                         ?>
                                                             <a href="editarmotivoensamble.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
