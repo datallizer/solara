@@ -59,3 +59,13 @@ a{
     border-radius: 10px;
     background-color: #2c5b87;
 }
+
+/* Margen para el elemento "Show entries" */
+.dataTables_length {
+    margin-bottom: 25px !important;
+}
+
+/* Margen para el elemento "Search" */
+.dataTables_filter {
+    margin-bottom: 25px !important;
+}

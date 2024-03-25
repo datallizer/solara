@@ -110,6 +110,8 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Técnico mecanico";
                                                         } else if ($registro['rol'] === '9') {
                                                             echo "Ing. Control";
+                                                        }else if ($registro['rol'] === '10') {
+                                                            echo "Recursos humanos";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }

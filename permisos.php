@@ -145,7 +145,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <title>Dashboard | Solara</title>
@@ -160,7 +160,15 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                     <div class="col-12">
                         <h2 class="mb-3">PERMISOS</h2>
                     </div>
-
+                    <div class="col-3 card text-center m-1 bg-dark">
+                        <a style="color: #fff;" class="p-3" href="asistenciageneral.php"><i class="bi bi-arrow-counterclockwise" style="font-size: 30px;"></i><br>Historico</a>
+                    </div>
+                    <div class="col card text-center m-1 bg-dark">
+                        <a style="color: #fff;" class="p-3" href="solicitudesrechazadasasistencia.php"><i class="bi bi-x-circle-fill" style="font-size: 30px;"></i><br>Permisios rechazados</a>
+                    </div>
+                    <div class="col-3 card text-center m-1 bg-dark">
+                        <a style="color: #fff;" class="p-3" href="asistencia.php"><i class="bi bi-clipboard2-check-fill" style="font-size: 30px;"></i><br>Asistencia</a>
+                    </div>
                 </div>
             </div>
         </div>

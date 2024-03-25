@@ -182,7 +182,7 @@ require 'dbcon.php';
                             $registro = mysqli_fetch_array($query_run);
                     ?>
                             <div class="row">
-                                <div class="col-6"><img style="width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                <div class="col-6"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                                 </div>
                                 <div class="col">
                                     <p style="margin-left: -10px;"><?= $registro['nombre']; ?><br>

@@ -51,7 +51,7 @@ if (isset($_SESSION['codigo'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Asistencia personal | Solara</title>
+    <title>Asistencia global | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
@@ -69,58 +69,8 @@ if (isset($_SESSION['codigo'])) {
                 <div class="row justify-content-center">
                     <div class="col-12">
                         <h3 class="p-2 bg-dark text-light align-items-top" style="text-transform: uppercase;border-radius:5px;">
-                            <?php
-                            if (isset($_GET['id'])) {
-                                $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                $query = "SELECT * FROM usuarios WHERE codigo='$registro_id' ";
-                                $query_run = mysqli_query($con, $query);
-
-                                if (mysqli_num_rows($query_run) > 0) {
-                                    $registro = mysqli_fetch_array($query_run);
-                                    $nombre = $registro['nombre'];
-                                    $apellidop = $registro['apellidop'];
-                                    $apellidom = $registro['apellidom'];
-                            ?>
-                                    <div class="row">
-                                        <div class="col-1"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil"></div>
-                                        <div class="col-11">
-                                            <a href="asistencia.php" class="btn btn-danger btn-sm float-end">Regresar</a>
-                                            <b>Asistencia</b><br>
-                                            Registro de <b><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></b><br>
-                                            <p style="font-size: 15px;text-transform:capitalize"><?php
-                                                                                                    if ($registro['rol'] === '1') {
-                                                                                                        echo "Administrador";
-                                                                                                    } else if ($registro['rol'] === '2') {
-                                                                                                        echo "Gerencia";
-                                                                                                    } else if ($registro['rol'] === '4') {
-                                                                                                        echo "Técnico controles";
-                                                                                                    } else if ($registro['rol'] === '5') {
-                                                                                                        echo "Ing. Diseño";
-                                                                                                    } else if ($registro['rol'] === '6') {
-                                                                                                        echo "Compras";
-                                                                                                    } else if ($registro['rol'] === '7') {
-                                                                                                        echo "Almacenista";
-                                                                                                    } else if ($registro['rol'] === '8') {
-                                                                                                        echo "Técnico mecanico";
-                                                                                                    } else if ($registro['rol'] === '9') {
-                                                                                                        echo "Ing. Control";
-                                                                                                    } else if ($registro['rol'] === '10') {
-                                                                                                        echo "Recursos humanos";
-                                                                                                    } else {
-                                                                                                        echo "Error, contacte a soporte";
-                                                                                                    }
-                                                                                                    ?></p>
-
-                                        </div>
-                                    </div>
-
-
-                            <?php
-                                }
-                            }
-                            ?>
-
-
+                            ASISTENCIA GLOBAL
+                            <a href="asistencia.php" class="btn btn-danger btn-sm float-end">Regresar</a>
                         </h3>
                     </div>
                     <div class="col-md-6">
@@ -135,14 +85,19 @@ if (isset($_SESSION['codigo'])) {
                                             <th scope="col">#</th>
                                             <th scope="col">Entrada</th>
                                             <th scope="col">Salida</th>
+                                            <th scope="col">Empleado</th>
                                             <th scope="col">Jornada</th>
                                             <th scope="col">Fecha</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                        $query = "SELECT fecha, MIN(entrada) AS entrada_earliest, MAX(salida) AS salida_latest, TIME_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(salida, entrada)))), '%H:%i') AS horas_trabajadas_total FROM asistencia WHERE idcodigo = $registro_id GROUP BY fecha";
+                                        $query = "SELECT a.fecha, 
+                                        MIN(a.entrada) AS entrada_earliest, 
+                                        MAX(a.salida) AS salida_latest, 
+                                        TIME_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(a.salida, a.entrada)))), '%H:%i') AS horas_trabajadas_total, 
+                                        u.nombre, u.apellidop FROM asistencia a INNER JOIN usuarios u ON a.idcodigo = u.codigo GROUP BY a.fecha";
+
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             $index = 1;
@@ -157,6 +112,9 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td>
                                                         <p><?= $registro['salida_latest']; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
                                                     </td>
                                                     <td>
                                                         <p><?= $registro['horas_trabajadas_total']; ?> <small>hrs</small></p>
@@ -191,15 +149,17 @@ if (isset($_SESSION['codigo'])) {
                                             <th scope="col">#</th>
                                             <th scope="col">Entrada</th>
                                             <th scope="col">Salida</th>
+                                            <th scope="col">Empleado</th>
                                             <th scope="col">Fecha</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $registro_id = mysqli_real_escape_string($con, $_GET['id']);
                                         $fecha_actual = date('Y-m-d'); // Obtiene la fecha actual en formato 'YYYY-MM-DD'
 
-                                        $query = "SELECT * FROM asistencia WHERE idcodigo = $registro_id";
+                                        $query = "SELECT asistencia.*, usuarios.nombre, usuarios.apellidop 
+          FROM asistencia 
+          INNER JOIN usuarios ON asistencia.idcodigo = usuarios.codigo";
                                         $query_run = mysqli_query($con, $query);
 
                                         if (mysqli_num_rows($query_run) > 0) {
@@ -275,6 +235,9 @@ if (isset($_SESSION['codigo'])) {
                                                         }
 
                                                         ?>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
                                                     </td>
                                                     <td>
                                                         <p><?= $registro['fecha']; ?></p>

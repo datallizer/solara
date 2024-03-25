@@ -57,7 +57,7 @@ if (isset($_SESSION['codigo'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <title>Asistencia | Solara</title>
@@ -68,30 +68,37 @@ if (isset($_SESSION['codigo'])) {
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
-                <div class="row justify-content-md-center justify-content-start mt-5 mb-5">
+                <div class="row justify-content-evenly mt-5 mb-5">
                     <div class="col-12">
                         <h2 class="mb-3">ASISTENCIA</h2>
                     </div>
-                    <div class="col-12 p-3 text-center" style="background-color: #e3e3e3;">
+                    <div class="col-3 card text-center m-1 bg-dark">
+                        <a style="color: #fff;" class="p-3" href="asistenciageneral.php"><i class="bi bi-grid-3x3-gap-fill" style="font-size: 30px;"></i><br>General</a>
+                    </div>
+                    <div class="col card text-center m-1 bg-dark">
+                        <a style="color: #fff;" class="p-3" href="solicitudesrechazadasasistencia.php"><i class="bi bi-x-circle-fill" style="font-size: 30px;"></i><br>Solicitudes rechazadas</a>
+                    </div>
+                    <div class="col-3 card text-center m-1 bg-dark">
+                        <a style="color: #fff;" class="p-3" href="permisos.php"><i class="bi bi-calendar-check-fill" style="font-size: 30px;"></i><br>Permisos</a>
+                    </div>
+                    <div class="col-12 p-3 text-center mt-3" style="border: 1px solid #e7e7e7;">
                     <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Usuario</th>
-                                            <th>Codigo acceso</th>
                                             <th>Rol</th>
                                             <th>Accion</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM usuarios WHERE estatus=1 ORDER BY id DESC";
+                                        $query = "SELECT * FROM usuarios WHERE estatus=1 AND rol<>1 ORDER BY id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
                                         ?>
-                                                <tr>
+                                                <tr class="text-start">
                                                     <td><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></td>
-                                                    <td><?= $registro['codigo']; ?></td>
                                                     <td>
                                                         <?php
                                                         if ($registro['rol'] === '1') {
@@ -110,26 +117,26 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Técnico mecanico";
                                                         } else if ($registro['rol'] === '9') {
                                                             echo "Ing. Control";
+                                                        } else if ($registro['rol'] === '10') {
+                                                            echo "Recursos humanos";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
                                                         ?>
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         <a href="asistenciapersonal.php?id=<?= $registro['codigo']; ?>" class="btn btn-primary btn-sm m-1"><i class="bi bi-eye-fill"></i></a>
                                                     </td>
                                                 </tr>
                                         <?php
                                             }
                                         } else {
-                                            echo "<td><p>No se encontro ningun usuario</p></td><td></td><td></td><td></td>
-                                            <td></td>";
+                                            echo "<td colspan='4'><p>No se encontro ningun usuario</p></td>";
                                         }
                                         ?>
                                     </tbody>
                                 </table>
                     </div>
-
                 </div>
             </div>
         </div>
