@@ -143,7 +143,7 @@ if (isset($_SESSION['codigo'])) {
                                                                                     <label for="salidarechazada">Hora de salida rechazada</label>
                                                                                 </div>
                                                                                 <div class="form-floating col-12 mb-3">
-                                                                                    <input style="background-color:#ffffff;" type="time" class="form-control" name="salida" id="salida" placeholder="Salida" autocomplete="off" focus required>
+                                                                                    <input style="background-color:#ffffff;" type="time" class="form-control" name="salida" id="salida" placeholder="Salida" autocomplete="off" required>
                                                                                     <label for="salida">Nueva hora de salida</label>
                                                                                 </div>
                                                                                 <div class="col-12">

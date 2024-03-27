@@ -96,9 +96,8 @@ if (isset($_SESSION['codigo'])) {
             MIN(entrada) AS entrada_earliest, 
             MAX(salida) AS salida_latest, 
             SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(salida, entrada)))) AS horas_trabajadas_total 
-          FROM 
-            asistencia INNER JOIN usuarios ON asistencia.idcodigo = usuarios.codigo GROUP BY 
-            fecha";
+          FROM asistencia INNER JOIN usuarios ON asistencia.idcodigo = usuarios.codigo GROUP BY 
+            fecha, idcodigo";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             $index = 1;
@@ -195,39 +194,34 @@ if (isset($_SESSION['codigo'])) {
                                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                         </div>
                                                                         <div class="modal-body">
-                                                                            <form id="asistenciaForm" action="codeasistencia.php" method="POST" class="row">
-                                                                                <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
-                                                                                <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
-                                                                                <div class="form-floating col-12 mb-3">
-                                                                                    <input type="text" class="form-control" id="fecha" value="<?= $registro['fecha']; ?>" placeholder="Fecha" autocomplete="off" disabled>
-                                                                                    <label for="fecha">Fecha <span class="small">(YYYY/MM/DD)</span></label>
-                                                                                </div>
-                                                                                <div class="form-floating col-12 mb-3">
-                                                                                    <input type="time" class="form-control" id="entrada" value="<?= $registro['entrada']; ?>" placeholder="Entrada" autocomplete="off" disabled>
-                                                                                    <label for="entrada">Hora de entrada</label>
-                                                                                </div>
-                                                                                <div class="form-floating col-12 mb-3">
-                                                                                    <input style="background-color:#ffffff;" type="time" class="form-control" name="salida" id="salida" placeholder="Salida" autocomplete="off" focus required>
-                                                                                    <label for="salida">Ingresa la hora de salida</label>
-                                                                                </div>
-                                                                                <div class="col-12">
-                                                                                    <p id="duracionJornada">La jornada será de: </p>
-                                                                                </div>
-                                                                                <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                                                    <?php
-                                                                                    if ($registro['idcodigo'] == $codigo) {
-                                                                                    ?>
-                                                                                        <button type="submit" class="btn btn-primary" name="propio">Actualizar</button>
-                                                                                    <?php
-                                                                                    } else {
-                                                                                    ?>
-                                                                                        <button type="submit" class="btn btn-primary" name="solicitar">Solicitar</button>
-                                                                                    <?php
-                                                                                    }
-                                                                                    ?>
-                                                                                </div>
-                                                                            </form>
+                                                                        <form id="asistenciaForm" action="codeasistencia.php" method="POST" class="row">
+    <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
+    <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
+    <div class="form-floating col-12 mb-3">
+        <input type="text" class="form-control" id="fechadetail" value="<?= $registro['fecha']; ?>" placeholder="Fecha" autocomplete="off" disabled>
+        <label for="fechadetail">Fecha <span class="small">(YYYY/MM/DD)</span></label>
+    </div>
+    <div class="form-floating col-12 mb-3">
+        <input type="time" class="form-control" id="entradadetail" value="<?= $registro['entrada']; ?>" placeholder="Entrada" autocomplete="off" disabled>
+        <label for="entradadetail">Hora de entrada</label>
+    </div>
+    <div class="form-floating col-12 mb-3">
+    <input style="background-color:#ffffff;" type="time" class="form-control" name="salidadetail" id="salidadetail" placeholder="Salida" autocomplete="off" required>
+    <label for="salidadetail">Ingresa la hora de salida</label>
+</div>
+<div class="col-12">
+    <p id="duracionJornada">La jornada será de: </p>
+</div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <?php if ($registro['idcodigo'] == $codigo) { ?>
+            <button type="submit" class="btn btn-primary" name="propio">Actualizar</button>
+        <?php } else { ?>
+            <button type="submit" class="btn btn-primary" name="solicitar">Solicitar</button>
+        <?php } ?>
+    </div>
+</form>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -277,14 +271,13 @@ if (isset($_SESSION['codigo'])) {
                     "order": [
                         [0, "desc"]
                     ],
-                    "pageLength": 25
+                    "pageLength": 100
                 });
-            });
 
-            document.getElementById("asistenciaForm").addEventListener("submit", function(event) {
+                document.getElementById("asistenciaForm").addEventListener("submit", function(event) {
                 // Obtener la hora de entrada y salida
-                var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entrada").value);
-                var salida = new Date("<?= $registro['fecha'] ?> " + document.getElementById("salida").value);
+                var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entradadetail").value);
+                var salida = new Date("<?= $registro['fecha'] ?> " + document.getElementById("salidadetail").value);
 
                 // Verificar si la hora de salida es anterior a la hora de entrada
                 if (salida <= entrada) {
@@ -299,22 +292,27 @@ if (isset($_SESSION['codigo'])) {
                 }
             });
 
-            var salidaInput = document.getElementById("salida");
-            salidaInput.addEventListener("input", function() {
-                // Obtener la hora de entrada y salida
-                var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entrada").value);
-                var salida = new Date("<?= $registro['fecha'] ?> " + this.value);
+                // Asignar el evento input al campo de salida cuando el documento esté cargado
+    document.getElementById("salidadetail").addEventListener("input", calcularDuracionJornada);
 
-                // Calcular la diferencia en milisegundos
-                var diferencia = salida.getTime() - entrada.getTime();
+function calcularDuracionJornada() {
+    var entrada = document.getElementById("entradadetail").value;
+    var salida = document.getElementById("salidadetail").value;
 
-                // Convertir la diferencia de milisegundos a horas y minutos
-                var horas = Math.floor(diferencia / (1000 * 60 * 60));
-                var minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+    if (entrada && salida) {
+        var entradaHora = new Date("2000-01-01 " + entrada);
+        var salidaHora = new Date("2000-01-01 " + salida);
+        var duracionMs = salidaHora - entradaHora;
 
-                // Mostrar la duración de la jornada en el párrafo
-                document.getElementById("duracionJornada").textContent = "La jornada será de: " + horas + " horas y " + minutos + " minutos";
+        var duracionHoras = Math.floor(duracionMs / (1000 * 60 * 60));
+        var duracionMinutos = Math.floor((duracionMs % (1000 * 60 * 60)) / (1000 * 60));
+
+        document.getElementById("duracionJornada").innerHTML = "La jornada será de: " + duracionHoras + " horas y " + duracionMinutos + " minutos.";
+    }
+}
             });
+
+        
         </script>
 </body>
 

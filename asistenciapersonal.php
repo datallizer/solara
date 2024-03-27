@@ -325,9 +325,8 @@ if (mysqli_num_rows($query_run) > 0) {
                     ],
                     "pageLength": 25
                 });
-            });
 
-            document.getElementById("asistenciaForm").addEventListener("submit", function(event) {
+                document.getElementById("asistenciaForm").addEventListener("submit", function(event) {
                 // Obtener la hora de entrada y salida
                 var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entrada").value);
                 var salida = new Date("<?= $registro['fecha'] ?> " + document.getElementById("salida").value);
@@ -361,6 +360,8 @@ if (mysqli_num_rows($query_run) > 0) {
                 // Mostrar la duración de la jornada en el párrafo
                 document.getElementById("duracionJornada").textContent = "La jornada será de: " + horas + " horas y " + minutos + " minutos";
             });
+            });
+
         </script>
 </body>
 
