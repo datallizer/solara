@@ -62,10 +62,18 @@ a{
 
 /* Margen para el elemento "Show entries" */
 .dataTables_length {
-    margin-bottom: 25px !important;
+    margin-bottom: 18px !important;
 }
 
 /* Margen para el elemento "Search" */
 .dataTables_filter {
-    margin-bottom: 25px !important;
+    margin-bottom: 18px !important;
+}
+.card-header{
+    padding-top: 10px !important;
+    background-color: #222222 !important;
+    color: #ffffff !important;
+}
+.dataTable{
+    border-top: 1px solid #c7c7c7 !important;
 }

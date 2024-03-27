@@ -27,6 +27,24 @@ if (isset($_POST['delete'])) {
     }
 }
 
+if (isset($_POST['update'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $notas = mysqli_real_escape_string($con, $_POST['notas']);
+
+    $query = "UPDATE `quotes` SET `notas` = '$notas' WHERE `quotes`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Quote editado exitosamente";
+        header("Location: quotes.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar el quote, contacte a soporte";
+        header("Location: quotes.php");
+        exit(0);
+    }
+}
+
 
 if (isset($_POST['aprobar'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['aprobar']);
@@ -81,7 +99,27 @@ if (isset($_POST['aprobar'])) {
                 <tr>
                     <td>{$registro_aprobado['id']}</td>
                     <td>{$registro_aprobado['solicitante']}</td>
-                    <td>{$registro_aprobado['rol']}</td>
+                    <td>";
+                    if ($registro_aprobado['rol'] === '1') {
+                        $html_content .= "Administrador";
+                    } else if ($registro_aprobado['rol'] === '2') {
+                        $html_content .= "Gerencia";
+                    } else if ($registro_aprobado['rol'] === '4') {
+                        $html_content .= "Técnico controles";
+                    } else if ($registro_aprobado['rol'] === '5') {
+                        $html_content .= "Ing. Diseño";
+                    } else if ($registro_aprobado['rol'] === '6') {
+                        $html_content .= "Compras";
+                    } else if ($registro_aprobado['rol'] === '7') {
+                        $html_content .= "Almacenista";
+                    } else if ($registro_aprobado['rol'] === '8') {
+                        $html_content .= "Técnico mecanico";
+                    } else if ($registro_aprobado['rol'] === '9') {
+                        $html_content .= "Ing. Control";
+                    } else {
+                        $html_content .= "Error, contacte a soporte";
+                    }
+                    $html_content .= "</td>
                     <td>{$registro_aprobado['cotizacion']}</td>
                     <td><a href='http://192.168.1.38:81/solara/vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
                     <td>{$registro_aprobado['notas']}</td>
@@ -89,10 +127,11 @@ if (isset($_POST['aprobar'])) {
                 </tr>
             </table>
 
-            <p style='font-size:10px;'>Este es un email enviado automaticamente por el sistema de planificación de recursos empresariales SOLARA AI, la información previa a sido generada utilizando datos históricos almacenados en la base de datos de SOLARA, es importante tener en cuenta que la información u otros detalles presentados en este email podrían estar desactualizados, descontinuados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos desde el submódulo 'Compras'</p>
+            <p style='font-size:10px;'>Este es un email enviado automáticamente por el sistema de planificación de recursos empresariales SOLARA AI, la información previa ha sido generada utilizando datos históricos almacenados en la base de datos de SOLARA, es importante tener en cuenta que la información u otros detalles presentados en este email podrían estar desactualizados, descontinuados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos desde el submódulo 'Compras'</p>
         </body>
         </html>
     ";
+
 
     // Crear instancia PHPMailer
     $mail = new PHPMailer(true);

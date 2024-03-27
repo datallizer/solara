@@ -145,8 +145,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<td><p>No se encontro ningun usuario</p></td><td></td><td></td><td></td>
-                                            <td></td>";
+                                            echo "<td colspan='5'><p>No se encontro ningun usuario</p></td>";
                                         }
                                         ?>
                                     </tbody>

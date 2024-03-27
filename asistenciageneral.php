@@ -64,8 +64,7 @@ if (isset($_SESSION['codigo'])) {
     <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
-            <div class="container mt-5">
-
+            <div class="container mt-5 mb-4">
                 <div class="row justify-content-center">
                     <div class="col-12">
                         <h3 class="p-2 bg-dark text-light align-items-top" style="text-transform: uppercase;border-radius:5px;">
@@ -92,32 +91,43 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT a.fecha, 
-                                        MIN(a.entrada) AS entrada_earliest, 
-                                        MAX(a.salida) AS salida_latest, 
-                                        TIME_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(a.salida, a.entrada)))), '%H:%i') AS horas_trabajadas_total, 
-                                        u.nombre, u.apellidop FROM asistencia a INNER JOIN usuarios u ON a.idcodigo = u.codigo GROUP BY a.fecha";
-
+                                        $query = "SELECT 
+            fecha, idcodigo, usuarios.nombre, usuarios.apellidop,
+            MIN(entrada) AS entrada_earliest, 
+            MAX(salida) AS salida_latest, 
+            SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(salida, entrada)))) AS horas_trabajadas_total 
+          FROM 
+            asistencia INNER JOIN usuarios ON asistencia.idcodigo = usuarios.codigo GROUP BY 
+            fecha";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             $index = 1;
                                             foreach ($query_run as $registro) {
+                                                // Calcular individualmente el tiempo de trabajo para cada registro
+                                                $entrada_earliest = $registro['entrada_earliest'];
+                                                $salida_latest = $registro['salida_latest'];
+                                                $horas_trabajadas_individual = date_diff(date_create($entrada_earliest), date_create($salida_latest))->format('%H:%I');
+
+                                                // Mostrar la hora más temprana de entrada y la hora más tardía de salida
+                                                $hora_entrada = $registro['entrada_earliest'];
+                                                $hora_salida = $registro['salida_latest'];
+
                                         ?>
                                                 <tr>
                                                     <td>
                                                         <p><?= $index++; ?></p>
                                                     </td>
                                                     <td>
-                                                        <p><?= $registro['entrada_earliest']; ?></p>
+                                                        <p><?= $hora_entrada; ?></p>
                                                     </td>
                                                     <td>
-                                                        <p><?= $registro['salida_latest']; ?></p>
+                                                        <p><?= $hora_salida; ?></p>
                                                     </td>
                                                     <td>
                                                         <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
                                                     </td>
                                                     <td>
-                                                        <p><?= $registro['horas_trabajadas_total']; ?> <small>hrs</small></p>
+                                                        <p><?= $horas_trabajadas_individual; ?> <small>hrs</small></p>
                                                     </td>
                                                     <td>
                                                         <p><?= $registro['fecha']; ?></p>
@@ -129,8 +139,6 @@ if (isset($_SESSION['codigo'])) {
                                             echo "<tr><td colspan='6'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
-
-
 
                                     </tbody>
                                 </table>

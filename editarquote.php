@@ -62,51 +62,51 @@ if (isset($_SESSION['codigo'])) {
                 <div class="row justify-content-center">
                     <div class="col-md-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4>EDITAR REORDEN
-                                    <a href="reorden.php" class="btn btn-danger btn-sm float-end">Regresar</a>
-                                </h4>
-                            </div>
-                            <div class="card-body">
-
-                                <?php
+                        <?php
                                 
                                 if (isset($_GET['id'])) {
                                     $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                    $query = "SELECT * FROM inventario WHERE id='$registro_id' ";
+                                    $query = "SELECT * FROM quotes WHERE id='$registro_id' ";
                                     $query_run = mysqli_query($con, $query);
 
                                     if (mysqli_num_rows($query_run) > 0) {
                                         $registro = mysqli_fetch_array($query_run);
 
                                 ?>
+                            <div class="card-header">
+                                <h4>EDITAR QUOTE
+                                <a href="reorden.php" class="btn btn-danger btn-sm float-end m-1">Regresar</a>
+                                <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver cotizacion <?= $registro['cotizacion']; ?></button>
+                                                        <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title text-dark" id="pdfModalLabel">Cotización <?= $registro['cotizacion']; ?></h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                    
+                                </h4>
+                            </div>
+                            <div class="card-body">
+
                                 
-                                        <form action="codeinventario.php" method="POST" enctype="multipart/form-data">
+                                
+                                        <form action="codequotes.php" method="POST" enctype="multipart/form-data">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row mt-1">
                                                 <div class="form-floating col-12">
-                                                    <input type="text" class="form-control" name="nombre" id="nombre" value="<?= $registro['nombre']; ?>">
-                                                    <label for="nombre">Nombre</label>
+                                                    <textarea type="text" style="min-height: 380px;" class="form-control" name="notas" id="notas"><?= $registro['notas']; ?></textarea>
+                                                    <label for="notas">Notas</label>
                                                 </div>
-
-                                                <div class="form-floating col-2 mt-3">
-                                                    <input type="number" class="form-control" name="cantidad" id="cantidad" value="<?= $registro['cantidad']; ?>" readonly>
-                                                    <label for="cantidad">Cantidad</label>
-                                                </div>
-
-                                                <div class="form-floating col-3 mt-3">
-                                                    <input type="number" class="form-control" name="maximo" id="maximo" value="<?= $registro['maximo']; ?>">
-                                                    <label for="maximo">Maximo</label>
-                                                </div>
-
-                                                <div class="form-floating col-3 mt-3">
-                                                    <input type="number" class="form-control" name="minimo" id="minimo" value="<?= $registro['minimo']; ?>">
-                                                    <label for="minimo">Minimo</label>
-                                                </div>
-
                                                 <div class="col-12 text-center mt-3">
-                                                    <button type="submit" name="reorden" class="btn btn-primary">
+                                                    <button type="submit" name="update" class="btn btn-warning">
                                                         Actualizar
                                                     </button>
                                                 </div>
@@ -118,7 +118,7 @@ if (isset($_SESSION['codigo'])) {
                             </form>
                     <?php
                                     } else {
-                                        echo "<h4>No Such Id Found</h4>";
+                                        echo "<h4>No such ID found</h4>";
                                     }
                                 }
                     ?>

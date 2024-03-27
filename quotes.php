@@ -153,10 +153,13 @@ if (isset($_SESSION['codigo'])) {
                                                         <form action="codequotes.php" method="POST" class="d-inline">
                                                             <?php
                                                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2,3,4,5,6,7,8,9])){
-                                                                echo '<button type="submit" name="delete" value="' . $registro['id_quote'] . '" class="btn btn-danger btn-sm m-1 float-end deletebtn"><i class="bi bi-trash-fill"></i></button>';
+                                                                echo '<button type="submit" name="delete" value="' . $registro['id_quote'] . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>';
                                                             }
+                                                            ?>
+                                                            <a href="editarquote.php?id=<?= $registro['id_quote']; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                            <?php
                                                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])){
-                                                                echo '<button type="submit" name="aprobar" value="' . $registro['id_quote'] . '" class="btn btn-success btn-sm m-1 float-end"><i class="bi bi-check-lg"> Aprobar</i></button>';
+                                                                echo '<button type="submit" name="aprobar" value="' . $registro['id_quote'] . '" class="btn btn-success btn-sm m-1"><i class="bi bi-check-lg"> Aprobar</i></button>';
                                                             }
                                                             ?>                                                          
                                                         </form>
