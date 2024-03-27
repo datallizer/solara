@@ -126,7 +126,13 @@ if (isset($_SESSION['codigo'])) {
                                                         <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
                                                     </td>
                                                     <td>
-                                                        <p><?= $horas_trabajadas_individual; ?> <small>hrs</small></p>
+                                                        <p>
+                                                            <?php if($hora_salida == NULL){
+                                                                echo'-';
+                                                            }else{
+                                                                echo"$horas_trabajadas_individual <small>hrs</small>";
+                                                            } ?>
+                                                            </p>
                                                     </td>
                                                     <td>
                                                         <p><?= $registro['fecha']; ?></p>
@@ -194,34 +200,34 @@ if (isset($_SESSION['codigo'])) {
                                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                         </div>
                                                                         <div class="modal-body">
-                                                                        <form id="asistenciaForm" action="codeasistencia.php" method="POST" class="row">
-    <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
-    <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
-    <div class="form-floating col-12 mb-3">
-        <input type="text" class="form-control" id="fechadetail" value="<?= $registro['fecha']; ?>" placeholder="Fecha" autocomplete="off" disabled>
-        <label for="fechadetail">Fecha <span class="small">(YYYY/MM/DD)</span></label>
-    </div>
-    <div class="form-floating col-12 mb-3">
-        <input type="time" class="form-control" id="entradadetail" value="<?= $registro['entrada']; ?>" placeholder="Entrada" autocomplete="off" disabled>
-        <label for="entradadetail">Hora de entrada</label>
-    </div>
-    <div class="form-floating col-12 mb-3">
-    <input style="background-color:#ffffff;" type="time" class="form-control" name="salidadetail" id="salidadetail" placeholder="Salida" autocomplete="off" required>
-    <label for="salidadetail">Ingresa la hora de salida</label>
-</div>
-<div class="col-12">
-    <p id="duracionJornada">La jornada será de: </p>
-</div>
+                                                                            <form id="asistenciaForm" action="codeasistencia.php" method="POST" class="row">
+                                                                                <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
+                                                                                <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
+                                                                                <div class="form-floating col-12 mb-3">
+                                                                                    <input type="text" class="form-control" id="fechadetail" value="<?= $registro['fecha']; ?>" placeholder="Fecha" autocomplete="off" disabled>
+                                                                                    <label for="fechadetail">Fecha <span class="small">(YYYY/MM/DD)</span></label>
+                                                                                </div>
+                                                                                <div class="form-floating col-12 mb-3">
+                                                                                    <input type="time" class="form-control" id="entradadetail" value="<?= $registro['entrada']; ?>" placeholder="Entrada" autocomplete="off" disabled>
+                                                                                    <label for="entradadetail">Hora de entrada</label>
+                                                                                </div>
+                                                                                <div class="form-floating col-12 mb-3">
+                                                                                    <input style="background-color:#ffffff;" type="time" class="form-control" name="salidadetail" id="salidadetail" placeholder="Salida" autocomplete="off" required>
+                                                                                    <label for="salidadetail">Ingresa la hora de salida</label>
+                                                                                </div>
+                                                                                <div class="col-12">
+                                                                                    <p id="duracionJornada">La jornada será de: </p>
+                                                                                </div>
 
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <?php if ($registro['idcodigo'] == $codigo) { ?>
-            <button type="submit" class="btn btn-primary" name="propio">Actualizar</button>
-        <?php } else { ?>
-            <button type="submit" class="btn btn-primary" name="solicitar">Solicitar</button>
-        <?php } ?>
-    </div>
-</form>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                                                    <?php if ($registro['idcodigo'] == $codigo) { ?>
+                                                                                        <button type="submit" class="btn btn-primary" name="propio">Actualizar</button>
+                                                                                    <?php } else { ?>
+                                                                                        <button type="submit" class="btn btn-primary" name="solicitar">Solicitar</button>
+                                                                                    <?php } ?>
+                                                                                </div>
+                                                                            </form>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -275,44 +281,42 @@ if (isset($_SESSION['codigo'])) {
                 });
 
                 document.getElementById("asistenciaForm").addEventListener("submit", function(event) {
-                // Obtener la hora de entrada y salida
-                var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entradadetail").value);
-                var salida = new Date("<?= $registro['fecha'] ?> " + document.getElementById("salidadetail").value);
+                    // Obtener la hora de entrada y salida
+                    var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entradadetail").value);
+                    var salida = new Date("<?= $registro['fecha'] ?> " + document.getElementById("salidadetail").value);
 
-                // Verificar si la hora de salida es anterior a la hora de entrada
-                if (salida <= entrada) {
-                    // Mostrar un mensaje de error con SweetAlert
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: '¡La hora de salida no puede ser anterior o igual a la hora de entrada!'
-                    });
-                    // Prevenir el envío del formulario
-                    event.preventDefault();
-                }
-            });
+                    // Verificar si la hora de salida es anterior a la hora de entrada
+                    if (salida <= entrada) {
+                        // Mostrar un mensaje de error con SweetAlert
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: '¡La hora de salida no puede ser anterior o igual a la hora de entrada!'
+                        });
+                        // Prevenir el envío del formulario
+                        event.preventDefault();
+                    }
+                });
 
                 // Asignar el evento input al campo de salida cuando el documento esté cargado
-    document.getElementById("salidadetail").addEventListener("input", calcularDuracionJornada);
+                document.getElementById("salidadetail").addEventListener("input", calcularDuracionJornada);
 
-function calcularDuracionJornada() {
-    var entrada = document.getElementById("entradadetail").value;
-    var salida = document.getElementById("salidadetail").value;
+                function calcularDuracionJornada() {
+                    var entrada = document.getElementById("entradadetail").value;
+                    var salida = document.getElementById("salidadetail").value;
 
-    if (entrada && salida) {
-        var entradaHora = new Date("2000-01-01 " + entrada);
-        var salidaHora = new Date("2000-01-01 " + salida);
-        var duracionMs = salidaHora - entradaHora;
+                    if (entrada && salida) {
+                        var entradaHora = new Date("2000-01-01 " + entrada);
+                        var salidaHora = new Date("2000-01-01 " + salida);
+                        var duracionMs = salidaHora - entradaHora;
 
-        var duracionHoras = Math.floor(duracionMs / (1000 * 60 * 60));
-        var duracionMinutos = Math.floor((duracionMs % (1000 * 60 * 60)) / (1000 * 60));
+                        var duracionHoras = Math.floor(duracionMs / (1000 * 60 * 60));
+                        var duracionMinutos = Math.floor((duracionMs % (1000 * 60 * 60)) / (1000 * 60));
 
-        document.getElementById("duracionJornada").innerHTML = "La jornada será de: " + duracionHoras + " horas y " + duracionMinutos + " minutos.";
-    }
-}
+                        document.getElementById("duracionJornada").innerHTML = "La jornada será de: " + duracionHoras + " horas y " + duracionMinutos + " minutos.";
+                    }
+                }
             });
-
-        
         </script>
 </body>
 

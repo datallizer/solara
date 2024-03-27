@@ -140,9 +140,9 @@ if (isset($_SESSION['codigo'])) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php
-$registro_id = mysqli_real_escape_string($con, $_GET['id']);
-$query = "SELECT 
+                                        <?php
+                                        $registro_id = mysqli_real_escape_string($con, $_GET['id']);
+                                        $query = "SELECT 
             fecha, 
             MIN(entrada) AS entrada_earliest, 
             MAX(salida) AS salida_latest, 
@@ -153,43 +153,49 @@ $query = "SELECT
             idcodigo = $registro_id 
           GROUP BY 
             fecha";
-$query_run = mysqli_query($con, $query);
-if (mysqli_num_rows($query_run) > 0) {
-    $index = 1;
-    foreach ($query_run as $registro) {
-        // Calcular individualmente el tiempo de trabajo para cada registro
-        $entrada_earliest = $registro['entrada_earliest'];
-        $salida_latest = $registro['salida_latest'];
-        $horas_trabajadas_individual = date_diff(date_create($entrada_earliest), date_create($salida_latest))->format('%H:%I');
+                                        $query_run = mysqli_query($con, $query);
+                                        if (mysqli_num_rows($query_run) > 0) {
+                                            $index = 1;
+                                            foreach ($query_run as $registro) {
+                                                // Calcular individualmente el tiempo de trabajo para cada registro
+                                                $entrada_earliest = $registro['entrada_earliest'];
+                                                $salida_latest = $registro['salida_latest'];
+                                                $horas_trabajadas_individual = date_diff(date_create($entrada_earliest), date_create($salida_latest))->format('%H:%I');
 
-        // Mostrar la hora más temprana de entrada y la hora más tardía de salida
-        $hora_entrada = $registro['entrada_earliest'];
-        $hora_salida = $registro['salida_latest'];
+                                                // Mostrar la hora más temprana de entrada y la hora más tardía de salida
+                                                $hora_entrada = $registro['entrada_earliest'];
+                                                $hora_salida = $registro['salida_latest'];
 
-        ?>
-        <tr>
-            <td>
-                <p><?= $index++; ?></p>
-            </td>
-            <td>
-                <p><?= $hora_entrada; ?></p>
-            </td>
-            <td>
-                <p><?= $hora_salida; ?></p>
-            </td>
-            <td>
-                <p><?= $horas_trabajadas_individual; ?> <small>hrs</small></p>
-            </td>
-            <td>
-                <p><?= $registro['fecha']; ?></p>
-            </td>
-        </tr>
-    <?php
-    }
-} else {
-    echo "<tr><td colspan='6'><p>No se encontró ningún registro</p></td></tr>";
-}
-?>
+                                        ?>
+                                                <tr>
+                                                    <td>
+                                                        <p><?= $index++; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $hora_entrada; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $hora_salida; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p>
+                                                            <?php if ($hora_salida == NULL) {
+                                                                echo '-';
+                                                            } else {
+                                                                echo "$horas_trabajadas_individual <small>hrs</small>";
+                                                            } ?>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $registro['fecha']; ?></p>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='6'><p>No se encontró ningún registro</p></td></tr>";
+                                        }
+                                        ?>
 
                                     </tbody>
                                 </table>
@@ -327,41 +333,40 @@ if (mysqli_num_rows($query_run) > 0) {
                 });
 
                 document.getElementById("asistenciaForm").addEventListener("submit", function(event) {
-                // Obtener la hora de entrada y salida
-                var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entrada").value);
-                var salida = new Date("<?= $registro['fecha'] ?> " + document.getElementById("salida").value);
+                    // Obtener la hora de entrada y salida
+                    var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entrada").value);
+                    var salida = new Date("<?= $registro['fecha'] ?> " + document.getElementById("salida").value);
 
-                // Verificar si la hora de salida es anterior a la hora de entrada
-                if (salida <= entrada) {
-                    // Mostrar un mensaje de error con SweetAlert
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: '¡La hora de salida no puede ser anterior o igual a la hora de entrada!'
-                    });
-                    // Prevenir el envío del formulario
-                    event.preventDefault();
-                }
+                    // Verificar si la hora de salida es anterior a la hora de entrada
+                    if (salida <= entrada) {
+                        // Mostrar un mensaje de error con SweetAlert
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: '¡La hora de salida no puede ser anterior o igual a la hora de entrada!'
+                        });
+                        // Prevenir el envío del formulario
+                        event.preventDefault();
+                    }
+                });
+
+                var salidaInput = document.getElementById("salida");
+                salidaInput.addEventListener("input", function() {
+                    // Obtener la hora de entrada y salida
+                    var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entrada").value);
+                    var salida = new Date("<?= $registro['fecha'] ?> " + this.value);
+
+                    // Calcular la diferencia en milisegundos
+                    var diferencia = salida.getTime() - entrada.getTime();
+
+                    // Convertir la diferencia de milisegundos a horas y minutos
+                    var horas = Math.floor(diferencia / (1000 * 60 * 60));
+                    var minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+
+                    // Mostrar la duración de la jornada en el párrafo
+                    document.getElementById("duracionJornada").textContent = "La jornada será de: " + horas + " horas y " + minutos + " minutos";
+                });
             });
-
-            var salidaInput = document.getElementById("salida");
-            salidaInput.addEventListener("input", function() {
-                // Obtener la hora de entrada y salida
-                var entrada = new Date("<?= $registro['fecha'] ?> " + document.getElementById("entrada").value);
-                var salida = new Date("<?= $registro['fecha'] ?> " + this.value);
-
-                // Calcular la diferencia en milisegundos
-                var diferencia = salida.getTime() - entrada.getTime();
-
-                // Convertir la diferencia de milisegundos a horas y minutos
-                var horas = Math.floor(diferencia / (1000 * 60 * 60));
-                var minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-
-                // Mostrar la duración de la jornada en el párrafo
-                document.getElementById("duracionJornada").textContent = "La jornada será de: " + horas + " horas y " + minutos + " minutos";
-            });
-            });
-
         </script>
 </body>
 
