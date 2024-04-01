@@ -67,7 +67,6 @@ if (isset($_SESSION['codigo'])) {
                                     <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         Nuevo usuario
                                     </button>
-                                    <a style="margin:0px 5px;" href="dashboard.php" class="btn btn-dark btn-sm float-end">Inicio</a>
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">

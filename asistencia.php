@@ -75,67 +75,81 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-3 card text-center m-1 bg-dark">
                         <a style="color: #fff;" class="p-3" href="asistenciageneral.php"><i class="bi bi-grid-3x3-gap-fill" style="font-size: 30px;"></i><br>General</a>
                     </div>
+                    <?php
+                    // Suponiendo que ya tienes una conexión a tu base de datos
+                    // Realiza la consulta SQL para obtener el número de registros con estatus = 2
+                    $sql = "SELECT COUNT(*) AS total_registros FROM asistencia WHERE estatus = 2";
+                    $resultado = mysqli_query($con, $sql);
+                    $fila = mysqli_fetch_assoc($resultado);
+                    $total_registros = $fila['total_registros'];
+                    ?>
+
                     <div class="col card text-center m-1 bg-dark">
                         <a style="color: #fff;" class="p-3" href="solicitudesrechazadasasistencia.php"><i class="bi bi-x-circle-fill" style="font-size: 30px;"></i><br>Solicitudes rechazadas</a>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <?php echo $total_registros; ?>
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
                     </div>
+
                     <div class="col-3 card text-center m-1 bg-dark">
                         <a style="color: #fff;" class="p-3" href="permisos.php"><i class="bi bi-calendar-check-fill" style="font-size: 30px;"></i><br>Permisos</a>
                     </div>
                     <div class="col-12 p-3 text-center mt-3" style="border: 1px solid #e7e7e7;">
-                    <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Usuario</th>
-                                            <th>Rol</th>
-                                            <th>Accion</th>
+                        <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th>Accion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $query = "SELECT * FROM usuarios WHERE estatus=1 AND rol<>1 ORDER BY id DESC";
+                                $query_run = mysqli_query($con, $query);
+                                if (mysqli_num_rows($query_run) > 0) {
+                                    foreach ($query_run as $registro) {
+                                ?>
+                                        <tr class="text-start">
+                                            <td><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></td>
+                                            <td>
+                                                <?php
+                                                if ($registro['rol'] === '1') {
+                                                    echo "Administrador";
+                                                } else if ($registro['rol'] === '2') {
+                                                    echo "Gerencia";
+                                                } else if ($registro['rol'] === '4') {
+                                                    echo "Técnico controles";
+                                                } else if ($registro['rol'] === '5') {
+                                                    echo "Ing. Diseño";
+                                                } else if ($registro['rol'] === '6') {
+                                                    echo "Compras";
+                                                } else if ($registro['rol'] === '7') {
+                                                    echo "Almacenista";
+                                                } else if ($registro['rol'] === '8') {
+                                                    echo "Técnico mecanico";
+                                                } else if ($registro['rol'] === '9') {
+                                                    echo "Ing. Control";
+                                                } else if ($registro['rol'] === '10') {
+                                                    echo "Recursos humanos";
+                                                } else {
+                                                    echo "Error, contacte a soporte";
+                                                }
+                                                ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="asistenciapersonal.php?id=<?= $registro['codigo']; ?>" class="btn btn-primary btn-sm m-1"><i class="bi bi-eye-fill"></i></a>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $query = "SELECT * FROM usuarios WHERE estatus=1 AND rol<>1 ORDER BY id DESC";
-                                        $query_run = mysqli_query($con, $query);
-                                        if (mysqli_num_rows($query_run) > 0) {
-                                            foreach ($query_run as $registro) {
-                                        ?>
-                                                <tr class="text-start">
-                                                    <td><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></td>
-                                                    <td>
-                                                        <?php
-                                                        if ($registro['rol'] === '1') {
-                                                            echo "Administrador";
-                                                        } else if ($registro['rol'] === '2') {
-                                                            echo "Gerencia";
-                                                        }  else if ($registro['rol'] === '4') {
-                                                            echo "Técnico controles";
-                                                        } else if ($registro['rol'] === '5') {
-                                                            echo "Ing. Diseño";
-                                                        } else if ($registro['rol'] === '6') {
-                                                            echo "Compras";
-                                                        } else if ($registro['rol'] === '7') {
-                                                            echo "Almacenista";
-                                                        } else if ($registro['rol'] === '8') {
-                                                            echo "Técnico mecanico";
-                                                        } else if ($registro['rol'] === '9') {
-                                                            echo "Ing. Control";
-                                                        } else if ($registro['rol'] === '10') {
-                                                            echo "Recursos humanos";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <a href="asistenciapersonal.php?id=<?= $registro['codigo']; ?>" class="btn btn-primary btn-sm m-1"><i class="bi bi-eye-fill"></i></a>
-                                                    </td>
-                                                </tr>
-                                        <?php
-                                            }
-                                        } else {
-                                            echo "<td colspan='4'><p>No se encontro ningun usuario</p></td>";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
+                                <?php
+                                    }
+                                } else {
+                                    echo "<td colspan='4'><p>No se encontro ningun usuario</p></td>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -151,7 +165,8 @@ if (isset($_SESSION['codigo'])) {
             $('#miTabla').DataTable({
                 "order": [
                     [0, "desc"]
-                ] // Ordenar la primera columna (índice 0) en orden descendente
+                ],
+                "pageLength": 25
             });
         });
     </script>
