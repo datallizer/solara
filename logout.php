@@ -8,15 +8,16 @@ if (isset($_SESSION['rol']) && ($_SESSION['rol'] != 1 && $_SESSION['rol'] != 2))
     $apellidop = $_SESSION['apellidop'];
     $fecha_actual = date("Y-m-d");
     $hora_actual = date("H:i");
-    $query_verificar = "SELECT * FROM asistencia WHERE idcodigo='$idcodigo' AND salida IS NULL";
+    $query_verificar = "SELECT MAX(id) as ultimo FROM asistencia WHERE idcodigo='$idcodigo' AND salida IS NULL";
     $resultado_verificar = mysqli_query($con, $query_verificar);
 
     if (mysqli_num_rows($resultado_verificar) > 0) {
         // Si existe una fila, actualiza la salida
         $fila = mysqli_fetch_assoc($resultado_verificar);
-        $id_asistencia = $fila['id']; // Suponiendo que el ID de la asistencia se llama 'id'
+        //$id_asistencia = $fila['id'];
+        $ultimo = $fila['ultimo'];
 
-        $query_actualizar = "UPDATE asistencia SET salida='$hora_actual' WHERE id='$id_asistencia'";
+        $query_actualizar = "UPDATE asistencia SET salida='$hora_actual' WHERE id='$ultimo' AND fecha = '$fecha_actual'";
         mysqli_query($con, $query_actualizar);
         session_destroy();
         header("Location: login.php");

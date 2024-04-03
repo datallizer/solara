@@ -23,7 +23,7 @@ if (isset($_POST['propio'])) {
 
 if (isset($_POST['solicitar'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
-    $salida = mysqli_real_escape_string($con, $_POST['salida']);
+    $salida = mysqli_real_escape_string($con, $_POST['salidadetail']);
     $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
 
     $query = "UPDATE `asistencia` SET `salida` = '$salida', `estatus` = '1' WHERE `asistencia`.`id` = '$id'";
