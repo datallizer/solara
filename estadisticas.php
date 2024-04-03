@@ -221,7 +221,7 @@ if (isset($_SESSION['codigo'])) {
                             </thead>
                             <tbody>
                                 <?php
-                                $query = "SELECT * FROM proyecto ORDER BY prioridad ASC";
+                                $query = "SELECT * FROM proyecto WHERE estatus = 1 ORDER BY prioridad ASC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
@@ -541,10 +541,10 @@ if (isset($_SESSION['codigo'])) {
                                             ?><a href="estadisticacontrol.php?id=<?= $registro['id']; ?>" class="btn btn-secondary">Ver analítica</a><?php
                                                                                                                                                     } else if ($registro['rol'] === '8') {
                                                                                                                                                         ?><a href="estadisticaoperadores.php?id=<?= $registro['id']; ?>" class="btn btn-dark">Ver analítica</a><?php
-                                                                                                                                                                                                                                                                            } else {
-                                                                                                                                                                                                                                                                                echo "Error, contacte a soporte";
-                                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                                                ?>
+                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                echo "Error, contacte a soporte";
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                ?>
                                         </div>
                                     </div>
                                 </div>

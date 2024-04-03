@@ -240,13 +240,13 @@ if (isset($_SESSION['codigo'])) {
                                                         // Compara la fecha del registro con la fecha actual
                                                         if ($registro['fecha'] < $fecha_actual && $registro['salida'] === NULL) {
                                                         ?>
-                                                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">Completar</button>
+                                                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal<?= $registro['id']; ?>">Completar</button>
                                                             <!-- Modal para solicitud de salida -->
-                                                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal fade" id="exampleModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel<?= $registro['id']; ?>" aria-hidden="true">
                                                                 <div class="modal-dialog">
                                                                     <div class="modal-content">
                                                                         <div class="modal-header">
-                                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">ACTUALIZAR HORA DE SALIDA</h1>
+                                                                            <h1 class="modal-title fs-5" id="exampleModalLabel<?= $registro['id']; ?>">ACTUALIZAR HORA DE SALIDA</h1>
                                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                         </div>
                                                                         <div class="modal-body">

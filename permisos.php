@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 require 'dbcon.php';
 $message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
@@ -45,95 +44,6 @@ if (isset($_SESSION['codigo'])) {
     header('Location: login.php');
     exit(); // Finalizar el script después de la redirección
 }
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-require 'PHPMailer/src/Exception.php';
-
-// Configuracion SMTP
-$host = 'smtp.gmail.com';
-$port = 587;
-$username = 'solarasystemai@gmail.com';
-$password = 'owwd pbtr bpfh brff';
-$security = 'tls';
-
-$query = "SELECT * FROM inventario WHERE tipo = 'Consumible'";
-$query_run = mysqli_query($con, $query);
-
-while ($registro = mysqli_fetch_assoc($query_run)) {
-    // Obtener valores
-    $cantidad = $registro['cantidad'];
-    $minimo = $registro['minimo'];
-    $maximo = $registro['maximo'];
-
-    // Evaluar si la cantidad es menor o igual al mínimo y reorden es igual a "1"
-    if ($cantidad <= $minimo && $registro['reorden'] == 1) {
-
-        // Crear instancia PHPMailer
-        $mail = new PHPMailer(true);
-
-
-        // Configurar SMTP
-        $mail->isSMTP();
-        $mail->Host = $host;
-        $mail->Port = $port;
-        $mail->SMTPAuth = true;
-        $mail->Username = $username;
-        $mail->Password = $password;
-        $mail->SMTPSecure = $security;
-        //$mail->SMTPDebug = 2;
-
-
-
-        // Configurar correo
-        $mail->setFrom('solarasystemai@gmail.com', 'SOLARA AI');
-        $mail->addAddress('storage@solara-industries.com');
-        $mail->Subject = 'Reorden: Inventario de ' . $registro['id'] . ' ' . $registro['nombre'] . ' bajo en stock';
-        $mail->CharSet = 'UTF-8';
-        $mail->isHTML(true);
-        // Cuerpo del mensaje
-        $body = '
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            </head>
-            <body>
-            <img style="width:100%;" src="https://datallizer.com/images/solarasuperior.jpg" alt="">
-            <h1 style="font-size:25px;margin-top:30px;text-align:left;margin-bottom:30px;"><b>REORDEN</b></h1>
-            <p>El producto id ' . $registro['id'] . ' ' . $registro['nombre'] . ' tiene un stock bajo.</p>
-            <p><b>Cantidad actual:</b> ' . $cantidad . '</p>
-            <p><b>Minimo recomendado:</b> ' . $minimo . '</p>
-            <p><b>Maximo recomendado:</b> ' . $maximo . '</p>
-
-            <p style="margin-top:30px;"><b>Detalles</b></p>
-            <p><b>Proveedor:</b> ' . $registro['proveedor'] . '</p>
-            <p><b>Parte:</b> ' . $registro['parte'] . '</p>
-            <p><b>Marca:</b> ' . $registro['marca'] . '</p>
-            <p><b>Condición:</b> ' . $registro['condicion'] . '</p>
-            <p><b>Costo:</b> $' . $registro['costo'] . '</p>
-
-            <p style="font-size:10px;">Este es un email enviado automaticamente por el sistema de planificación de recursos empresariales SOLARA AI, la información previa a sido generada utilizando datos históricos almacenados en la base de datos de SOLARA, es importante tener en cuenta que las cantidades, materiales u otros detalles presentados en esta propuesta podrían estar desactualizados, descontinuados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos desde los submódulos "Inventario" y "Reorden".</p>
-            </body>
-            </html>
-            ';
-        $mail->Body = $body;
-
-        // Enviar correo
-        if ($mail->send()) {
-            mysqli_query($con, "UPDATE inventario SET reorden = 0 WHERE id = " . $registro['id']);
-        } else {
-            $_SESSION['message'] = "Error al solicitar reorden";
-        }
-    } elseif ($cantidad > $minimo && $registro['reorden'] == 0) {
-        mysqli_query($con, "UPDATE inventario SET reorden = 1 WHERE id = " . $registro['id']);
-    }
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -143,13 +53,17 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css' rel='stylesheet' />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-    <title>Dashboard | Solara</title>
+    <title>Permisos | Solara</title>
 </head>
+
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
@@ -181,91 +95,92 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                             <div class="card-header">
                                 <h4>SOLICITUDES VIGENTES
                                     <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                        Nueva solicitud
+                                        Nuevo permiso
                                     </button>
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <?php include('message.php'); ?>
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Id</th>
-                                            <th>Usuario</th>
-                                            <th>Detalle</th>
-                                            <th>Rol</th>
-                                            <th>Fecha / Tiempo</th>
-                                            <th>Accion</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $query = "SELECT * FROM permisos ORDER BY id DESC";
-                                        $query_run = mysqli_query($con, $query);
-                                        if (mysqli_num_rows($query_run) > 0) {
-                                            foreach ($query_run as $registro) {
-                                        ?>
-                                                <tr>
-                                                    <td><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></td>
-                                                    <td><?= $registro['codigo']; ?></td>
-                                                    <td>
-                                                        <?php
-                                                        if ($registro['rol'] === '1') {
-                                                            echo "Administrador";
-                                                        } else if ($registro['rol'] === '2') {
-                                                            echo "Gerencia";
-                                                        } else if ($registro['rol'] === '4') {
-                                                            echo "Técnico controles";
-                                                        } else if ($registro['rol'] === '5') {
-                                                            echo "Ing. Diseño";
-                                                        } else if ($registro['rol'] === '6') {
-                                                            echo "Compras";
-                                                        } else if ($registro['rol'] === '7') {
-                                                            echo "Almacenista";
-                                                        } else if ($registro['rol'] === '8') {
-                                                            echo "Técnico mecanico";
-                                                        } else if ($registro['rol'] === '9') {
-                                                            echo "Ing. Control";
-                                                        } else if ($registro['rol'] === '10') {
-                                                            echo "Recursos humanos";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php
-                                                        if ($registro['estatus'] === '0') {
-                                                            echo "Inactivo";
-                                                        } else if ($registro['estatus'] === '1') {
-                                                            echo "Activo";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <a href="editarusuario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-
-                                                        <?php
-                                                        if ($registro['id'] != 1) {
-                                                            echo '
-                                                            <form action="codeusuarios.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
+                                <?php
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 10])) {
+                                ?>
+                                    <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Id</th>
+                                                <th>Usuario</th>
+                                                <th>Permiso</th>
+                                                <th>Rol</th>
+                                                <th>Fecha</th>
+                                                <th>Tiempo</th>
+                                                <th>Accion</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $query = "SELECT permisos.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.rol 
+                                        FROM permisos 
+                                        INNER JOIN usuarios ON permisos.idcodigo = usuarios.codigo WHERE permisos.estatus = 1
+                                        ORDER BY permisos.id DESC";
+                                            $query_run = mysqli_query($con, $query);
+                                            if (mysqli_num_rows($query_run) > 0) {
+                                                foreach ($query_run as $registro) {
+                                            ?>
+                                                    <tr>
+                                                        <td><?= $registro['id']; ?></td>
+                                                        <td><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></td>
+                                                        <td><?= $registro['detalle']; ?></td>
+                                                        <td>
+                                                            <?php
+                                                            if ($registro['rol'] === '1') {
+                                                                echo "Administrador";
+                                                            } else if ($registro['rol'] === '2') {
+                                                                echo "Gerencia";
+                                                            } else if ($registro['rol'] === '4') {
+                                                                echo "Técnico controles";
+                                                            } else if ($registro['rol'] === '5') {
+                                                                echo "Ing. Diseño";
+                                                            } else if ($registro['rol'] === '6') {
+                                                                echo "Compras";
+                                                            } else if ($registro['rol'] === '7') {
+                                                                echo "Almacenista";
+                                                            } else if ($registro['rol'] === '8') {
+                                                                echo "Técnico mecanico";
+                                                            } else if ($registro['rol'] === '9') {
+                                                                echo "Ing. Control";
+                                                            } else if ($registro['rol'] === '10') {
+                                                                echo "Recursos humanos";
+                                                            } else {
+                                                                echo "Error, contacte a soporte";
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                        <td><?= $registro['fecha']; ?></td>
+                                                        <td><?= $registro['tiempo']; ?><small>hrs</small></td>
+                                                        <td>
+                                                            <?php
+                                                            if ($registro['id'] != 1) {
+                                                                echo '
+                                                            <form action="codepermisos.php" method="POST" class="d-inline">
+                                                                <button type="submit" name="aprobar" value="' . $registro['id'] . '" class="btn btn-success btn-sm m-1"><i class="bi bi-check2"></i> Aprobar</button>
+                                                                <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-warning btn-sm m-1"><i class="bi bi-x-lg"></i> Rechazar</button>
+                                                                <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                             </form>';
-                                                        }
-                                                        ?>
-
-                                                    </td>
-                                                </tr>
-                                        <?php
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    </tr>
+                                            <?php
+                                                }
+                                            } else {
+                                                echo "<td colspan='6'><p>No se encontro ningun registro</p></td>";
                                             }
-                                        } else {
-                                            echo "<td colspan='6'><p>No se encontro ningun registro</p></td>";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                <?php
+                                }
+                                ?>
+                                <div class="mt-5 p-3 bg-light" id='calendar'></div>
                             </div>
                         </div>
                     </div>
@@ -279,51 +194,44 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO USUARIO</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO PERMISO</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codeusuarios.php" method="POST" class="row" enctype="multipart/form-data">
+                    <form action="codepermisos.php" method="POST" class="row">
                         <div class="form-floating col-12 mt-1">
-                            <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" autocomplete="off" required>
-                            <label for="nombre">Nombre</label>
-                        </div>
-
-                        <div class="form-floating col-md-6 mt-3">
-                            <input type="text" class="form-control" name="apellidop" id="apellidop" placeholder="Apellido paterno" autocomplete="off" required>
-                            <label for="apellidop">Apellido paterno</label>
-                        </div>
-
-                        <div class="form-floating col-12 col-md-6 mt-3">
-                            <input type="text" class="form-control" name="apellidom" id="apellidom" placeholder="Apellido materno" autocomplete="off" required>
-                            <label for="apellidom">Apellido Materno</label>
+                            <input type="text" class="form-control" name="idcodigo" id="idcodigo" placeholder="IdCodigo" value="<?php echo $_SESSION['codigo']; ?>" readonly>
+                            <label for="nombre">Código</label>
                         </div>
 
                         <div class="form-floating col-12 mt-3">
-                            <input type="int" class="form-control" name="codigo" id="codigo" placeholder="Codigo acceso" autocomplete="off" required>
-                            <label for="codigo">Codigo acceso</label>
+                            <select class="form-select" name="detalle" id="detalle" autocomplete="off" required>
+                                <option selected disabled>Seleccione una opción</option>
+                                <option value="Vacaciones">Vacaciones</option>
+                                <option value="Tiempo por tiempo">Tiempo por tiempo</option>
+                                <option value="Día habíl">Día habíl</option>
+                                <option value="Permiso médico">Permiso médico</option>
+                                <option value="Permiso por asuntos personales">Permiso por asuntos personales</option>
+                                <option value="Permiso por maternidad">Permiso por maternidad</option>
+                            </select>
+                            <label for="detalle">Permiso</label>
                         </div>
 
-                        <div class="col-12 mt-3">
-                            <label for="medio" class="form-label">Foto de perfil</label>
-                            <input type="file" class="form-control" name="medio" id="medio" required>
+                        <div class="form-floating col-12 col-md-6 mt-3">
+                            <input type="date" class="form-control" name="fecha" id="fecha" placeholder="Fecha" autocomplete="off" required>
+                            <label for="fecha">Fecha inicio</label>
+                        </div>
+
+                        <div class="form-floating col-12 col-md-6 mt-3">
+                            <input type="date" class="form-control" name="fecha_fin" id="fecha_fin" placeholder="Fecha fin" autocomplete="off" required>
+                            <label for="fecha_fin">Fecha fin</label>
                         </div>
 
                         <div class="form-floating col-12 mt-3 mb-3">
-                            <select class="form-select" name="rol" id="rol" autocomplete="off" required>
-                                <option selected disabled>Seleccione el rol</option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Gerencia</option>
-                                <option value="4">Técnico controles</option>
-                                <option value="5">Ing. Diseño</option>
-                                <option value="6">Compras</option>
-                                <option value="7">Almacenista</option>
-                                <option value="8">Técnico mecanico</option>
-                                <option value="9">Ing. Control</option>
-                                <option value="10">Recursos humanos</option>
-                            </select>
-                            <label for="rol">Rol</label>
+                            <input type="time" class="form-control" name="tiempo" id="tiempo" placeholder="Tiempo" autocomplete="off" required>
+                            <label for="tiempo">Tiempo</label>
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary" name="save">Guardar</button>
@@ -339,54 +247,76 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#miTabla').DataTable({
                 "order": [
                     [0, "desc"]
                 ],
-                "pageLength": 25
+                "pageLength": 100
             });
         });
 
-        const deleteButtons = document.querySelectorAll('.deletebtn');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener referencia a los campos de fecha de inicio y fin
+            const fechaInicio = document.getElementById('fecha');
+            const fechaFin = document.getElementById('fecha_fin');
 
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
+            // Añadir evento change al campo de fecha de inicio
+            fechaInicio.addEventListener('change', function() {
+                // Obtener valor del campo de fecha de inicio
+                const fechaInicioValue = fechaInicio.value;
 
-                const id = e.target.value; // Obtener el valor del botón delete
-
-                // Mostrar la alerta de SweetAlert2 para confirmar la eliminación
-                Swal.fire({
-                    title: '¿Estás seguro que deseas eliminar este registro?',
-                    text: '¡No podrás deshacer esta acción!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const formData = new FormData();
-                        formData.append('delete', id);
-
-                        fetch('codeusuarios.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => {
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 500);
-
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                            });
-                    }
-                });
+                // Asignar el mismo valor al campo de fecha de fin
+                fechaFin.value = fechaInicioValue;
             });
+
+            const detalleSelect = document.getElementById('detalle');
+            const tiempoInput = document.getElementById('tiempo');
+
+            detalleSelect.addEventListener('change', function() {
+                // Verificar si la opción seleccionada es "Vacaciones"
+                if (detalleSelect.value === 'Vacaciones') {
+                    // Establecer el valor del campo de tiempo en "08:00"
+                    tiempoInput.value = '08:00';
+                    // Hacer el campo de tiempo de solo lectura
+                    tiempoInput.setAttribute('readonly', 'readonly');
+                } else {
+                    // Eliminar el atributo readonly y restablecer el valor predeterminado
+                    tiempoInput.removeAttribute('readonly');
+                    tiempoInput.value = ''; // Aquí puedes establecer el valor predeterminado si lo deseas
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: [
+                    <?php
+                    
+                    $query = "SELECT permisos.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.rol 
+                     FROM permisos 
+                     INNER JOIN usuarios ON permisos.idcodigo = usuarios.codigo WHERE permisos.estatus = 2 and permisos.idcodigo = $codigo
+                     ORDER BY permisos.id DESC";
+                    $result = mysqli_query($con, $query);
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        // Formatear la fecha en el formato ISO-8601 (YYYY-MM-DD)
+                        $formattedDate = date('Y-m-d', strtotime($row['fecha']));
+
+                        echo "{";
+                        echo "title: '{$row['detalle']}',";
+                        echo "start: '{$formattedDate}',"; // Utilizar la fecha formateada
+                        echo "},";
+                    }
+                    ?>
+                ]
+            });
+
+            calendar.render();
         });
     </script>
 </body>

@@ -315,7 +315,7 @@ if (isset($_SESSION['codigo'])) {
                     divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
                     divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
                     divBotonLunch.style.display = 'none';
-                } else if (valorSeleccionado === 'Atención a otra prioridad' || valorSeleccionado === 'Fin de jornada laboral') {
+                } else if (valorSeleccionado === 'Atención a otra prioridad' || valorSeleccionado === 'Fin de jornada laboral' || valorSeleccionado === 'Falta de material') {
                     divBotonTerminar.style.display = 'none'; // Ocultar el botón "Terminar"
                     divBotonPausar.style.display = 'none'; // Ocultar el botón "Pausar"
                     divBotonMenu.style.display = 'block'; // Mostrar el botón "Menú"

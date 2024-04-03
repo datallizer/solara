@@ -108,7 +108,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <p><?= $registro['entrada']; ?></p>
                                                     </td>
                                                     <td>
-                                                    <p><?= $registro['salida']; ?></p>
+                                                        <p><?= $registro['salida']; ?></p>
                                                     </td>
                                                     <td>
                                                         <p><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?></p>
@@ -117,47 +117,47 @@ if (isset($_SESSION['codigo'])) {
                                                         <p><?= $registro['fecha']; ?></p>
                                                     </td>
                                                     <td>
-                                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">Completar</button>
-                                                            <!-- Modal para solicitud de salida -->
-                                                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                <div class="modal-dialog">
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">ACTUALIZAR HORA DE SALIDA</h1>
-                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <form id="asistenciaForm" action="codeasistencia.php" method="POST" class="row">
-                                                                                <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
-                                                                                <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
-                                                                                <div class="form-floating col-12 mb-3">
-                                                                                    <input type="text" class="form-control" id="fecha" value="<?= $registro['fecha']; ?>" placeholder="Fecha" autocomplete="off" disabled>
-                                                                                    <label for="fecha">Fecha <span class="small">(YYYY/MM/DD)</span></label>
-                                                                                </div>
-                                                                                <div class="form-floating col-12 mb-3">
-                                                                                    <input type="time" class="form-control" id="entrada" value="<?= $registro['entrada']; ?>" placeholder="Entrada" autocomplete="off" disabled>
-                                                                                    <label for="entrada">Hora de entrada</label>
-                                                                                </div>
-                                                                                <div class="form-floating col-12 mb-3">
-                                                                                    <input type="time" class="form-control" id="salidarechazada" value="<?= $registro['salida']; ?>" placeholder="Salida rechazada" autocomplete="off" disabled>
-                                                                                    <label for="salidarechazada">Hora de salida rechazada</label>
-                                                                                </div>
-                                                                                <div class="form-floating col-12 mb-3">
-                                                                                    <input style="background-color:#ffffff;" type="time" class="form-control" name="salida" id="salida" placeholder="Salida" autocomplete="off" required>
-                                                                                    <label for="salida">Nueva hora de salida</label>
-                                                                                </div>
-                                                                                <div class="col-12">
-                                                                                    <p id="duracionJornada">La jornada será de: </p>
-                                                                                </div>
-                                                                                <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                                                    <button type="submit" class="btn btn-primary" name="solicitar">Solicitar</button>
-                                                                                </div>
-                                                                            </form>
-                                                                        </div>
+                                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal<?= $registro['id']; ?>">Completar</button>
+                                                        <!-- Modal para solicitud de salida -->
+                                                        <div class="modal fade" id="exampleModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel<?= $registro['id']; ?>" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h1 class="modal-title fs-5" id="exampleModalLabel<?= $registro['id']; ?>">ACTUALIZAR HORA DE SALIDA</h1>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form id="asistenciaForm" action="codeasistencia.php" method="POST" class="row">
+                                                                            <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
+                                                                            <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
+                                                                            <div class="form-floating col-12 mb-3">
+                                                                                <input type="text" class="form-control" id="fecha" value="<?= $registro['fecha']; ?>" placeholder="Fecha" autocomplete="off" disabled>
+                                                                                <label for="fecha">Fecha <span class="small">(YYYY/MM/DD)</span></label>
+                                                                            </div>
+                                                                            <div class="form-floating col-12 mb-3">
+                                                                                <input type="time" class="form-control" id="entrada" value="<?= $registro['entrada']; ?>" placeholder="Entrada" autocomplete="off" disabled>
+                                                                                <label for="entrada">Hora de entrada</label>
+                                                                            </div>
+                                                                            <div class="form-floating col-12 mb-3">
+                                                                                <input type="time" class="form-control" id="salidarechazada" value="<?= $registro['salida']; ?>" placeholder="Salida rechazada" autocomplete="off" disabled>
+                                                                                <label for="salidarechazada">Hora de salida rechazada</label>
+                                                                            </div>
+                                                                            <div class="form-floating col-12 mb-3">
+                                                                                <input style="background-color:#ffffff;" type="time" class="form-control" name="salida" id="salida" placeholder="Salida" autocomplete="off" required>
+                                                                                <label for="salida">Nueva hora de salida</label>
+                                                                            </div>
+                                                                            <div class="col-12">
+                                                                                <p id="duracionJornada">La jornada será de: </p>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                                                <button type="submit" class="btn btn-primary" name="solicitar">Solicitar</button>
+                                                                            </div>
+                                                                        </form>
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                         <?php
