@@ -83,7 +83,7 @@ if (isset($_SESSION['codigo'])) {
                                     <div class="row">
                                         <div class="col-1"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil"></div>
                                         <div class="col-11">
-                                            <a href="asistencia.php" class="btn btn-danger btn-sm float-end">Regresar</a>
+                                            <a href="asistencia.php" class="btn btn-primary btn-sm float-end">Regresar</a>
                                             <b>Asistencia</b><br>
                                             Registro de <b><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></b><br>
                                             <p style="font-size: 15px;text-transform:capitalize"><?php
@@ -125,7 +125,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4 style="text-transform: uppercase;">REGISTRO GENERAL</h4>
+                                <h4 style="text-transform: uppercase;">REGISTRO GENERAL
+                                    <button class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
+                                    <button class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <table id="miTabla" class="table table-striped text-center">
@@ -204,7 +207,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4 style="text-transform: uppercase;">REGISTRO DETALLADO</h4>
+                                <h4 style="text-transform: uppercase;">REGISTRO DETALLADO
+                                    <button class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
+                                    <button class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <table id="miTablaDos" class="table table-striped text-center">

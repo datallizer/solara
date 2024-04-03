@@ -68,13 +68,16 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-12">
                         <h3 class="p-2 bg-dark text-light align-items-top" style="text-transform: uppercase;border-radius:5px;">
                             ASISTENCIA GLOBAL
-                            <a href="asistencia.php" class="btn btn-danger btn-sm float-end">Regresar</a>
+                            <a href="asistencia.php" class="btn btn-primary btn-sm float-end">Regresar</a>
                         </h3>
                     </div>
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4 style="text-transform: uppercase;">REGISTRO GENERAL</h4>
+                                <h4 style="text-transform: uppercase;">REGISTRO GENERAL
+                                    <button class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
+                                    <button class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <table id="miTabla" class="table table-striped text-center">
@@ -152,7 +155,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4 style="text-transform: uppercase;">REGISTRO DETALLADO</h4>
+                                <h4 style="text-transform: uppercase;">REGISTRO DETALLADO
+                                    <button class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
+                                    <button class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <table id="miTablaDos" class="table table-striped text-center">
