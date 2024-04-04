@@ -66,27 +66,65 @@ if (isset($_SESSION['codigo'])) {
         <div id="layoutSidenav_content">
             <div class="container mt-5">
                 <div class="row justify-content-center align-items-center mb-5">
+                    <div class="col-12">
+                        <h3 class="p-2 bg-dark text-light align-items-top" style="text-transform: uppercase;border-radius:5px;">
+                            <?php
+                            if (isset($_GET['id'])) {
+                                $registro_id = mysqli_real_escape_string($con, $_GET['id']);
+                                $query = "SELECT * FROM usuarios WHERE id='$registro_id' ";
+                                $query_run = mysqli_query($con, $query);
+
+                                if (mysqli_num_rows($query_run) > 0) {
+                                    $registro = mysqli_fetch_array($query_run);
+                                    $nombre = $registro['nombre'];
+                                    $apellidop = $registro['apellidop'];
+                                    $apellidom = $registro['apellidom'];
+                                    $codigouser = $registro['codigo'];
+                            ?>
+                                    <div class="row">
+                                        <div class="col-1"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil"></div>
+                                        <div class="col-11">
+                                            <a href="estadisticas.php#operadores" class="btn btn-primary btn-sm float-end">Regresar</a>
+                                            <b>Estadística</b><br>
+                                            Maquinados de <b><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></b><br>
+                                            <p style="font-size: 15px;text-transform:capitalize"><?php
+                                                                                                    if ($registro['rol'] === '1') {
+                                                                                                        echo "Administrador";
+                                                                                                    } else if ($registro['rol'] === '2') {
+                                                                                                        echo "Gerencia";
+                                                                                                    } else if ($registro['rol'] === '4') {
+                                                                                                        echo "Técnico controles";
+                                                                                                    } else if ($registro['rol'] === '5') {
+                                                                                                        echo "Ing. Diseño";
+                                                                                                    } else if ($registro['rol'] === '6') {
+                                                                                                        echo "Compras";
+                                                                                                    } else if ($registro['rol'] === '7') {
+                                                                                                        echo "Almacenista";
+                                                                                                    } else if ($registro['rol'] === '8') {
+                                                                                                        echo "Técnico mecanico";
+                                                                                                    } else if ($registro['rol'] === '9') {
+                                                                                                        echo "Ing. Control";
+                                                                                                    } else if ($registro['rol'] === '10') {
+                                                                                                        echo "Recursos humanos";
+                                                                                                    } else {
+                                                                                                        echo "Error, contacte a soporte";
+                                                                                                    }
+                                                                                                    ?></p>
+
+                                        </div>
+                                    </div>
+
+
+                            <?php
+                                }
+                            }
+                            ?>
+
+
+                        </h3>
+                    </div>
                     <div class="col-md-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4 style="text-transform: uppercase;">ESTADÍSTICA OPERADOR
-                                    <?php
-                                    $registro_id = mysqli_real_escape_string($con, $_GET['id']);
-                                    $query = "SELECT * FROM usuarios WHERE id ='$registro_id'";
-                                    $query_run = mysqli_query($con, $query);
-                                    if (mysqli_num_rows($query_run) > 0) {
-                                        $registro = mysqli_fetch_assoc($query_run);
-                                        $codigouser = $registro['codigo'];
-                                        echo $registro['nombre'] . ' ' . $registro['apellidop'] . ' ' . $registro['apellidom'];
-                                    } else {
-                                        echo "Error"; // Si no se encuentra un nombre de plano, muestra un texto predeterminado
-                                    }
-                                    ?>
-                                    <a href="estadisticas.php#operadores" class="btn btn-danger btn-sm float-end m-1">
-                                        Regresar
-                                    </a>
-                                </h4>
-                            </div>
                             <div class="card-body">
                                 <form class="row align-items-center p-4" method="get">
                                     <!-- Agrega un campo oculto para enviar el id del usuario -->
@@ -122,7 +160,7 @@ if (isset($_SESSION['codigo'])) {
                         motivoactividad,
                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                     FROM historialoperadores 
-                    WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> ''";
+                    WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> ''AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
 
                                         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                                         if ($fecha_inicio && $fecha_fin) {
@@ -175,7 +213,7 @@ if (isset($_SESSION['codigo'])) {
                         $query_maquinado = "SELECT 
                             SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_maquinado
                         FROM historialoperadores 
-                        WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> ''";
+                        WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
 
                         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                         if ($fecha_inicio && $fecha_fin) {
@@ -196,7 +234,7 @@ if (isset($_SESSION['codigo'])) {
                             SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                         FROM historialoperadores 
                         WHERE idcodigo ='$codigouser'
-                            AND motivoactividad <> 'Inicio' AND horareinicio <> ''";
+                            AND motivoactividad <> 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
 
                             // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                             if ($fecha_inicio && $fecha_fin) {
@@ -288,7 +326,7 @@ if (isset($_SESSION['codigo'])) {
                         motivoactividad,
                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                     FROM historialoperadores 
-                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> ''";
+                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
 
         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
         if ($fecha_inicio && $fecha_fin) {
