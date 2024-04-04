@@ -160,7 +160,7 @@ if (isset($_SESSION['codigo'])) {
                         motivoactividad,
                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                     FROM historialoperadores 
-                    WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> ''AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                    WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> ''AND fechareinicio IS NOT NULL ";
 
                                         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                                         if ($fecha_inicio && $fecha_fin) {
@@ -213,7 +213,7 @@ if (isset($_SESSION['codigo'])) {
                         $query_maquinado = "SELECT 
                             SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_maquinado
                         FROM historialoperadores 
-                        WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                        WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
                         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                         if ($fecha_inicio && $fecha_fin) {
@@ -234,7 +234,7 @@ if (isset($_SESSION['codigo'])) {
                             SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                         FROM historialoperadores 
                         WHERE idcodigo ='$codigouser'
-                            AND motivoactividad <> 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                            AND motivoactividad <> 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
                             // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                             if ($fecha_inicio && $fecha_fin) {
@@ -326,7 +326,7 @@ if (isset($_SESSION['codigo'])) {
                         motivoactividad,
                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                     FROM historialoperadores 
-                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND motivoactividad <> 'Atención a otra prioridad' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
         if ($fecha_inicio && $fecha_fin) {

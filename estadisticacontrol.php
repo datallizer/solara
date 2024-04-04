@@ -160,7 +160,7 @@ $query_paro = "SELECT
                     motivoactividad,
                     SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                 FROM historialensamble 
-                WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
 // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
 if ($fecha_inicio && $fecha_fin) {
@@ -217,7 +217,7 @@ $total_minutos = $total_paro % 60;
                         $query_maquinado = "SELECT 
                                                 SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_maquinado
                                             FROM historialensamble 
-                                            WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                                            WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
                         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                         if ($fecha_inicio && $fecha_fin) {
@@ -238,7 +238,7 @@ $total_minutos = $total_paro % 60;
                                                 SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                                             FROM historialensamble 
                                             WHERE idcodigo ='$codigouser'
-                                                AND motivoactividad <> 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                                                AND motivoactividad <> 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
                             // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                             if ($fecha_inicio && $fecha_fin) {
@@ -330,7 +330,7 @@ $total_minutos = $total_paro % 60;
                         motivoactividad,
                         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                     FROM historialensamble 
-                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND horareinicio <> '' AND fechareinicio IS NOT NULL AND horareinicio IS NOT NULL";
+                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
         // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
         if ($fecha_inicio && $fecha_fin) {
