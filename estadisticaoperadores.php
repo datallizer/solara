@@ -209,36 +209,30 @@ if (isset($_SESSION['codigo'])) {
                     </div>
                     <div class="col-6 text-center mt-5">
                         <?php
-                        // Consulta para obtener el tiempo total de "Inicio"
-                        $query_maquinado = "SELECT 
-                            SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_maquinado
-                        FROM historialoperadores 
-                        WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
+                        $query_maquinado = "SELECT motivoactividad,
+                        SUM(ABS(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio)))) AS tiempo_maquinado
+                    FROM historialoperadores 
+                    WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND fechareinicio IS NOT NULL ";
 
-                        // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
+
                         if ($fecha_inicio && $fecha_fin) {
-                            // Agregar condiciones de rango de fecha
                             $query_maquinado .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
                         }
 
                         $query_run_maquinado = mysqli_query($con, $query_maquinado);
                         $tiempo_maquinado = 0;
 
-                        // Verificar si se encontraron registros para la consulta de maquinado
                         if (mysqli_num_rows($query_run_maquinado) > 0) {
                             $registro_maquinado = mysqli_fetch_assoc($query_run_maquinado);
                             $tiempo_maquinado = $registro_maquinado['tiempo_maquinado'];
 
-                            // Consulta para obtener el tiempo total de paro
-                            $query_paro = "SELECT 
+                            $query_paro = "SELECT motivoactividad,
                             SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
                         FROM historialoperadores 
                         WHERE idcodigo ='$codigouser'
-                            AND motivoactividad <> 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
+                            AND motivoactividad <> 'Inicio' AND fechareinicio IS NOT NULL";
 
-                            // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
                             if ($fecha_inicio && $fecha_fin) {
-                                // Agregar condiciones de rango de fecha
                                 $query_paro .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
                             }
 
@@ -246,18 +240,61 @@ if (isset($_SESSION['codigo'])) {
 
                             $query_run_paro = mysqli_query($con, $query_paro);
                             $total_paro = 0;
+                            if (mysqli_num_rows($query_run_paro) > 0) {
+                                // Imprimir encabezado de la tabla
+                                echo "<p><b>REGISTROS CONTEMPLADOS PARA TIEMPO DE PARO:</b></p>";
+                                echo "<table border='1'>";
+                                echo "<tr><th>Motivo de Actividad</th><th>Tiempo Total</th></tr>";
+                            
+                                // Iterar sobre los resultados de la consulta de paro
+                                foreach ($query_run_paro as $registro) {
+                                    // Convertir tiempo total de paro a horas y minutos
+                                    $horas_paro = floor($registro['tiempo_total'] / 60);
+                                    $minutos_paro = $registro['tiempo_total'] % 60;
+                            
+                                    // Imprimir cada registro
+                                    echo "<tr>";
+                                    echo "<td>" . $registro['motivoactividad'] . "</td>";
+                                    echo "<td>" . $horas_paro . " horas " . $minutos_paro . " minutos</td>";
+                                    echo "</tr>";
+                                    $total_paro += $registro['tiempo_total'];
+                                }
+                                // Cerrar la tabla
+                                echo "</table>";
+                            }
+                            
+                            if (mysqli_num_rows($query_run_maquinado) > 0) {
+                                // Imprimir encabezado de la tabla
+                                echo "<p><b>REGISTROS CONTEMPLADOS PARA TIEMPO DE MAQUINADO:</b></p>";
+                                echo "<table border='1'>";
+                                echo "<tr><th>Motivo de Actividad</th><th>Tiempo Total</th></tr>";
+                            
+                                // Iterar sobre los resultados de la consulta de maquinado
+                                foreach ($query_run_maquinado as $registro) {
+                                    // Convertir tiempo total de maquinado a horas y minutos
+                                    $horas_maquinado = floor($registro['tiempo_maquinado'] / 60);
+                                    $minutos_maquinado = $registro['tiempo_maquinado'] % 60;
+                            
+                                    // Imprimir cada registro
+                                    echo "<tr>";
+                                    echo "<td>" . $registro['motivoactividad'] . "</td>";
+                                    echo "<td>" . $horas_maquinado . " horas " . $minutos_maquinado . " minutos</td>";
+                                    echo "</tr>";
+                                    $tiempo_maquinado += $registro['tiempo_maquinado'];
+                                }
+                                // Cerrar la tabla
+                                echo "</table>";
+                            }
+                            
 
-                            // Verificar si se encontraron registros para la consulta de paro
                             if (mysqli_num_rows($query_run_paro) > 0) {
                                 foreach ($query_run_paro as $registro) {
                                     $total_paro += $registro['tiempo_total'];
                                 }
                             }
 
-                            // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
                             $tiempo_maquinado = $tiempo_maquinado - $total_paro;
 
-                            // Convertir minutos a horas y minutos
                             $horas = floor($tiempo_maquinado / 60);
                             $minutos = $tiempo_maquinado % 60;
                         ?>

@@ -37,6 +37,8 @@ if (isset($_POST['codigo'])) {
         $_SESSION['apellidom'] = $apellidom;
         $_SESSION['codigo'] = $row['codigo'];
         $_SESSION['rol'] = $row['rol'];
+        $querysesion = "UPDATE `usuarios` SET `sesion` = '1' WHERE `usuarios`.`codigo` = '$codigo'";
+        $querysesion_run = mysqli_query($con, $querysesion);
         if ($_SESSION['rol'] == 5 || $_SESSION['rol'] == 8) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");
@@ -84,6 +86,7 @@ if (isset($_POST['codigo'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -94,6 +97,7 @@ if (isset($_POST['codigo'])) {
     <link rel="stylesheet" href="css/styles.css">
     <title>Acceso al sistema | Solara</title>
 </head>
+
 <body>
     <div class="container-fluid">
         <div style="min-height: 100vh;" class="row justify-content-evenly align-items-center loginform text-center">
@@ -128,6 +132,7 @@ if (isset($_POST['codigo'])) {
             var input = document.getElementById('inputCodigo');
             input.value += valor;
         }
+
         function borrarUltimoCaracter() {
             var input = document.getElementById('inputCodigo');
             var valor = input.value;
@@ -135,4 +140,5 @@ if (isset($_POST['codigo'])) {
         }
     </script>
 </body>
+
 </html>

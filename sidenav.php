@@ -55,6 +55,7 @@ require 'dbcon.php';
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 10])) {
                                     echo '
                                     <a class="nav-link" href="asistencia.php">Asistencia</a>
+                                    <a class="nav-link" href="sesiones.php">Sesiones</a>
                                     <a class="nav-link" href="dashboard.php">Movimientos</a>
                                     <a class="nav-link" href="permisos.php">Permisos</a>
                                     ';

@@ -1,9 +1,11 @@
 <?php
 session_start();
 require 'dbcon.php';
-
+$idcodigo = $_SESSION['codigo'];
+$querysesion = "UPDATE `usuarios` SET `sesion` = '0' WHERE `usuarios`.`codigo` = '$idcodigo'";
+$querysesion_run = mysqli_query($con, $querysesion);
 if (isset($_SESSION['rol']) && ($_SESSION['rol'] != 1 && $_SESSION['rol'] != 2)) {
-    $idcodigo = $_SESSION['codigo'];
+    
     $nombre = $_SESSION['nombre'];
     $apellidop = $_SESSION['apellidop'];
     $fecha_actual = date("Y-m-d");
@@ -28,9 +30,8 @@ if (isset($_SESSION['rol']) && ($_SESSION['rol'] != 1 && $_SESSION['rol'] != 2))
         header("Location: dashboard.php");
         exit();
     }
-} else{
-        session_destroy();
-        header("Location: login.php");
-        exit();
+} else {
+    session_destroy();
+    header("Location: login.php");
+    exit();
 }
-?>
