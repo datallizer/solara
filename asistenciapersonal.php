@@ -126,8 +126,8 @@ if (isset($_SESSION['codigo'])) {
                         <div class="card">
                             <div class="card-header">
                                 <h4 style="text-transform: uppercase;">REGISTRO GENERAL
-                                    <button class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
-                                    <button class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
+                                <button id="generalEx" class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
+                                    <button id="generalPdf" class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
                                 </h4>
                             </div>
                             <div class="card-body">
@@ -208,8 +208,8 @@ if (isset($_SESSION['codigo'])) {
                         <div class="card">
                             <div class="card-header">
                                 <h4 style="text-transform: uppercase;">REGISTRO DETALLADO
-                                    <button class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
-                                    <button class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
+                                <button id="detalladoEx" class="btn btn-sm btn-success btn-sm float-end m-1">Excel</button>
+                                    <button id="detalladoPdf" class="btn btn-sm btn-danger btn-sm float-end m-1">PDF</button>
                                 </h4>
                             </div>
                             <div class="card-body">
@@ -324,6 +324,9 @@ if (isset($_SESSION['codigo'])) {
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
         <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.4/xlsx.full.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.js"></script>
         <script>
             $(document).ready(function() {
                 $('#miTabla, #miTablaDos').DataTable({
@@ -332,6 +335,7 @@ if (isset($_SESSION['codigo'])) {
                     ],
                     "pageLength": 25
                 });
+
 
                 <?php foreach ($query_run as $registro) { ?>
                     $('#exampleModal<?= $registro['id']; ?>').on('shown.bs.modal', function() {
@@ -356,6 +360,107 @@ if (isset($_SESSION['codigo'])) {
                         }
                     }
                 <?php } ?>
+
+                $('#generalEx').click(function() {
+                    // Crear una nueva hoja de cálculo
+                    var wb = XLSX.utils.book_new();
+                    // Convertir la tabla de datos a un formato Excel
+                    var ws = XLSX.utils.table_to_sheet($('#miTabla')[0]);
+                    // Agregar la hoja de cálculo al libro de trabajo
+                    XLSX.utils.book_append_sheet(wb, ws, "Registros");
+                    // Generar el archivo Excel
+                    var wbout = XLSX.write(wb, {
+                        bookType: 'xlsx',
+                        type: 'binary'
+                    });
+
+                    // Convertir el archivo Excel a un blob
+                    var blob = new Blob([s2ab(wbout)], {
+                        type: 'application/octet-stream'
+                    });
+                    // Crear un objeto URL para el blob
+                    var url = URL.createObjectURL(blob);
+
+                    // Crear un enlace para descargar el archivo Excel
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'registros.xlsx';
+                    // Simular un clic en el enlace para iniciar la descarga
+                    link.click();
+
+                    // Liberar el objeto URL
+                    URL.revokeObjectURL(url);
+                });
+
+                $('#detalladoEx').click(function() {
+                    // Clonar la tabla para conservar la original
+                    var $tableClone = $('#miTablaDos').clone();
+                    // Eliminar los modales del clon
+                    $tableClone.find('.modal').remove();
+
+                    // Crear una nueva hoja de cálculo
+                    var wb = XLSX.utils.book_new();
+                    // Convertir solo la tabla clonada a un formato Excel
+                    var ws = XLSX.utils.table_to_sheet($tableClone[0]);
+                    // Agregar la hoja de cálculo al libro de trabajo
+                    XLSX.utils.book_append_sheet(wb, ws, "Registros Detallados");
+                    // Generar el archivo Excel
+                    var wbout = XLSX.write(wb, {
+                        bookType: 'xlsx',
+                        type: 'binary'
+                    });
+
+                    // Convertir el archivo Excel a un Blob
+                    var blob = new Blob([s2ab(wbout)], {
+                        type: 'application/octet-stream'
+                    });
+
+                    // Crear un objeto URL para el blob
+                    var url = URL.createObjectURL(blob);
+
+                    // Crear un enlace para descargar el archivo Excel
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'registros_detallados.xlsx';
+                    // Simular un clic en el enlace para iniciar la descarga
+                    link.click();
+
+                    // Liberar el objeto URL
+                    URL.revokeObjectURL(url);
+                });
+
+
+                // Función auxiliar para convertir una cadena en una matriz de bytes
+                function s2ab(s) {
+                    var buf = new ArrayBuffer(s.length);
+                    var view = new Uint8Array(buf);
+                    for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                    return buf;
+                }
+
+                window.jsPDF = window.jspdf.jsPDF;
+
+                $('#generalPdf').click(function() {
+                    var doc = new jsPDF();
+                    doc.autoTable({
+                        html: '#miTabla'
+                    });
+                    doc.save('registros_general.pdf');
+                });
+
+                $('#detalladoPdf').click(function() {
+                    // Clonar la tabla para conservar la original
+                    var $tableClone = $('#miTablaDos').clone();
+                    // Eliminar los modales del clon
+                    $tableClone.find('.modal').remove();
+
+                    var doc = new jsPDF();
+                    // Solo convertir la tabla clonada a PDF
+                    doc.autoTable({
+                        html: $tableClone[0]
+                    });
+                    doc.save('registros_detallados.pdf');
+                });
             });
         </script>
 </body>

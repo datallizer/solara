@@ -292,7 +292,7 @@ if (isset($_SESSION['codigo'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
                                 <h4>PROYECTOS

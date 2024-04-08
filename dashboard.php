@@ -143,11 +143,11 @@ if (mysqli_num_rows($result) > 0) {
     $entrada = $registro['entrada'];
     $salida = $registro['salida'];
     $fecha = $registro['fecha'];
-    
+
     // Convertir la hora de entrada y salida a objetos DateTime
     $entrada_dt = new DateTime($entrada);
     $salida_dt = new DateTime($salida);
-    
+
     // Calcular la diferencia entre la hora de entrada y salida
     $duracion_jornada = $entrada_dt->diff($salida_dt)->format('%H:%I'); // Formato horas:minutos
 ?>
@@ -300,6 +300,7 @@ if (mysqli_num_rows($result) > 0) {
                 ] // Ordenar la primera columna (índice 0) en orden descendente
             });
         });
+        
     </script>
 </body>
 
