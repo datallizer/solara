@@ -34,6 +34,8 @@ if (isset($_SESSION['codigo'])) {
     // Si se encuentra un registro coincidente, el usuario está autorizado
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Editando técnico control encargado para enamble' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');
@@ -86,7 +88,7 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                         $query = "SELECT asignaciondiagrama.*, diagrama.id, asignaciondiagrama.id AS id_encargado, diagrama.nombreplano, usuarios.nombre AS username, usuarios.apellidop, usuarios.apellidom
+                                        $query = "SELECT asignaciondiagrama.*, diagrama.id, asignaciondiagrama.id AS id_encargado, diagrama.nombreplano, usuarios.nombre AS username, usuarios.apellidop, usuarios.apellidom
                                          FROM asignaciondiagrama
                                          JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
                                          JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id
@@ -105,7 +107,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <p><?= $registro['nombreplano']; ?></p>
                                                     </td>
                                                     <td>
-                                                    <p><?= $registro['username']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></p>
+                                                        <p><?= $registro['username']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></p>
                                                     </td>
                                                     <td>
                                                         <form action="codencargados.php" method="POST" class="d-inline">
@@ -140,8 +142,8 @@ if (isset($_SESSION['codigo'])) {
                 <div class="modal-body">
                     <form id="miFormulario" action="codetecnicos.php" method="POST" class="row">
                         <div class="form-floating col-12">
-                        <select class="form-select" name="idplano" id="idplano">
-                                <option disabled selected>Seleccione un plano</option>
+                            <select class="form-select" name="idplano" id="idplano">
+                                <option disabled selected>Seleccione un diagrama / actividad</option>
                                 <?php
                                 // Consulta a la base de datos para obtener los proyectos
                                 $query = "SELECT * FROM diagrama WHERE estatusplano = 1";
@@ -155,7 +157,7 @@ if (isset($_SESSION['codigo'])) {
                                         // Obtener el ID del usuario
                                         $idPlano = $plano['id'];
                                         // Mostrar la opción con el valor igual al ID del plano
-                                        echo "<option value='$idPlano' " . ($registro['id'] == $idPlano ? 'selected' : '') . ">$opcion</option>";
+                                        echo "<option value='$idPlano' " . ($registro['id'] == $idPlano ? '' : '') . ">$opcion</option>";
                                     }
                                 }
                                 ?>

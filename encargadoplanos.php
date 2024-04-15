@@ -34,6 +34,8 @@ if (isset($_SESSION['codigo'])) {
     // Si se encuentra un registro coincidente, el usuario está autorizado
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Editando técnico mecánico asignado a maquinado' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');
@@ -139,10 +141,10 @@ if (isset($_SESSION['codigo'])) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codetecnicos.php" method="POST" class="row">
+                    <form id="miFormulario" action="codetecnicos.php" method="POST" class="row">
                         <div class="form-floating col-12 mb-3">
                             <select class="form-select" name="idplano" id="idplano">
-                                <option disabled selected>Seleccione un plano</option>
+                                <option disabled selected>Seleccione un plano / actividad</option>
                                 <?php
                                 // Consulta a la base de datos para obtener los proyectos
                                 $query = "SELECT * FROM plano WHERE estatusplano = 1";

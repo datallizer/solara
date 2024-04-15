@@ -54,7 +54,8 @@ if (isset($_SESSION['codigo'])) {
 
                         $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Inicio actividades en el plano $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
                         $query_rundos = mysqli_query($con, $querydos);
-                        $message = "Se inicio la asignación exitosamente a las $hora_actual";
+                        $queryubicacion_run = mysqli_query($con, $queryubicacion);
+                        $message = "Se inicio la asignación $nombreplano exitosamente a las $hora_actual";
                         echo "<script>
                                 document.addEventListener('DOMContentLoaded', function() {
                                     const message = " . json_encode($message) . ";
@@ -73,6 +74,7 @@ if (isset($_SESSION['codigo'])) {
                         unset($_SESSION['message']);
                     }
                 }
+                
             } else {
             }
         }
@@ -123,7 +125,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                         if ($registro['estatusplano'] === '3') {
                                             echo '<h4>MAQUINADO EN PROGRESO</h4>';
-                                        } else{
+                                        } else {
                                             echo '<h4>MAQUINADO EN PAUSA</h4>';
                                         }
                                         ?>
@@ -173,7 +175,7 @@ if (isset($_SESSION['codigo'])) {
                                                         echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3'>
                                                                 Detener actividad
                                                             </button>";
-                                                    } else{
+                                                    } else {
                                                         echo '<form action="codeactividad.php" method="post">
                                                                 <button type="submit" name="restart" class="btn btn-success m-3">Reiniciar actividad</button>
                                                             </form>';

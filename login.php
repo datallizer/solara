@@ -37,8 +37,6 @@ if (isset($_POST['codigo'])) {
         $_SESSION['apellidom'] = $apellidom;
         $_SESSION['codigo'] = $row['codigo'];
         $_SESSION['rol'] = $row['rol'];
-        $querysesion = "UPDATE `usuarios` SET `sesion` = '1' WHERE `usuarios`.`codigo` = '$codigo'";
-        $querysesion_run = mysqli_query($con, $querysesion);
         if ($_SESSION['rol'] == 5 || $_SESSION['rol'] == 8) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");

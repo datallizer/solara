@@ -29,7 +29,8 @@ if (isset($_SESSION['codigo'])) {
     $result = mysqli_query($con, $query);
 
     if (mysqli_num_rows($result) > 0) {
-        // Se puede acceder al contenido
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Editando quote' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         header('Location: login.php');
         exit();

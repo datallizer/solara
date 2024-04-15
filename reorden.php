@@ -34,6 +34,8 @@ if (isset($_SESSION['codigo'])) {
     // Si se encuentra un registro coincidente, el usuario está autorizado
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Reorden' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');
@@ -95,9 +97,15 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['id']; ?></td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td><?= $registro['parte']; ?></td>
-                                                    <td><p><?= $registro['cantidad']; ?></p></td>
-                                                    <td><p><?= $registro['maximo']; ?></p></td>
-                                                    <td><p><?= $registro['minimo']; ?></p></td>
+                                                    <td>
+                                                        <p><?= $registro['cantidad']; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $registro['maximo']; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $registro['minimo']; ?></p>
+                                                    </td>
                                                     <td>
                                                         <a href="editarreorden.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                     </td>

@@ -26,6 +26,8 @@ if (isset($_SESSION['codigo'])) {
     $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) > 0) {
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Ensambles' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         header('Location: login.php');
         exit();

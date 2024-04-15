@@ -26,6 +26,8 @@ if (isset($_SESSION['codigo'])) {
     $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) > 0) {
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Quotes' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         header('Location: login.php');
         exit();
@@ -152,16 +154,16 @@ if (isset($_SESSION['codigo'])) {
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
                                                             <?php
-                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2,3,4,5,6,7,8,9])){
+                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 8, 9])) {
                                                                 echo '<button type="submit" name="delete" value="' . $registro['id_quote'] . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>';
                                                             }
                                                             ?>
                                                             <a href="editarquote.php?id=<?= $registro['id_quote']; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                             <?php
-                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])){
+                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                                 echo '<button type="submit" name="aprobar" value="' . $registro['id_quote'] . '" class="btn btn-success btn-sm m-1"><i class="bi bi-check-lg"> Aprobar</i></button>';
                                                             }
-                                                            ?>                                                          
+                                                            ?>
                                                         </form>
                                                     </td>
                                                 </tr>

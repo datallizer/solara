@@ -34,6 +34,8 @@ if (isset($_SESSION['codigo'])) {
     // Si se encuentra un registro coincidente, el usuario está autorizado
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Estadísticas' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');

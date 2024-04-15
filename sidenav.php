@@ -84,11 +84,11 @@ require 'dbcon.php';
                             <nav class="sb-sidenav-menu-nested nav">
                                 <?php
                                 // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 8])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 8])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="maquinados.php">Maquinados</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 8, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="ensamble.php">Ensamble</a>';
                                 }
@@ -96,7 +96,7 @@ require 'dbcon.php';
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="bom.php">BOM</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 10])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="estadisticas.php">Estadisticas</a>';
                                 }
@@ -154,8 +154,7 @@ require 'dbcon.php';
 
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                     echo '<a class="nav-link" href="encargadoplanos.php">Maquinados</a>
-                                            <a class="nav-link" href="encargadomecanico.php">Técnicos mecánicos</a>
-                                            <a class="nav-link" href="encargadocontrol.php">Técnicos de control</a>';
+                                            <a class="nav-link" href="encargadocontrol.php">Ensamble</a>';
                                 }
 
                                 ?>

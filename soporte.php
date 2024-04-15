@@ -13,6 +13,8 @@ if (isset($_SESSION['codigo'])) {
     // Si se encuentra un registro coincidente, el usuario está autorizado
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Soporte' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');
@@ -44,6 +46,7 @@ if (isset($_SESSION['codigo'])) {
     <link rel="stylesheet" href="css/styles.css">
     <title>Soporte | Solara</title>
 </head>
+
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">

@@ -30,6 +30,8 @@ if (isset($_SESSION['codigo'])) {
 
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Usuarios' WHERE `usuarios`.`codigo` = '$codigo'";
+            $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         header('Location: login.php');
         exit();

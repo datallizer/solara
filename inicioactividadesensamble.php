@@ -41,7 +41,7 @@ if (isset($_SESSION['codigo'])) {
             // Verificar que el estatus sea 1
             if ($estatusPlano == 1) {
                 // El estatus del plano es 1, puedes proceder con la acción
-                $query = "SELECT nombreplano FROM plano WHERE id = $id_plano";
+                $query = "SELECT nombreplano FROM diagrama WHERE id = $id_plano";
                 $result = mysqli_query($con, $query);
                 $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
                 $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
