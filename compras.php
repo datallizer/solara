@@ -238,20 +238,7 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
-                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id_quote']; ?>">Cotizacion <?= $registro['cotizacion']; ?></button>
-                                                        <div class="modal fade" id="pdfModal<?= $registro['id_quote']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-                                                            <div class="modal-dialog modal-lg">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="pdfModalLabel">Cotización <?= $registro['cotizacion']; ?></h5>
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <a href="vercompra.php?id=<?= $registro['id_quote']; ?>" class="btn btn-outline-dark btn-sm">Ver PDF</a>
                                                     </td>
                                                     <td><?= $registro['notas']; ?></td>
                                                     <td><?php

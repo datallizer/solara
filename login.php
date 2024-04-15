@@ -107,6 +107,7 @@ if (isset($_POST['codigo'])) {
             <div class="col-4">
                 <?php include 'message.php'; ?>
                 <h2 class="mb-4">ACCESO AL SISTEMA</h2>
+                <p><?php echo date("Y-m-d H:i"); ?></p> <!-- Muestra la fecha y hora actual -->
                 <form action="" method="post" class="row justify-content-evenly">
                     <div class="col-11 mb-4"><input id="inputCodigo" style="width: 100%;padding:10px 10px;" type="password" name="codigo" autocomplete="off" required></div>
                     <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(1)">1</a></div>

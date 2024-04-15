@@ -29,7 +29,24 @@ if (isset($_SESSION['codigo'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_sessions') {
     $response = array();
 
-    $query = "SELECT nombre, apellidop, apellidom, rol, estatus, sesion FROM usuarios WHERE estatus = 1 ORDER BY id DESC";
+    $fecha_actual = date("Y-m-d");
+    $hora_actual = date("H:i");
+
+    $query = "SELECT u.nombre, u.apellidop, u.apellidom, u.rol, u.estatus, 
+          (CASE WHEN EXISTS (
+              SELECT 1 
+              FROM asistencia a 
+              WHERE a.idcodigo = u.codigo 
+              AND DATE(a.fecha) = '$fecha_actual' 
+              AND TIME(a.fecha) <= '$hora_actual' 
+              AND a.salida IS NULL
+          ) THEN '1' ELSE '0' END) AS activo
+          FROM usuarios u
+          WHERE u.estatus = 1 AND rol <> 1 AND rol <> 2
+          ORDER BY u.id DESC";
+
+
+
     $result = mysqli_query($con, $query);
 
     if (!$result) {
@@ -124,76 +141,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script> -->
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
-  $(document).ready(function() {
-    function getSessions() {
-        $.ajax({
-            url: 'sesiones.php?action=get_sessions',
-            type: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                console.log(response);
-                console.log('response');
-                
-                // Limpiar la tabla antes de actualizarla
-                $('#miTabla tbody').empty();
-                $('#miTablaDos tbody').empty();
+        $(document).ready(function() {
+            function getSessions() {
+                $.ajax({
+                    url: 'sesiones.php?action=get_sessions',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#miTabla tbody').empty();
+                        $('#miTablaDos tbody').empty();
 
-                // Actualizar las tablas con los datos recibidos
-                response.sessions.forEach(function(session) {
-                    var sessionStatus = session.sesion === '1' ? '<i style="color:#09e83a;" class="bi bi-circle-fill"></i> Activo' : '<i style="color:#e80909;" class="bi bi-circle-fill"></i> Inactivo';
-                    var sessionRow = '<tr>' +
-                        '<td>' + session.nombre + ' ' + session.apellidop + ' ' + session.apellidom + '</td>' +
-                        '<td>' + getRoleName(session.rol) + '</td>' +
-                        '<td>' + sessionStatus + '</td>' +
-                        '</tr>';
+                        response.sessions.forEach(function(session) {
+                            var sessionStatus = session.activo === '1' ? '<i style="color:#09e83a;" class="bi bi-circle-fill"></i> Activo' : '<i style="color:#e80909;" class="bi bi-circle-fill"></i> Inactivo';
+                            var sessionRow = '<tr>' +
+                                '<td>' + session.nombre + ' ' + session.apellidop + ' ' + session.apellidom + '</td>' +
+                                '<td>' + getRoleName(session.rol) + '</td>' +
+                                '<td>' + sessionStatus + '</td>' +
+                                '</tr>';
 
-                    if (session.sesion === '1') {
-                        $('#miTabla tbody').append(sessionRow);
-                    } else {
-                        $('#miTablaDos tbody').append(sessionRow);
+                            if (session.activo === '1') {
+                                $('#miTabla tbody').append(sessionRow);
+                            } else {
+                                $('#miTablaDos tbody').append(sessionRow);
+                            }
+                        });
                     }
                 });
             }
+
+
+
+            getSessions();
+
+            // Inicializar DataTables para las tablas una vez que los datos estén presentes
+            // $('#miTabla').DataTable();
+            // $('#miTablaDos').DataTable();
+
+            setInterval(getSessions, 5000);
+
+            function getRoleName($roleId) {
+                switch ($roleId) {
+                    case '1':
+                        return "Administrador";
+                    case '2':
+                        return "Gerencia";
+                    case '4':
+                        return "Técnico controles";
+                    case '5':
+                        return "Ing. Diseño";
+                    case '6':
+                        return "Compras";
+                    case '7':
+                        return "Almacenista";
+                    case '8':
+                        return "Técnico mecanico";
+                    case '9':
+                        return "Ing. Control";
+                    case '10':
+                        return "Recursos humanos";
+                    default:
+                        return "Error, contacte a soporte";
+                }
+            }
         });
-    }
-
-    // Llamar a getSessions por primera vez para cargar las sesiones inicialmente
-    getSessions();
-
-    // Inicializar DataTables para las tablas una vez que los datos estén presentes
-    // $('#miTabla').DataTable();
-    // $('#miTablaDos').DataTable();
-
-    // Actualizar las sesiones cada 10 segundos (10000 milisegundos)
-    setInterval(getSessions, 10000);
-
-    function getRoleName($roleId) {
-    switch ($roleId) {
-        case '1':
-            return "Administrador";
-        case '2':
-            return "Gerencia";
-        case '4':
-            return "Técnico controles";
-        case '5':
-            return "Ing. Diseño";
-        case '6':
-            return "Compras";
-        case '7':
-            return "Almacenista";
-        case '8':
-            return "Técnico mecanico";
-        case '9':
-            return "Ing. Control";
-        case '10':
-            return "Recursos humanos";
-        default:
-            return "Error, contacte a soporte";
-    }
-}
-});
-
-</script>
+    </script>
 </body>
 
 </html>
