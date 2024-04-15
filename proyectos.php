@@ -297,21 +297,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-12 mt-3">
                         <div class="card">
                             <div class="card-header">
-                                <h4>PROYECTOS
-                                    <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                        echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                        Nuevo proyecto
-                                        </button>
-                                        <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
-                                        Asignar encargado
-                                        </button>';
-                                    }
-                                    ?>
-                                </h4>
+                                <h4>PROYECTOS FINALIZADOS</h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                                <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -334,7 +323,7 @@ if (isset($_SESSION['codigo'])) {
                                                 JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
                                                 JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
                                                 WHERE encargadoproyecto.codigooperador = $codigo 
-                                                AND proyecto.estatus = 1
+                                                AND proyecto.estatus = 0
                                                 ORDER BY proyecto.prioridad ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                             $query = "SELECT * FROM proyecto WHERE estatus = 0 ORDER BY prioridad ASC";
@@ -500,13 +489,13 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td>
                                                         <a href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-                                                        <?php
+                                                        <!-- <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                             echo '<form action="codeproyecto.php" method="POST" class="d-inline">
                                                                         <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                                     </form>';
                                                         }
-                                                        ?>
+                                                        ?> -->
                                                     </td>
                                                 </tr>
                                         <?php
@@ -760,7 +749,7 @@ if (isset($_SESSION['codigo'])) {
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         $(document).ready(function() {
-            $('#miTabla').DataTable({
+            $('#miTabla, #miTablaDos').DataTable({
                 "order": [
                     [4, "asc"]
                 ] // Ordenar la primera columna (índice 0) en orden descendente

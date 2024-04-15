@@ -158,7 +158,7 @@ if (isset($_SESSION['codigo'])) {
                                         // Obtener el ID del usuario
                                         $idPlano = $plano['id'];
                                         // Mostrar la opción con el valor igual al ID del plano
-                                        echo "<option value='$idPlano' " . ($registro['id'] == $idPlano ? 'selected' : '') . ">$opcion</option>";
+                                        echo "<option value='$idPlano' " . ($registro['id'] == $idPlano ? '' : '') . ">$opcion</option>";
                                     }
                                 }
                                 ?>
