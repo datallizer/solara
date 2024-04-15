@@ -452,7 +452,7 @@ if (isset($_SESSION['codigo'])) {
                                                                 echo "Diagramas";
                                                             } else if ($registro['etapacontrol'] === '5') {
                                                                 echo "Bom";
-                                                            } else if ($registro['etapadiseño'] === '6') {
+                                                            } else if ($registro['etapacontrol'] === '6') {
                                                                 echo "Manufactura";
                                                             } else if ($registro['etapacontrol'] === '7') {
                                                                 echo "Programación";
