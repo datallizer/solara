@@ -80,6 +80,29 @@ if (isset($_POST['update'])) {
     }
 }
 
+if (isset($_POST['nominaupdate'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $nomina = mysqli_real_escape_string($con, $_POST['nomina']);
+    // Obtener la nueva imagen cargada
+    $query = "UPDATE `usuarios` SET `nomina` = '$nomina' WHERE `usuarios`.`id` = '$id'";
+        $query_run = mysqli_query($con, $query);
+
+        if ($query_run) {
+            $idcodigo = $_SESSION['codigo'];
+            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito la nómina, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol, estatus: $estatus', hora='$hora_actual', fecha='$fecha_actual'";
+            $query_rundos = mysqli_query($con, $querydos);
+            $_SESSION['message'] = "Nómina editado exitosamente";
+            header("Location: nomina.php");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al editar la nómina, contacte a soporte";
+            header("Location: nomina.php");
+            exit(0);
+        }
+}
+
 
 
 if (isset($_POST['save'])) {
