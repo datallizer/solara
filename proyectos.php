@@ -102,17 +102,17 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9])) {
-                                            $query = "SELECT proyecto.*
-                                                FROM proyecto 
-                                                JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
-                                                JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
-                                                WHERE encargadoproyecto.codigooperador = $codigo 
-                                                AND proyecto.estatus = 1
-                                                ORDER BY proyecto.prioridad ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                        // if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9])) {
+                                        //     $query = "SELECT proyecto.*
+                                        //         FROM proyecto 
+                                        //         JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
+                                        //         JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
+                                        //         WHERE encargadoproyecto.codigooperador = $codigo 
+                                        //         AND proyecto.estatus = 1
+                                        //         ORDER BY proyecto.prioridad ASC";
+                                        // } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                             $query = "SELECT * FROM proyecto WHERE estatus = 1 ORDER BY prioridad ASC";
-                                        }
+                                        //}
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
