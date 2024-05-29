@@ -14,7 +14,7 @@ if (isset($_SESSION['codigo'])) {
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Visualizador de compras' WHERE `usuarios`.`codigo` = '$codigo'";
-            $queryubicacion_run = mysqli_query($con, $queryubicacion);
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');
@@ -63,8 +63,50 @@ if (isset($_GET['id'])) {
                     <div id="layoutSidenav_content">
                         <div class="container-fluid">
                             <div class="row" style="margin-top: 35px;">
-                                <div class="col-md-12" style="width: 100%; height: 100vh;">
+
+                                <div class="col-md-7" style="height: 85vh;">
                                     <embed src="data:application/pdf;base64,<?= base64_encode($pdf_content); ?>" type="application/pdf" width="100%" height="100%" />
+                                </div>
+
+                                <div class="col-5">
+                                    <a class="btn btn-warning btn-sm float-end" href="compras.php">Regresar</a>
+                                    <h2 style="margin-top: 50px;text-transform:uppercase;"><b><?= $plano['cotizacion']; ?></b></h2>
+                                    <p class="mt-4"><b>Solicitante:</b> <?= $plano['solicitante']; ?></p>
+                                    <p><b>Rol del solicitante:</b>
+                                        <?php
+                                        if ($plano['rol'] === '1') {
+                                            echo "Administrador";
+                                        } else if ($plano['rol'] === '2') {
+                                            echo "Gerencia";
+                                        } else if ($plano['rol'] === '4') {
+                                            echo "Técnico controles";
+                                        } else if ($plano['rol'] === '5') {
+                                            echo "Ing. Diseño";
+                                        } else if ($plano['rol'] === '6') {
+                                            echo "Compras";
+                                        } else if ($plano['rol'] === '7') {
+                                            echo "Almacenista";
+                                        } else if ($plano['rol'] === '8') {
+                                            echo "Técnico mecanico";
+                                        } else if ($plano['rol'] === '9') {
+                                            echo "Ing. Control";
+                                        } else {
+                                            echo "Error, contacte a soporte";
+                                        }
+                                        ?>
+                                    </p>
+                                    <p><b>Notas:</b> <?= $plano['notas']; ?></p>
+                                    <?php
+                                    if ($plano['estatusq'] <> 2) {
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6])) {
+                                    ?>
+                                            <form action="codequotes.php" method="POST" class="text-center mt-5">
+                                                <button type="submit" name="completar" value="<?= $plano['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-box-fill"></i> Completar</i></button>
+                                            </form>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>

@@ -149,11 +149,7 @@ if (mysqli_num_rows($result) > 0) {
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
-                                            <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                                                echo '<th>Estatus</th>';
-                                            }
-                                            ?>
+                                            <th>Estatus</th>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>
@@ -257,38 +253,56 @@ if (mysqli_num_rows($result) > 0) {
                                                     }
                                                     ?>
                                                     <?php
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                                                        if ($registro['estatusplano'] === '1') {
-                                                            echo "<td>Asignado</td>";
-                                                        } elseif ($registro['estatusplano'] === '2') {
-                                                            echo "<td>Pausado</td>";
-                                                        } elseif ($registro['estatusplano'] === '3') {
-                                                            echo "<td style='background-color:#e5da00 !important'>En progreso</td>";
-                                                        } else {
+
+                                                    if ($registro['estatusplano'] === '1') {
+                                                        echo "<td>Asignado</td>";
+                                                    } elseif ($registro['estatusplano'] === '2') {
+                                                        echo "<td>Pausado</td>";
+                                                    } elseif ($registro['estatusplano'] === '3') {
+                                                        echo "<td style='background-color:#e5da00 !important'>En progreso</td>";
+                                                    } else {
                                                     ?>
-                                                            <td class="text-center"><?= $registro['estatusplano']; ?></td>
+                                                        <td class="text-center"><?= $registro['estatusplano']; ?></td>
                                                     <?php
-                                                        }
                                                     }
 
                                                     ?>
                                                     <td>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                            $countQuery = "SELECT COUNT(*) as count
+                                                            FROM plano
+                                                            JOIN asignacionplano ON asignacionplano.idplano = plano.id
+                                                            WHERE asignacionplano.codigooperador = $codigo AND plano.estatusplano = 3";
+                                                            $countResult = mysqli_query($con, $countQuery);
+                                                            $countRow = mysqli_fetch_assoc($countResult);
+                                                            $planosConEstatus3 = $countRow['count'];
                                                             $id = $registro['id'];
-                                                            if ($registro['estatusplano'] === '1') {
-                                                                echo '<form action="codeactividad.php" method="post">
-                                                                <input type="hidden" value="' . $id . '" name="id">
-                                                                <button type="submit" name="start" class="btn btn-sm btn-success">Iniciar</button>
-                                                                </form>';
-                                                            } else if ($registro['estatusplano'] === '2' || $registro['estatusplano'] === '3') {
-                                                                echo '<form action="codeactividad.php" method="post">
-                                                                <input type="hidden" value="' . $id . '" name="id">
-                                                                <button type="submit" name="restart" class="btn btn-sm btn-primary">Seguimiento</button>
-                                                                </form>';
+                                                            if ($planosConEstatus3 >= 1) {
+                                                                if ($registro['estatusplano'] === '3') {
+                                                                    echo '<form action="codeactividad.php" method="post">
+                                                                            <input type="hidden" value="' . $id . '" name="id">
+                                                                            <button type="submit" name="restart" class="btn btn-sm btn-danger">Seguimiento</button>
+                                                                          </form>';
+                                                                } else {
+                                                                    echo "<p>-</p>";
+                                                                }
                                                             } else {
-                                                                echo "Error, contacte a soporte";
+                                                                if ($registro['estatusplano'] === '1') {
+                                                                    echo '<form action="codeactividad.php" method="post">
+                                                                            <input type="hidden" value="' . $id . '" name="id">
+                                                                            <button type="submit" name="start" class="btn btn-sm btn-success">Iniciar</button>
+                                                                          </form>';
+                                                                } else if ($registro['estatusplano'] === '2' || $registro['estatusplano'] === '3') {
+                                                                    echo '<form action="codeactividad.php" method="post">
+                                                                            <input type="hidden" value="' . $id . '" name="id">
+                                                                            <button type="submit" name="restart" class="btn btn-sm btn-primary">Seguimiento</button>
+                                                                          </form>';
+                                                                } else {
+                                                                    echo "Error, contacte a soporte";
+                                                                }
                                                             }
+                                                            
                                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
