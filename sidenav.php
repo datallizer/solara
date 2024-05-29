@@ -103,6 +103,7 @@ require 'dbcon.php';
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="proyectos.php">Proyectos</a>';
+                                    echo '<a class="nav-link" href="motivosdeparo.php">Motivos de paro</a>';
                                 }
                                 ?>
                             </nav>
