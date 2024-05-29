@@ -118,7 +118,7 @@ if (isset($_POST['codigo'])) {
                     <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(8)">8</a></div>
                     <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(9)">9</a></div>
                     <div class="col-3 colbtnlogin"><a class="btn btn-danger btnlogin" onclick="borrarUltimoCaracter()"><i class="bi bi-arrow-left"></i></a></div>
-                    <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(0)">0</a></div>
+                    <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin">0</a></div>
                     <div class="col-3 colbtnlogin"><button type="submit" class="btn btn-success btnlogin"><i class="bi bi-check2"></i></button></div>
                 </form>
             </div>

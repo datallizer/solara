@@ -295,6 +295,37 @@ if (isset($_SESSION['codigo'])) {
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Activar modo pantalla completa',
+                text: 'Debes activar el modo pantalla completa para continuar.',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonText: 'Aceptar',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem('fullscreenAccepted', 'true');
+                    requestFullscreen();
+                }
+            });
+
+        });
+
+        function requestFullscreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { // Firefox
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { // IE/Edge
+                elem.msRequestFullscreen();
+            }
+        }
         // Obtener los radio buttons y los divs de los botones "Terminar", "Pausar" y "Menú"
         const radioButtons = document.querySelectorAll('input[name="motivosparo"]');
         const divBotonTerminar = document.getElementById('botonTerminar');

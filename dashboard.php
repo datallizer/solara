@@ -294,6 +294,7 @@ if (mysqli_num_rows($result) > 0) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
+
         $(document).ready(function() {
             $('#miTabla').DataTable({
                 "order": [
@@ -301,7 +302,6 @@ if (mysqli_num_rows($result) > 0) {
                 ] // Ordenar la primera columna (índice 0) en orden descendente
             });
         });
-        
     </script>
 </body>
 
