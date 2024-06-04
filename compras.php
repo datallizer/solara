@@ -67,13 +67,14 @@ if (isset($_SESSION['codigo'])) {
                                 <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>Id</th>
+                                            <th>#</th>
                                             <th>Solicitante</th>
                                             <th>Rol</th>
                                             <th>Proyecto</th>
                                             <th>PDF</th>
                                             <th>Notas</th>
                                             <th>Estatus</th>
+                                            <th>Monto</th>
                                             <?php
                                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6])) {
                                                 echo '<th>Acción</th>';
@@ -86,7 +87,7 @@ if (isset($_SESSION['codigo'])) {
                                         $query = "SELECT quotes.*, proyecto.*, quotes.id AS id_quote
                                             FROM quotes 
                                             JOIN proyecto ON quotes.proyecto = proyecto.id
-                                            WHERE estatusq = 0
+                                            WHERE estatusq = 0 OR estatusq = 7
                                             ORDER BY quotes.id ASC";
 
 
@@ -146,20 +147,27 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Pendiente";
                                                         } elseif ($registro['estatusq'] === '2') {
                                                             echo "Completada";
+                                                        } elseif ($registro['estatusq'] === '7') {
+                                                            echo "Compra parcial";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
                                                         ?>
                                                     </td>
+                                                    <td>$<?= $registro['monto']; ?></td>
 
                                                     <?php
                                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6])) {
                                                     ?>
                                                         <td>
-                                                            <form action="codequotes.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="completar" value="<?= $registro['id_quote']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-box-fill"></i> Completar</i></button>
+                                                            <form action="codequotes.php" method="POST" class="d-inline" id="formCompletar<?= $registro['id_quote']; ?>">
+                                                                <button type="button" onclick="completarCompra(<?= $registro['id_quote']; ?>)" class="btn btn-success btn-sm m-1"><i class="bi bi-box-fill"></i> Completar</button>
+                                                                <input type="hidden" name="completar" value="<?= $registro['id_quote']; ?>">
+                                                                <input type="hidden" id="monto<?= $registro['id_quote']; ?>" name="monto">
+                                                                <input type="hidden" id="estatus<?= $registro['id_quote']; ?>" name="estatus">
                                                             </form>
                                                         </td>
+
                                                     <?php
                                                     }
                                                     ?>
@@ -168,7 +176,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='8'><p>No se encontró ningún registro</p></td></tr>";
+                                            echo "<tr><td colspan='9'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -186,13 +194,14 @@ if (isset($_SESSION['codigo'])) {
                                 <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>Id</th>
+                                            <th>#</th>
                                             <th>Solicitante</th>
                                             <th>Rol</th>
                                             <th>Proyecto</th>
                                             <th>PDF</th>
                                             <th>Notas</th>
                                             <th>Estatus</th>
+                                            <th>Monto</th>
                                             <?php
                                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6])) {
                                                 echo '<th>Acción</th>';
@@ -241,7 +250,7 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
-                                                    <a href="vercompra.php?id=<?= $registro['id_quote']; ?>" class="btn btn-outline-dark btn-sm">Ver PDF</a>
+                                                        <a href="vercompra.php?id=<?= $registro['id_quote']; ?>" class="btn btn-outline-dark btn-sm">Ver PDF</a>
                                                     </td>
                                                     <td><?= $registro['notas']; ?></td>
                                                     <td><?php
@@ -256,6 +265,7 @@ if (isset($_SESSION['codigo'])) {
                                                         }
                                                         ?>
                                                     </td>
+                                                    <td>$<?= $registro['monto']; ?></td>
 
                                                     <?php
                                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6])) {
@@ -273,7 +283,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='8'><p>No se encontró ningún registro</p></td></tr>";
+                                            echo "<tr><td colspan='9'><p>No se encontró ningún registro</p></td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -301,36 +311,51 @@ if (isset($_SESSION['codigo'])) {
                 ] // Ordenar la primera columna (índice 0) en orden descendente
             });
         });
-        // Función para cargar y mostrar el PDF en el iframe
-        function showPDF(pdfUrl, iframeId) {
-            const loadingTask = pdfjsLib.getDocument(pdfUrl);
-            loadingTask.promise.then(function(pdf) {
-                // Carga la página 1 del PDF
-                pdf.getPage(1).then(function(page) {
-                    const scale = 1.5;
-                    const viewport = page.getViewport({
-                        scale
+
+        function completarCompra(idQuote) {
+            Swal.fire({
+                title: '¿La compra fue total o parcial?',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Total',
+                denyButtonText: 'Parcial',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Ingrese la cantidad total',
+                        input: 'number',
+                        inputAttributes: {
+                            min: 0
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Enviar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('monto' + idQuote).value = result.value;
+                            document.getElementById('estatus' + idQuote).value = 2;
+                            document.getElementById('formCompletar' + idQuote).submit();
+                        }
                     });
-                    // Preparar el canvas para renderizar la página PDF
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-                    // Renderizar la página PDF en el canvas
-                    const renderContext = {
-                        canvasContext: context,
-                        viewport: viewport
-                    };
-                    page.render(renderContext).promise.then(function() {
-                        // Agregar el canvas al iframe
-                        const iframe = document.getElementById(iframeId);
-                        iframe.src = canvas.toDataURL();
+                } else if (result.isDenied) {
+                    Swal.fire({
+                        title: 'Ingrese la cantidad comprada',
+                        input: 'number',
+                        inputAttributes: {
+                            min: 0
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Enviar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('monto' + idQuote).value = result.value;
+                            document.getElementById('estatus' + idQuote).value = 7;
+                            document.getElementById('formCompletar' + idQuote).submit();
+                        }
                     });
-                });
-            }, function(error) {
-                console.error('Error al cargar el PDF:', error);
+                }
             });
         }
+        
         const deleteButtons = document.querySelectorAll('.deletebtn');
 
         deleteButtons.forEach(button => {

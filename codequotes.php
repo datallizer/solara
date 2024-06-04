@@ -178,20 +178,23 @@ if (isset($_POST['aprobar'])) {
     }
 } elseif (isset($_POST['completar'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['completar']);
+    $monto = mysqli_real_escape_string($con, $_POST['monto']);
+    $estatus = mysqli_real_escape_string($con, $_POST['estatus']);
 
-    $query = "UPDATE `quotes` SET `estatusq` = '2' WHERE `quotes`.`id` = '$registro_id'";
+    $query = "UPDATE `quotes` SET `monto` = '$monto', `estatusq` = '$estatus' WHERE `quotes`.`id` = '$registro_id'";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Compra completada exitosamente";
+        $_SESSION['message'] = "Compra actualizada exitosamente";
         header("Location: compras.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al aprobar el quote, contacte a soporte";
+        $_SESSION['message'] = "Error al actualizar el quote, contacte a soporte";
         header("Location: compras.php");
         exit(0);
     }
 }
+
 
 
 if (isset($_POST['save'])) {
