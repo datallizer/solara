@@ -18,15 +18,15 @@ require 'dbcon.php';
                 <?php
                 $queryUsuarios = "
                 SELECT COUNT(*) as numUsuarios
-                FROM (
-                    SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, COUNT(plano.id) as cuenta
-                    FROM asignacionplano
-                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                    JOIN plano ON asignacionplano.idplano = plano.id
-                    WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
-                    GROUP BY usuarios.nombre, usuarios.apellidop, usuarios.apellidom
-                    HAVING cuenta <= 3
-                ) as subquery";
+FROM (
+    SELECT usuarios.codigo, COUNT(plano.id) as cuenta
+    FROM asignacionplano
+    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+    JOIN plano ON asignacionplano.idplano = plano.id
+    WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
+    GROUP BY usuarios.codigo
+    HAVING cuenta <= 3
+) as subquery";
 
                 $resultado = mysqli_query($con, $queryUsuarios);
                 $usuarioData = mysqli_fetch_assoc($resultado);
@@ -46,13 +46,13 @@ require 'dbcon.php';
 
                 <?php
                 $queryUsuarios = "
-                SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, COUNT(plano.id) as cuenta
-                FROM asignacionplano
-                JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                JOIN plano ON asignacionplano.idplano = plano.id
-                WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
-                GROUP BY usuarios.nombre, usuarios.apellidop, usuarios.apellidom
-                HAVING cuenta <= 3";
+                SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(plano.id) as cuenta
+FROM asignacionplano
+JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+JOIN plano ON asignacionplano.idplano = plano.id
+WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
+GROUP BY usuarios.codigo
+HAVING cuenta <= 3";
 
                 $resultado = mysqli_query($con, $queryUsuarios);
                 function numeroATexto($numero)
@@ -69,8 +69,14 @@ require 'dbcon.php';
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
                         <li style="width: 400px;padding:0px 15px;">
+                            <div class="row">
+                                <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
+                                <div class="col-9">
                             <small><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Advertencia</small>
-                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p>
+                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p></div>
+                            </div>
+                            
+                            
                         </li>
                         <hr class="dropdown-divider" />
                     <?php endwhile; ?>
