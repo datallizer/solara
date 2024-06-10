@@ -23,7 +23,7 @@ require 'dbcon.php';
                     FROM asignacionplano
                     JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                     JOIN plano ON asignacionplano.idplano = plano.id
-                    WHERE plano.estatusplano IN (1, 2, 3)
+                    WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
                     GROUP BY usuarios.nombre, usuarios.apellidop, usuarios.apellidom
                     HAVING cuenta <= 3
                 ) as subquery";
@@ -50,7 +50,7 @@ require 'dbcon.php';
                 FROM asignacionplano
                 JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                 JOIN plano ON asignacionplano.idplano = plano.id
-                WHERE plano.estatusplano IN (1, 2, 3)
+                WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
                 GROUP BY usuarios.nombre, usuarios.apellidop, usuarios.apellidom
                 HAVING cuenta <= 3";
 

@@ -12,7 +12,7 @@ if (isset($_POST['save'])) {
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
-        $querydos = "UPDATE `plano` SET `estatusplano` = '$motivosparo' WHERE `plano`.`id` = '$id'";
+        $querydos = "UPDATE `plano` SET `estatusplano` = '2' WHERE `plano`.`id` = '$id'";
         $query_rundos = mysqli_query($con, $querydos);
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Detuvo el maquinado, motivo: $motivosparo' WHERE `usuarios`.`codigo` = '$idcodigo'";
         $queryubicacion_run = mysqli_query($con, $queryubicacion);
