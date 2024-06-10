@@ -32,7 +32,8 @@ if (isset($_POST['restart'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
     $fecha_actual = date("Y-m-d");
     $hora_actual = date("H:i");
-    $paro = $_SESSION['paro'];
+    $paro = isset($_SESSION['paro']) ? $_SESSION['paro'] : '';
+
 
     // Obtener el ID de la última fila que cumpla con la condición WHERE
     $subquery = "SELECT MAX(id) AS max_id FROM historialoperadores WHERE idcodigo = $idcodigo AND idplano = $id";
@@ -40,9 +41,12 @@ if (isset($_POST['restart'])) {
     $row = mysqli_fetch_assoc($result);
     $max_id = $row['max_id'];
 
-    // Actualizar solo la fila con el ID obtenido
+    if ($max_id) {
+        // Actualizar solo la fila con el ID obtenido
     $query = "UPDATE historialoperadores SET horareinicio = '$hora_actual', fechareinicio = '$fecha_actual' WHERE id = $max_id";
     $query_run = mysqli_query($con, $query);
+    }
+    
 
     if ($query_run && $paro == 'Lunch') {
         $querydos = "UPDATE `plano` SET `estatusplano` = '3' WHERE `plano`.`id` = '$id'";

@@ -228,7 +228,7 @@ if (mysqli_num_rows($result) > 0) {
                     <div class="col-12">
                         <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA</h2>
                     </div>
-                    <div class="col-12 p-3 text-center" style="background-color: #e3e3e3;">
+                    <div class="col-12 p-3 text-center" style="border: 1.5px solid #e7e7e7;">
                         <table id="miTabla" class="table table-striped">
                             <thead>
                                 <tr>

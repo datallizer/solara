@@ -14,13 +14,76 @@ require 'dbcon.php';
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-12 me-3 me-lg-12">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+            <li class="nav-item dropdown m-1">
+                <?php
+                $queryUsuarios = "
+                SELECT COUNT(*) as numUsuarios
+                FROM (
+                    SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, COUNT(plano.id) as cuenta
+                    FROM asignacionplano
+                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                    JOIN plano ON asignacionplano.idplano = plano.id
+                    WHERE plano.estatusplano IN (1, 2, 3)
+                    GROUP BY usuarios.nombre, usuarios.apellidop, usuarios.apellidom
+                    HAVING cuenta <= 3
+                ) as subquery";
+
+                $resultado = mysqli_query($con, $queryUsuarios);
+                $usuarioData = mysqli_fetch_assoc($resultado);
+                $numUsuarios = $usuarioData['numUsuarios'];
+
+                ?>
+
+                <?php if ($numUsuarios > 0) : ?>
+                    <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-bell-fill"></i>
+                        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
+                            <?php echo $numUsuarios; ?>
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    </a>
+                <?php endif; ?>
+
+                <?php
+                $queryUsuarios = "
+                SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, COUNT(plano.id) as cuenta
+                FROM asignacionplano
+                JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                JOIN plano ON asignacionplano.idplano = plano.id
+                WHERE plano.estatusplano IN (1, 2, 3)
+                GROUP BY usuarios.nombre, usuarios.apellidop, usuarios.apellidom
+                HAVING cuenta <= 3";
+
+                $resultado = mysqli_query($con, $queryUsuarios);
+                function numeroATexto($numero)
+                {
+                    $textos = [
+                        1 => 'un maquinado asignado',
+                        2 => 'dos maquinados asignados',
+                        3 => 'tres maquinados asignados'
+                    ];
+                    return $textos[$numero] ?? $numero; // Devuelve el texto o el número si no está en el array
+                }
+
+                ?>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
+                        <li style="width: 400px;padding:0px 15px;">
+                            <small><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Advertencia</small>
+                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p>
+                        </li>
+                        <hr class="dropdown-divider" />
+                    <?php endwhile; ?>
+                </ul>
+
+            </li>
+            <li class="nav-item dropdown m-1">
+                <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user fa-fw"></i>
+                </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="soporte.php">Soporte</a></li>
-                    <li>
-                        <hr class="dropdown-divider" />
-                    </li>
+                    <hr class="dropdown-divider" />
                     <li><a class="dropdown-item" href="logout.php">Salir</a></li>
                 </ul>
             </li>
@@ -84,11 +147,11 @@ require 'dbcon.php';
                             <nav class="sb-sidenav-menu-nested nav">
                                 <?php
                                 // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 8,5,9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 8, 5, 9])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="maquinados.php">Maquinados</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4,5,9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 9])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="ensamble.php">Ensamble</a>';
                                 }
@@ -196,7 +259,7 @@ require 'dbcon.php';
                             $registro = mysqli_fetch_array($query_run);
                     ?>
                             <div class="row">
-                                <div class="col-6"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                <div class="col-6"><img style="width: 100%;border-radius:5px;height:112px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                                 </div>
                                 <div class="col">
                                     <p style="margin-left: -10px;"><?= $registro['nombre']; ?><br>
