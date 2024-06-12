@@ -51,13 +51,27 @@ require 'dbcon.php';
                 ?>
 
                 <?php if ($numUsuarios > 0) : ?>
-                    <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell-fill"></i>
-                        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
-                            <?php echo $numUsuarios + $numEnsambles; ?>
-                            <span class="visually-hidden">unread messages</span>
-                        </span>
-                    </a>
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                    ?>
+                        <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell-fill"></i>
+                            <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
+                                <?php
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                    echo $numUsuarios + $numEnsambles;
+                                } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])){
+                                    echo $numUsuarios;
+                                } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])){
+                                    echo $numEnsambles;
+                                }
+                                ?>
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        </a>
+                    <?php
+                    }
+                    ?>
                 <?php endif; ?>
 
                 <?php
@@ -103,33 +117,44 @@ require 'dbcon.php';
 
                 ?>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
-                        <li style="width: 400px;padding:0px 15px;">
-                            <div class="row">
-                                <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
-                                <div class="col-9">
-                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
-                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p></div>
-                            </div>
-                            
-                            
-                        </li>
-                        <hr class="dropdown-divider" />
-                    <?php endwhile; ?>
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
+                    ?>
+                        <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
+                            <li style="width: 400px;padding:0px 15px;">
+                                <div class="row">
+                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
+                                    <div class="col-9">
+                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
+                                        <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p>
+                                    </div>
+                                </div>
 
-                    <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
-                        <li style="width: 400px;padding:0px 15px;">
-                            <div class="row">
-                                <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
-                                <div class="col-9">
-                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
-                            <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> tiene <?php echo numeroATextos($ensamble['cuenta']); ?>.</p></div>
-                            </div>
-                            
-                            
-                        </li>
-                        <hr class="dropdown-divider" />
-                    <?php endwhile; ?>
+
+                            </li>
+                            <hr class="dropdown-divider" />
+                        <?php endwhile; ?>
+                    <?php
+                    }
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 9])) {
+                    ?>
+                        <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
+                            <li style="width: 400px;padding:0px 15px;">
+                                <div class="row">
+                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
+                                    <div class="col-9">
+                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
+                                        <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> tiene <?php echo numeroATextos($ensamble['cuenta']); ?>.</p>
+                                    </div>
+                                </div>
+
+
+                            </li>
+                            <hr class="dropdown-divider" />
+                        <?php endwhile; ?>
+                    <?php
+                    }
+                    ?>
                 </ul>
 
             </li>
