@@ -18,19 +18,35 @@ require 'dbcon.php';
                 <?php
                 $queryUsuarios = "
                 SELECT COUNT(*) as numUsuarios
-FROM (
-    SELECT usuarios.codigo, COUNT(plano.id) as cuenta
-    FROM asignacionplano
-    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-    JOIN plano ON asignacionplano.idplano = plano.id
-    WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
-    GROUP BY usuarios.codigo
-    HAVING cuenta <= 3
-) as subquery";
+                FROM (
+                    SELECT usuarios.codigo, COUNT(plano.id) as cuenta
+                    FROM asignacionplano
+                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                    JOIN plano ON asignacionplano.idplano = plano.id
+                    WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
+                    GROUP BY usuarios.codigo
+                    HAVING cuenta <= 3
+                ) as subquery";
 
                 $resultado = mysqli_query($con, $queryUsuarios);
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numUsuarios = $usuarioData['numUsuarios'];
+
+                $queryUsuarios = "
+                SELECT COUNT(*) as numEnsambles
+                FROM (
+                    SELECT usuarios.codigo, COUNT(diagrama.id) as cuenta
+                    FROM asignaciondiagrama
+                    JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
+                    JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id
+                    WHERE diagrama.estatusplano IN (1, 2, 3) AND usuarios.rol = 4
+                    GROUP BY usuarios.codigo
+                    HAVING cuenta <= 3
+                ) as subquery";
+
+                $resultado = mysqli_query($con, $queryUsuarios);
+                $usuarioData = mysqli_fetch_assoc($resultado);
+                $numEnsambles = $usuarioData['numEnsambles'];
 
                 ?>
 
@@ -38,7 +54,7 @@ FROM (
                     <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-bell-fill"></i>
                         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
-                            <?php echo $numUsuarios; ?>
+                            <?php echo $numUsuarios + $numEnsambles; ?>
                             <span class="visually-hidden">unread messages</span>
                         </span>
                     </a>
@@ -47,12 +63,12 @@ FROM (
                 <?php
                 $queryUsuarios = "
                 SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(plano.id) as cuenta
-FROM asignacionplano
-JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-JOIN plano ON asignacionplano.idplano = plano.id
-WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
-GROUP BY usuarios.codigo
-HAVING cuenta <= 3";
+                FROM asignacionplano
+                JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                JOIN plano ON asignacionplano.idplano = plano.id
+                WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
+                GROUP BY usuarios.codigo
+                HAVING cuenta <= 3";
 
                 $resultado = mysqli_query($con, $queryUsuarios);
                 function numeroATexto($numero)
@@ -65,6 +81,26 @@ HAVING cuenta <= 3";
                     return $textos[$numero] ?? $numero; // Devuelve el texto o el número si no está en el array
                 }
 
+                $queryEnsambles = "
+                SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(diagrama.id) as cuenta
+                FROM asignaciondiagrama
+                JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
+                JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id
+                WHERE diagrama.estatusplano IN (1, 2, 3) AND usuarios.rol = 4
+                GROUP BY usuarios.codigo
+                HAVING cuenta <= 3";
+
+                $resultados = mysqli_query($con, $queryEnsambles);
+                function numeroATextos($numeros)
+                {
+                    $texto = [
+                        1 => 'un ensamble asignado',
+                        2 => 'dos ensambles asignados',
+                        3 => 'tres ensambles asignados'
+                    ];
+                    return $texto[$numeros] ?? $numeros; // Devuelve el texto o el número si no está en el array
+                }
+
                 ?>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
@@ -72,8 +108,22 @@ HAVING cuenta <= 3";
                             <div class="row">
                                 <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
                                 <div class="col-9">
-                            <small><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Advertencia</small>
+                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
                             <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p></div>
+                            </div>
+                            
+                            
+                        </li>
+                        <hr class="dropdown-divider" />
+                    <?php endwhile; ?>
+
+                    <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
+                        <li style="width: 400px;padding:0px 15px;">
+                            <div class="row">
+                                <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
+                                <div class="col-9">
+                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
+                            <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> tiene <?php echo numeroATextos($ensamble['cuenta']); ?>.</p></div>
                             </div>
                             
                             
