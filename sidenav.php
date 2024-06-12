@@ -50,33 +50,34 @@ require 'dbcon.php';
 
                 ?>
 
-<?php 
-// Variables de control para mostrar el enlace
-$mostrarEnlace = false;
+                <?php
+                // Variables de control para mostrar el enlace
+                $mostrarEnlace = false;
 
-// Comprobar condiciones y asignar la variable de control
-if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) || 
-    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9]))) {
-    $mostrarEnlace = true;
-}
+                // Comprobar condiciones y asignar la variable de control
+                if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) ||
+                    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9]))
+                ) {
+                    $mostrarEnlace = true;
+                }
 
-if ($mostrarEnlace) : ?>
-    <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-bell-fill"></i>
-        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
-            <?php
-            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                echo $numUsuarios + $numEnsambles;
-            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])){
-                echo $numUsuarios;
-            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])){
-                echo $numEnsambles;
-            }
-            ?>
-            <span class="visually-hidden">unread messages</span>
-        </span>
-    </a>
-<?php endif; ?>
+                if ($mostrarEnlace) : ?>
+                    <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-bell-fill"></i>
+                        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
+                            <?php
+                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                echo $numUsuarios + $numEnsambles;
+                            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])) {
+                                echo $numUsuarios;
+                            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])) {
+                                echo $numEnsambles;
+                            }
+                            ?>
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    </a>
+                <?php endif; ?>
 
 
                 <?php
@@ -163,7 +164,12 @@ if ($mostrarEnlace) : ?>
                 </ul>
 
             </li>
-            <li class="nav-item dropdown m-1">
+            <li class="m-1">
+                <a style="color:#000;padding:3px 7px;border-radius:5px;" class="nav-link btn-warning" href="logout.php" role="button">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </a>
+            </li>
+            <!-- <li class="nav-item dropdown m-1">
                 <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-user fa-fw"></i>
                 </a>
@@ -172,7 +178,7 @@ if ($mostrarEnlace) : ?>
                     <hr class="dropdown-divider" />
                     <li><a class="dropdown-item" href="logout.php">Salir</a></li>
                 </ul>
-            </li>
+            </li> -->
         </ul>
     </nav>
     <div id="layoutSidenav">
@@ -352,29 +358,30 @@ if ($mostrarEnlace) : ?>
                                         <?= $registro['apellidop']; ?>
                                         <?= $registro['apellidom']; ?> <br>
                                         <small style="font-size: 11px;"><?php
-                                                        if ($registro['rol'] === '1') {
-                                                            echo "Administrador";
-                                                        } else if ($registro['rol'] === '2') {
-                                                            echo "Gerencia";
-                                                        }  else if ($registro['rol'] === '4') {
-                                                            echo "Técnico controles";
-                                                        } else if ($registro['rol'] === '5') {
-                                                            echo "Ing. Diseño";
-                                                        } else if ($registro['rol'] === '6') {
-                                                            echo "Compras";
-                                                        } else if ($registro['rol'] === '7') {
-                                                            echo "Almacenista";
-                                                        } else if ($registro['rol'] === '8') {
-                                                            echo "Técnico mecanico";
-                                                        } else if ($registro['rol'] === '9') {
-                                                            echo "Ing. Control";
-                                                        }else if ($registro['rol'] === '10') {
-                                                            echo "Recursos humanos";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?></small></p>
-                                        
+                                                                        if ($registro['rol'] === '1') {
+                                                                            echo "Administrador";
+                                                                        } else if ($registro['rol'] === '2') {
+                                                                            echo "Gerencia";
+                                                                        } else if ($registro['rol'] === '4') {
+                                                                            echo "Técnico controles";
+                                                                        } else if ($registro['rol'] === '5') {
+                                                                            echo "Ing. Diseño";
+                                                                        } else if ($registro['rol'] === '6') {
+                                                                            echo "Compras";
+                                                                        } else if ($registro['rol'] === '7') {
+                                                                            echo "Almacenista";
+                                                                        } else if ($registro['rol'] === '8') {
+                                                                            echo "Técnico mecanico";
+                                                                        } else if ($registro['rol'] === '9') {
+                                                                            echo "Ing. Control";
+                                                                        } else if ($registro['rol'] === '10') {
+                                                                            echo "Recursos humanos";
+                                                                        } else {
+                                                                            echo "Error, contacte a soporte";
+                                                                        }
+                                                                        ?></small>
+                                    </p>
+
                                 </div>
                             </div>
                     <?php
