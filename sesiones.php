@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
               AND a.salida IS NULL
           ) THEN '1' ELSE '0' END) AS activo
           FROM usuarios u
-          WHERE u.estatus = 1 AND rol <> 1 AND rol <> 2
+          WHERE u.estatus = 1 AND rol <> 1 AND rol <> 2 AND u.ubicacion <> 'Fin de jornada laboral'
           ORDER BY u.id DESC";
 
 
