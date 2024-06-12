@@ -133,7 +133,7 @@ if (mysqli_num_rows($result) > 0) {
                                     <?php
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    Nuevo plano / actividad
+                                    Nuevo plano
                                 </button>';
                                     }
                                     ?>

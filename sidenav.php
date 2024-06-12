@@ -50,29 +50,34 @@ require 'dbcon.php';
 
                 ?>
 
-                <?php if ($numUsuarios > 0) : ?>
-                    <?php
-                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                    ?>
-                        <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-bell-fill"></i>
-                            <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
-                                <?php
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                    echo $numUsuarios + $numEnsambles;
-                                } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])){
-                                    echo $numUsuarios;
-                                } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])){
-                                    echo $numEnsambles;
-                                }
-                                ?>
-                                <span class="visually-hidden">unread messages</span>
-                            </span>
-                        </a>
-                    <?php
-                    }
-                    ?>
-                <?php endif; ?>
+<?php 
+// Variables de control para mostrar el enlace
+$mostrarEnlace = false;
+
+// Comprobar condiciones y asignar la variable de control
+if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) || 
+    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9]))) {
+    $mostrarEnlace = true;
+}
+
+if ($mostrarEnlace) : ?>
+    <a style="background-color:#363636;padding:3px 7px;border-radius:5px;" class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell-fill"></i>
+        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
+            <?php
+            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                echo $numUsuarios + $numEnsambles;
+            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])){
+                echo $numUsuarios;
+            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])){
+                echo $numEnsambles;
+            }
+            ?>
+            <span class="visually-hidden">unread messages</span>
+        </span>
+    </a>
+<?php endif; ?>
+
 
                 <?php
                 $queryUsuarios = "
@@ -340,12 +345,36 @@ require 'dbcon.php';
                             $registro = mysqli_fetch_array($query_run);
                     ?>
                             <div class="row">
-                                <div class="col-6"><img style="width: 100%;border-radius:5px;height:112px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                <div class="col-5"><img style="width: 100%;border-radius:5px;height:92px;object-fit: cover;object-position:top;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                                 </div>
-                                <div class="col">
-                                    <p style="margin-left: -10px;"><?= $registro['nombre']; ?><br>
-                                        <?= $registro['apellidop']; ?><br>
-                                        <?= $registro['apellidom']; ?></p>
+                                <div class="col-7">
+                                    <p style="margin-left: -10px;"><?= $registro['nombre']; ?>
+                                        <?= $registro['apellidop']; ?>
+                                        <?= $registro['apellidom']; ?> <br>
+                                        <small style="font-size: 11px;"><?php
+                                                        if ($registro['rol'] === '1') {
+                                                            echo "Administrador";
+                                                        } else if ($registro['rol'] === '2') {
+                                                            echo "Gerencia";
+                                                        }  else if ($registro['rol'] === '4') {
+                                                            echo "Técnico controles";
+                                                        } else if ($registro['rol'] === '5') {
+                                                            echo "Ing. Diseño";
+                                                        } else if ($registro['rol'] === '6') {
+                                                            echo "Compras";
+                                                        } else if ($registro['rol'] === '7') {
+                                                            echo "Almacenista";
+                                                        } else if ($registro['rol'] === '8') {
+                                                            echo "Técnico mecanico";
+                                                        } else if ($registro['rol'] === '9') {
+                                                            echo "Ing. Control";
+                                                        }else if ($registro['rol'] === '10') {
+                                                            echo "Recursos humanos";
+                                                        } else {
+                                                            echo "Error, contacte a soporte";
+                                                        }
+                                                        ?></small></p>
+                                        
                                 </div>
                             </div>
                     <?php

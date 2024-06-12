@@ -132,13 +132,14 @@ if (mysqli_num_rows($result) > 0) {
                         <div class="card">
                             <div class="card-header">
                                 <h4>ENSAMBLES
+                                <!-- <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    T. Mecánico
+                                </button> -->
                                     <?php
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                                        echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    T. Mecánico
-                                </button>
-                                <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
-                                    T. Control
+                                        echo '
+                                <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
+                                    Nuevo ensamble
                                 </button>';
                                     }
                                     ?>

@@ -212,7 +212,7 @@ if (isset($_POST['lunchEnd'])) {
                 $id_asistencia = $fila['id']; // Suponiendo que el ID de la asistencia se llama 'id'
                 $query_actualizar = "UPDATE asistencia SET salida='$hora_actual' WHERE id='$id_asistencia'";
                 mysqli_query($con, $query_actualizar);
-                $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Concluyo su jornada por Lunch y se pauso el maquinado' WHERE `usuarios`.`codigo` = '$idcodigo'";
+                $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Concluyo su jornada, maquinado en pausa, motivo: Lunch' WHERE `usuarios`.`codigo` = '$idcodigo'";
                 $queryubicacion_run = mysqli_query($con, $queryubicacion);
                 $_SESSION['message'] = "Concluyo su turno exitosamente y el maquinado se pauso por motivo: Lunch";
                 $_SESSION['paro'] = $motivosparo;
