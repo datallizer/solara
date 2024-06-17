@@ -289,6 +289,29 @@ if (isset($_SESSION['codigo'])) {
             });
         }
 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelector('button[name="save"]').addEventListener('click', function(event) {
+                // Obtiene los valores de los campos
+                const proyecto = document.getElementById('proyecto').value;
+                const cotizacion = document.getElementById('cotizacion').value;
+                const medio = document.getElementById('medio').value;
+
+                // Verifica si algún campo está vacío o sin seleccionar
+                if (proyecto === "Seleccione un proyecto" || cotizacion.trim() === "" || medio.trim() === "") {
+                    // Evita que el formulario se envíe
+                    event.preventDefault();
+
+                    // Muestra la alerta
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Campos incompletos',
+                        text: 'Por favor, complete todos los campos requeridos antes de guardar.',
+                        confirmButtonText: 'Ok'
+                    });
+                }
+            });
+        });
+
         // const deleteButtons = document.querySelectorAll('.deletebtn');
 
         // deleteButtons.forEach(button => {
