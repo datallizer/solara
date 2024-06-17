@@ -32,7 +32,7 @@ require 'dbcon.php';
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numUsuarios = $usuarioData['numUsuarios'];
 
-                $queryUsuarios = "
+                $queryControl = "
                 SELECT COUNT(*) as numEnsambles
                 FROM (
                     SELECT usuarios.codigo, COUNT(diagrama.id) as cuenta
@@ -44,9 +44,29 @@ require 'dbcon.php';
                     HAVING cuenta <= 3
                 ) as subquery";
 
-                $resultado = mysqli_query($con, $queryUsuarios);
+                $resultado = mysqli_query($con, $queryControl);
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numEnsambles = $usuarioData['numEnsambles'];
+
+                $queryAprobar = "
+                SELECT COUNT(*) as numQuotes
+                FROM (
+                SELECT * FROM quotes WHERE estatusq = 1
+                ) as subquery";
+
+                $resultado = mysqli_query($con, $queryAprobar);
+                $usuarioData = mysqli_fetch_assoc($resultado);
+                $numQuotes = $usuarioData['numQuotes'];
+
+                $queryBuy = "
+                SELECT COUNT(*) as numBuy
+                FROM (
+                SELECT * FROM quotes WHERE estatusq = 0
+                ) as subquery";
+
+                $resultado = mysqli_query($con, $queryBuy);
+                $usuarioData = mysqli_fetch_assoc($resultado);
+                $numBuy = $usuarioData['numBuy'];
 
                 ?>
 
@@ -56,7 +76,7 @@ require 'dbcon.php';
 
                 // Comprobar condiciones y asignar la variable de control
                 if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) ||
-                    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9]))
+                    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9])) || ($numQuotes > 0 && in_array($_SESSION['rol'], [1, 2])) || ($numBuy > 0 && in_array($_SESSION['rol'], [1, 2, 6, 7]))
                 ) {
                     $mostrarEnlace = true;
                 }
@@ -67,11 +87,13 @@ require 'dbcon.php';
                         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
                             <?php
                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                echo $numUsuarios + $numEnsambles;
+                                echo $numUsuarios + $numEnsambles + $numQuotes + $numBuy;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])) {
                                 echo $numUsuarios;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])) {
                                 echo $numEnsambles;
+                            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [6, 7])) {
+                                echo $numBuy;
                             }
                             ?>
                             <span class="visually-hidden">unread messages</span>
@@ -135,8 +157,6 @@ require 'dbcon.php';
                                         <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p>
                                     </div>
                                 </div>
-
-
                             </li>
                             <hr class="dropdown-divider" />
                         <?php endwhile; ?>
@@ -153,12 +173,62 @@ require 'dbcon.php';
                                         <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> tiene <?php echo numeroATextos($ensamble['cuenta']); ?>.</p>
                                     </div>
                                 </div>
-
-
                             </li>
                             <hr class="dropdown-divider" />
                         <?php endwhile; ?>
                     <?php
+                    }
+                    ?>
+
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                        $query = "SELECT * FROM quotes WHERE estatusq = 1";
+
+                        $query_run = mysqli_query($con, $query);
+                        if (mysqli_num_rows($query_run) > 0) {
+                            foreach ($query_run as $cotizaciones) {
+                                ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                <a href="quotes.php" style="color:#000;">
+                                <div class="row">
+                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="images/ics.png" alt="Foto perfil"></div>
+                                    <div class="col-9">
+                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso quotes</small>
+                                        <p><?php echo $cotizaciones['solicitante']; ?> registro una nueva cotización.</p>
+                                    </div>
+                                </div>
+                                </a>
+                            </li>
+                            <hr class="dropdown-divider" />
+                                <?php
+                            }
+                        }
+                    }
+                    ?>
+
+<?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 6, 7])) {
+                        $query = "SELECT * FROM quotes WHERE estatusq = 0";
+
+                        $query_run = mysqli_query($con, $query);
+                        if (mysqli_num_rows($query_run) > 0) {
+                            foreach ($query_run as $compras) {
+                                ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                <a href="compras.php" style="color:#000;">
+                                <div class="row">
+                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="images/ics.png" alt="Foto perfil"></div>
+                                    <div class="col-9">
+                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso compras</small>
+                                        <p>Hay una nueva compra pendiente: <?php echo $compras['cotizacion']; ?></p>
+                                    </div>
+                                </div>
+                                </a>
+                            </li>
+                            <hr class="dropdown-divider" />
+                                <?php
+                            }
+                        }
                     }
                     ?>
                 </ul>
