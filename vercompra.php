@@ -93,13 +93,22 @@ if (isset($_GET['id'])) {
                                         } else {
                                             echo "Error, contacte a soporte";
                                         }
+                                        if ($plano['estatusq'] == 2) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6])) {
+                                        ?>
+                                                <p><b>Monto:</b> $<?= $plano['monto']; ?></p>
+                                            <?php
+                                            }
+                                        }
                                         ?>
                                     </p>
                                     <p><b>Notas:</b> <?= $plano['notas']; ?></p>
+
                                     <?php
+                                    
                                     if ($plano['estatusq'] <> 2) {
                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6])) {
-                                    ?>
+                                        ?>
                                             <form action="codequotes.php" method="POST" class="text-center mt-5">
                                                 <button type="submit" name="completar" value="<?= $plano['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-box-fill"></i> Completar</i></button>
                                             </form>

@@ -250,7 +250,7 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
-                                                        <a href="vercompra.php?id=<?= $registro['id_quote']; ?>" class="btn btn-outline-dark btn-sm">Ver PDF</a>
+                                                        <a href="vercompra.php?id=<?= $registro['id_quote']; ?>" class="btn btn-outline-dark btn-sm">Cotizacion <?= $registro['cotizacion']; ?></a>
                                                     </td>
                                                     <td><?= $registro['notas']; ?></td>
                                                     <td><?php
@@ -274,7 +274,35 @@ if (isset($_SESSION['codigo'])) {
                                                             <form action="codequotes.php" method="POST" class="d-inline">
                                                                 <button type="submit" name="delete" value="<?= $registro['id_quote']; ?>" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill deletebtn"></i></button>
                                                             </form>
+                                                            <button type="button" value="<?= $registro['id_quote']; ?>" class="btn btn-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos<?= $registro['id_quote']; ?>"><i class="bi bi-pencil-square"></i></button>
                                                         </td>
+                                                        <div class="modal fade" id="exampleModalDos<?= $registro['id_quote']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel<?= $registro['id_quote']; ?>" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h1 class="modal-title fs-5" style="text-transform: uppercase;" id="tituloPlanoDos<?= $registro['id_quote']; ?>">EDITAR <?= $registro['cotizacion']; ?></h1>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form action="codequotes.php" method="POST" class="row">
+                                                                            <input type="hidden" name="id" value="<?= $registro['id_quote']; ?>" id="id">
+                                                                            <input type="hidden" class="form-control" name="pasado" id="pasado<?= $registro['id_quote']; ?>" value="<?= $registro['monto']; ?>">
+                                                                            <input type="hidden" class="form-control" name="cotizacion" id="cotizacion<?= $registro['id_quote']; ?>" value="<?= $registro['cotizacion']; ?>">
+
+                                                                            <div class="form-floating col-12 mb-3">
+                                                                                <input type="text" class="form-control" name="monto" id="monto<?= $registro['id_quote']; ?>" placeholder="Monto" value="<?= $registro['monto']; ?>">
+                                                                                <label style="padding-left: 0px;" for="monto<?= $registro['id_quote']; ?>">Monto</label>
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                                                <button type="submit" class="btn btn-primary" name="updatemonto">Guardar</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     <?php
                                                     }
                                                     ?>
@@ -308,7 +336,8 @@ if (isset($_SESSION['codigo'])) {
             $('#miTabla, #miTablaDos').DataTable({
                 "order": [
                     [0, "asc"]
-                ] // Ordenar la primera columna (índice 0) en orden descendente
+                ],
+                "pageLength": 50
             });
         });
 
@@ -323,7 +352,7 @@ if (isset($_SESSION['codigo'])) {
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Ingrese la cantidad total',
-                        input: 'number',
+                        input: 'text',
                         inputAttributes: {
                             min: 0
                         },
@@ -339,7 +368,7 @@ if (isset($_SESSION['codigo'])) {
                 } else if (result.isDenied) {
                     Swal.fire({
                         title: 'Ingrese la cantidad comprada',
-                        input: 'number',
+                        input: 'text',
                         inputAttributes: {
                             min: 0
                         },
@@ -355,7 +384,7 @@ if (isset($_SESSION['codigo'])) {
                 }
             });
         }
-        
+
         const deleteButtons = document.querySelectorAll('.deletebtn');
 
         deleteButtons.forEach(button => {

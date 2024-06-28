@@ -97,7 +97,30 @@ if (isset($_SESSION['codigo'])) {
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+<style>
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+        }
 
+        .spinner-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
 <body class="sb-nav-fixed" style="background-color: #e7e7e7;">
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
@@ -291,6 +314,14 @@ if (isset($_SESSION['codigo'])) {
 ?>
     </div>
 
+    <div class="spinner-overlay" style="z-index: 9999;">
+        <div class="spinner-container">
+            <div class="spinner-grow text-primary spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
@@ -358,6 +389,28 @@ if (isset($_SESSION['codigo'])) {
                     divBotonMenu.style.display = 'none'; // Ocultar el botón "Menú"
                     divBotonLunch.style.display = 'none';
                 }
+            });
+        });
+        $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                e.preventDefault(); // Evitar el envío inmediato del formulario
+
+                // Mostrar el overlay con el spinner
+                $('.spinner-overlay').show();
+
+                // Obtener el valor del botón que se hizo clic
+                var buttonName = $(this).find('button[type=submit]:focus').attr('name');
+
+                // Simular un retraso para demostrar el spinner (elimina esto en producción)
+                var form = this;
+                    // Agregar el valor del botón como un campo oculto al formulario
+                    $('<input>').attr({
+                        name: buttonName
+                    }).appendTo(form);
+
+                    // Enviar el formulario después del retraso simulado
+                    form.submit();
+               
             });
         });
     </script>

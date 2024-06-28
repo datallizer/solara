@@ -45,6 +45,32 @@ if (isset($_POST['update'])) {
     }
 }
 
+if (isset($_POST['updatemonto'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $monto = mysqli_real_escape_string($con, $_POST['monto']);
+    $pasado = mysqli_real_escape_string($con, $_POST['pasado']);
+    $cotizacion = mysqli_real_escape_string($con, $_POST['cotizacion']);
+
+    $query = "UPDATE `quotes` SET `monto` = '$monto' WHERE `quotes`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $idcodigo = $_SESSION['codigo'];
+        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+
+        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Actualizo el monto de la compra finalizada $cotizacion de $$pasado a $$monto', hora='$hora_actual', fecha='$fecha_actual'";
+        $query_rundos = mysqli_query($con, $querydos);
+        $_SESSION['message'] = "Monto de compra editado exitosamente";
+        header("Location: compras.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar el monto de la compra, contacte a soporte";
+        header("Location: compras.php");
+        exit(0);
+    }
+}
+
 
 if (isset($_POST['aprobar'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['aprobar']);
@@ -209,12 +235,6 @@ if (isset($_POST['save'])) {
 
     $query_run = mysqli_query($con, $query);
     if ($query_run) {
-        $idcodigo = $_SESSION['codigo'];
-        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-
-        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Registro un nuevo QUOTE: $cotizacion, detalles: $notas', hora='$hora_actual', fecha='$fecha_actual'";
-        $query_rundos = mysqli_query($con, $querydos);
         $_SESSION['message'] = "Quote creado exitosamente";
         header("Location: quotes.php");
         exit(0);
