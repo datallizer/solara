@@ -335,9 +335,9 @@ if (isset($_SESSION['codigo'])) {
         $(document).ready(function() {
             $('#miTabla, #miTablaDos').DataTable({
                 "order": [
-                    [0, "asc"]
+                    [0, "desc"]
                 ],
-                "pageLength": 50
+                "pageLength": 25
             });
         });
 
