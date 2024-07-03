@@ -163,7 +163,7 @@ if (mysqli_num_rows($result) > 0) {
                                                 JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                                 WHERE asignacionplano.codigooperador = $codigo 
                                                 AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
-                                                ORDER BY proyecto.prioridad ASC, plano.nivel ASC LIMIT 1";
+                                                ORDER BY proyecto.prioridad ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                             $query = "SELECT proyecto.*, plano.*
                                                 FROM plano 
