@@ -319,7 +319,7 @@ if (mysqli_num_rows($result) > 0) {
                                                     } elseif ($registro['nivel'] === '4') {
                                                         echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
                                                     } else {
-                                                        echo "Error, contacte a soporte";
+                                                        echo "<td>Error, contacte a soporte</td>";
                                                     }
                                                     ?>
                                                     <?php
