@@ -248,11 +248,11 @@ if (mysqli_num_rows($result) > 0) {
                                                         if ($registro['prioridad'] == 1) {
                                                             echo "<td style='background-color: #ff0000;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
                                                         } elseif ($registro['prioridad'] == 2) {
-                                                            echo "<td style='background-color: #ff1a1a;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
+                                                            echo "<td style='background-color: #ff1a1a;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
                                                         } elseif ($registro['prioridad'] == 3) {
-                                                            echo "<td style='background-color: #ff3333;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
+                                                            echo "<td style='background-color: #ff3333;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
                                                         } elseif ($registro['prioridad'] == 4) {
-                                                            echo "<td style='background-color: #ff4d4d;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
+                                                            echo "<td style='background-color: #ff4d4d;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
                                                         } elseif ($registro['prioridad'] == 5) {
                                                             echo "<td style='background-color: #ff6666;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
                                                         } elseif ($registro['prioridad'] == 6) {
@@ -445,11 +445,11 @@ if (mysqli_num_rows($result) > 0) {
                                                         if ($registro['prioridad'] == 1) {
                                                             echo "<td style='background-color: #ff0000;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
                                                         } elseif ($registro['prioridad'] == 2) {
-                                                            echo "<td style='background-color: #ff1a1a;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
+                                                            echo "<td style='background-color: #ff1a1a;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
                                                         } elseif ($registro['prioridad'] == 3) {
-                                                            echo "<td style='background-color: #ff3333;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
+                                                            echo "<td style='background-color: #ff3333;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
                                                         } elseif ($registro['prioridad'] == 4) {
-                                                            echo "<td style='background-color: #ff4d4d;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
+                                                            echo "<td style='background-color: #ff4d4d;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
                                                         } elseif ($registro['prioridad'] == 5) {
                                                             echo "<td style='background-color: #ff6666;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
                                                         } elseif ($registro['prioridad'] == 6) {
