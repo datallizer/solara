@@ -353,7 +353,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                 <button type="submit" name="restartensamble" class="btn btn-sm btn-primary">Seguimiento</button>
                                                                 </form>';
                                                             } else {
-                                                                echo "Error, contacte a soporte";
+                                                                echo "<td>Error, contacte a soporte</td>";
                                                             }
                                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             $id = $registro['id'];
@@ -516,7 +516,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         } elseif ($registro['nivel'] === '4') {
                                                             echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
                                                         } else {
-                                                            echo "Error, contacte a soporte";
+                                                            echo "<td>Error, contacte a soporte</td>";
                                                         }
                                                         ?>
                                                         <td>
