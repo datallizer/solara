@@ -140,7 +140,7 @@ if (mysqli_num_rows($result) > 0) {
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                                <table id="miTabla" class="table table-bordered" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Proyecto</th>
@@ -157,22 +157,25 @@ if (mysqli_num_rows($result) > 0) {
                                         <?php
                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                                             $query = "SELECT proyecto.*, plano.*
-                                                FROM plano 
-                                                JOIN proyecto ON plano.idproyecto = proyecto.id 
-                                                JOIN asignacionplano ON asignacionplano.idplano = plano.id 
-                                                JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                                WHERE asignacionplano.codigooperador = $codigo 
-                                                AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
-                                                ORDER BY proyecto.prioridad ASC";
+                  FROM plano 
+                  JOIN proyecto ON plano.idproyecto = proyecto.id 
+                  JOIN asignacionplano ON asignacionplano.idplano = plano.id 
+                  JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                  WHERE asignacionplano.codigooperador = $codigo 
+                  AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
+                  ORDER BY proyecto.prioridad ASC, plano.nivel ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                             $query = "SELECT proyecto.*, plano.*
-                                                FROM plano 
-                                                JOIN proyecto ON plano.idproyecto = proyecto.id
-                                                WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
-                                                ORDER BY proyecto.prioridad asc";
+                  FROM plano 
+                  JOIN proyecto ON plano.idproyecto = proyecto.id
+                  WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
+                  ORDER BY proyecto.prioridad asc";
                                         }
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
+                                            $habilitarBoton = true; // Bandera para habilitar el botón
+                                            $prevPrioridad = null;
+                                            $prevNivel = null;
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
@@ -183,11 +186,11 @@ if (mysqli_num_rows($result) > 0) {
                                                             // Verifica si 'medio' está vacío o no
                                                             if (empty($registro['medio'])) {
                                                         ?>
-                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
+                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?> </p>
                                                             <?php
                                                             } else {
                                                             ?>
-                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Plano <?= $registro['nombreplano']; ?></button>
+                                                                <button style="min-width: 200px;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Plano <?= $registro['nombreplano']; ?></button>
                                                                 <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                                     <div class="modal-dialog modal-lg">
                                                                         <div class="modal-content">
@@ -203,9 +206,6 @@ if (mysqli_num_rows($result) > 0) {
                                                                 </div>
                                                             <?php
                                                             }
-                                                            ?>
-
-                                                            <?php
                                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
 
                                                             // Verifica si 'medio' está vacío o no
@@ -215,7 +215,7 @@ if (mysqli_num_rows($result) > 0) {
                                                             <?php
                                                             } else {
                                                             ?>
-                                                                <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
+                                                                <a style="min-width: 200px;" href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm"><i class="bi bi-file-pdf"></i> Plano <?= $registro['nombreplano']; ?></a>
                                                         <?php
                                                             }
                                                         }
@@ -224,9 +224,9 @@ if (mysqli_num_rows($result) > 0) {
                                                     <td>
                                                         <?php
                                                         $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
-                                                            FROM asignacionplano
-                                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                                            WHERE asignacionplano.idplano = " . $registro['id'];
+                                        FROM asignacionplano
+                                        JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                                        WHERE asignacionplano.idplano = " . $registro['id'];
                                                         $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                         if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                             foreach ($query_run_asignacion as $asignacion) {
@@ -238,71 +238,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         ?>
                                                     </td>
                                                     <td class="text-center"><?= $registro['piezas']; ?></td>
-                                                    <?php
-                                                    if ($registro['prioridad'] == 1) {
-                                                        echo "<td style='background-color: #ff0000;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
-                                                    } elseif ($registro['prioridad'] == 2) {
-                                                        echo "<td style='background-color: #ff1a1a;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 3) {
-                                                        echo "<td style='background-color: #ff3333;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
-                                                    } elseif ($registro['prioridad'] == 4) {
-                                                        echo "<td style='background-color: #ff4d4d;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 5) {
-                                                        echo "<td style='background-color: #ff6666;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 6) {
-                                                        echo "<td style='background-color: #ff8080;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 7) {
-                                                        echo "<td style='background-color: #ff9999;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 8) {
-                                                        echo "<td style='background-color: #ffb2b2;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 9) {
-                                                        echo "<td style='background-color: #ffcccc;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 10) {
-                                                        echo "<td style='background-color: #ffe5e5;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 11) {
-                                                        echo "<td style='background-color: #ffffb3;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 12) {
-                                                        echo "<td style='background-color: #ffff99;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 13) {
-                                                        echo "<td style='background-color: #ffff80;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 14) {
-                                                        echo "<td style='background-color: #ffff66;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 15) {
-                                                        echo "<td style='background-color: #ffff4d;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 16) {
-                                                        echo "<td style='background-color: #ffff33;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 17) {
-                                                        echo "<td style='background-color: #ffff1a;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 18) {
-                                                        echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 19) {
-                                                        echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 20) {
-                                                        echo "<td style='background-color: #e5e500;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 21) {
-                                                        echo "<td style='background-color: #c6e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 22) {
-                                                        echo "<td style='background-color: #a8e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 23) {
-                                                        echo "<td style='background-color: #89e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 24) {
-                                                        echo "<td style='background-color: #67e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 25) {
-                                                        echo "<td style='background-color: #58e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 26) {
-                                                        echo "<td style='background-color: #39e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 27) {
-                                                        echo "<td style='background-color: #26e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 28) {
-                                                        echo "<td style='background-color: #00e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 29) {
-                                                        echo "<td style='background-color: #00e51b;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 30) {
-                                                        echo "<td style='background-color: #00e539;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } else {
-                                                        echo "<td>" . $registro['prioridad'] . "</td>"; // Valor fuera del rango
-                                                    }
-                                                    ?>
+                                                    <td class="text-center"><?= $registro['prioridad']; ?></td>
                                                     <?php
                                                     if ($registro['nivel'] === '1') {
                                                         echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
@@ -335,9 +271,9 @@ if (mysqli_num_rows($result) > 0) {
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                                                             $countQuery = "SELECT COUNT(*) as count
-                                                            FROM plano
-                                                            JOIN asignacionplano ON asignacionplano.idplano = plano.id
-                                                            WHERE asignacionplano.codigooperador = $codigo AND plano.estatusplano = 3";
+                                        FROM plano
+                                        JOIN asignacionplano ON asignacionplano.idplano = plano.id
+                                        WHERE asignacionplano.codigooperador = $codigo AND plano.estatusplano = 3";
                                                             $countResult = mysqli_query($con, $countQuery);
                                                             $countRow = mysqli_fetch_assoc($countResult);
                                                             $planosConEstatus3 = $countRow['count'];
@@ -345,34 +281,49 @@ if (mysqli_num_rows($result) > 0) {
                                                             if ($planosConEstatus3 >= 1) {
                                                                 if ($registro['estatusplano'] === '3') {
                                                                     echo '<form action="codeactividad.php" method="post">
-                                                                            <input type="hidden" value="' . $id . '" name="id">
-                                                                            <button type="submit" name="restart" class="btn btn-sm btn-danger">Seguimiento</button>
-                                                                          </form>';
+                                                                                <input type="hidden" value="' . $id . '" name="id">
+                                                                                <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-danger"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
+                                                                            </form>';
                                                                 } else {
-                                                                    echo "<p>-</p>";
+                                                                    echo '<button style="min-width:105px;" type="submit" class="btn btn-sm btn-outline-secondary" disabled><i class="bi bi-ban"></i> Bloqueado</button>';
                                                                 }
                                                             } else {
                                                                 if ($registro['estatusplano'] === '1') {
+                                                                    $prioridad = $registro['prioridad'];
+            $nivel = $registro['nivel'];
+            
+            if ($habilitarBoton && ($prevPrioridad === null || ($prioridad == $prevPrioridad && $nivel == $prevNivel))) {
+                $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
+                $botonClase = 'btn-success';
+                $botonEstado = '';
+                $prevPrioridad = $prioridad;
+                $prevNivel = $nivel;
+            } else {
+                $botonTexto = '<i class="bi bi-ban"></i> Bloqueado';
+                $botonClase = 'btn-outline-success';
+                $botonEstado = 'disabled';
+                $habilitarBoton = false;
+            }
+            
+            echo '<form action="codeactividad.php" method="post">
+                  <input type="hidden" value="' . $registro['id'] . '" name="id">
+                  <button style="min-width: 105px;" type="submit" name="start" class="btn btn-sm ' . $botonClase . '" ' . $botonEstado . '>' . $botonTexto . '</button>
+                  </form>';
+                                                              
+                                                            } else if ($registro['estatusplano'] === '2') {
                                                                     echo '<form action="codeactividad.php" method="post">
-                                                                            <input type="hidden" value="' . $id . '" name="id">
-                                                                            <button type="submit" name="start" class="btn btn-sm btn-success">Iniciar</button>
-                                                                          </form>';
-                                                                } else if ($registro['estatusplano'] === '2' || $registro['estatusplano'] === '3') {
-                                                                    echo '<form action="codeactividad.php" method="post">
-                                                                            <input type="hidden" value="' . $id . '" name="id">
-                                                                            <button type="submit" name="restart" class="btn btn-sm btn-primary">Seguimiento</button>
-                                                                          </form>';
-                                                                } else {
-                                                                    echo "Error, contacte a soporte";
+                                                                    <input type="hidden" value="' . $id . '" name="id">
+                                                                    <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
+                                                                </form>';
                                                                 }
                                                             }
                                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
-                                                        <form action="codemaquinados.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
-                                                        </form>';
+                              <form action="codemaquinados.php" method="POST" class="d-inline">
+                                  <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
+                              </form>';
                                                         }
                                                         ?>
                                                     </td>
@@ -384,6 +335,7 @@ if (mysqli_num_rows($result) > 0) {
                                         }
                                         ?>
                                     </tbody>
+
                                 </table>
                             </div>
                         </div>
