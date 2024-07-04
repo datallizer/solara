@@ -140,7 +140,7 @@ if (mysqli_num_rows($result) > 0) {
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered" style="width: 100%;">
+                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Proyecto</th>
