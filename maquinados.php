@@ -294,64 +294,73 @@ if (mysqli_num_rows($result) > 0) {
                                                     }
                                                     ?>
                                                     <td>
-                                                        <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
-                                                            $countQuery = "SELECT COUNT(*) as count
-                                        FROM plano
-                                        JOIN asignacionplano ON asignacionplano.idplano = plano.id
-                                        WHERE asignacionplano.codigooperador = $codigo AND plano.estatusplano = 3";
-                                                            $countResult = mysqli_query($con, $countQuery);
-                                                            $countRow = mysqli_fetch_assoc($countResult);
-                                                            $planosConEstatus3 = $countRow['count'];
-                                                            $id = $registro['id'];
-                                                            if ($planosConEstatus3 >= 1) {
-                                                                if ($registro['estatusplano'] === '3') {
-                                                                    echo '<form action="codeactividad.php" method="post">
-                                                                                <input type="hidden" value="' . $id . '" name="id">
-                                                                                <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-danger"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
-                                                                            </form>';
-                                                                } else {
-                                                                    echo '<button style="min-width:105px;" type="submit" class="btn btn-sm btn-outline-secondary" disabled><i class="bi bi-ban"></i> Bloqueado</button>';
-                                                                }
-                                                            } else {
-                                                                if ($registro['estatusplano'] === '1') {
-                                                                    $prioridad = $registro['prioridad'];
-                                                                    $nivel = $registro['nivel'];
-
-                                                                    if ($habilitarBoton && ($prevPrioridad === null || ($prioridad == $prevPrioridad && $nivel == $prevNivel))) {
-                                                                        $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
-                                                                        $botonClase = 'btn-success';
-                                                                        $botonEstado = '';
-                                                                        $prevPrioridad = $prioridad;
-                                                                        $prevNivel = $nivel;
-                                                                    } else {
-                                                                        $botonTexto = '<i class="bi bi-ban"></i> Bloqueado';
-                                                                        $botonClase = 'btn-outline-success';
-                                                                        $botonEstado = 'disabled';
-                                                                        $habilitarBoton = false;
-                                                                    }
-
-                                                                    echo '<form action="codeactividad.php" method="post">
-                  <input type="hidden" value="' . $registro['id'] . '" name="id">
-                  <button style="min-width: 105px;" type="submit" name="start" class="btn btn-sm ' . $botonClase . '" ' . $botonEstado . '>' . $botonTexto . '</button>
+    <?php
+$motivosQuery = "SELECT motivo FROM motivosinicio";
+$motivosResult = mysqli_query($con, $motivosQuery);
+$motivosOptions = "";
+while ($row = mysqli_fetch_assoc($motivosResult)) {
+    $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
+}
+if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+    $countQuery = "SELECT COUNT(*) as count
+        FROM plano
+        JOIN asignacionplano ON asignacionplano.idplano = plano.id
+        WHERE asignacionplano.codigooperador = $codigo AND plano.estatusplano = 3";
+    $countResult = mysqli_query($con, $countQuery);
+    $countRow = mysqli_fetch_assoc($countResult);
+    $planosConEstatus3 = $countRow['count'];
+    $id = $registro['id'];
+    if ($planosConEstatus3 >= 1) {
+        if ($registro['estatusplano'] === '3') {
+            echo '<form action="codeactividad.php" method="post">
+                    <input type="hidden" value="' . $id . '" name="id">
+                    <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-danger"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
                   </form>';
-                                                                } else if ($registro['estatusplano'] === '2') {
-                                                                    echo '<form action="codeactividad.php" method="post">
-                                                                    <input type="hidden" value="' . $id . '" name="id">
-                                                                    <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
-                                                                </form>';
-                                                                }
-                                                            }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                                                            $id = $registro['id'];
-                                                            echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+        } else {
+            echo '<button style="min-width:105px;" type="submit" class="btn btn-sm btn-outline-secondary" disabled><i class="bi bi-ban"></i> Bloqueado</button>';
+        }
+    } else {
+        if ($registro['estatusplano'] === '1') {
+            $prioridad = $registro['prioridad'];
+            $nivel = $registro['nivel'];
 
-                              <form action="codemaquinados.php" method="POST" class="d-inline">
-                                  <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
-                              </form>';
-                                                        }
-                                                        ?>
-                                                    </td>
+            if ($habilitarBoton && ($prevPrioridad === null || ($prioridad == $prevPrioridad && $nivel == $prevNivel))) {
+                $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
+                $botonClase = 'btn-success';
+                $botonEstado = '';
+                $prevPrioridad = $prioridad;
+                $prevNivel = $nivel;
+            } else {
+                $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
+                $botonClase = 'btn-outline-success';
+                $botonEstado = 'disabled';
+            }
+
+            if ($botonEstado === 'disabled') {
+                echo '<button id="btn-' . $id . '" style="min-width: 105px;" class="btn btn-sm ' . $botonClase . '" onclick="handleNonPriorityClick(\'' . $id . '\')">' . $botonTexto . '</button>';
+            } else {
+                echo '<form action="codeactividad.php" method="post">
+                        <input type="hidden" value="' . $registro['id'] . '" name="id">
+                        <button style="min-width: 105px;" type="submit" name="start" class="btn btn-sm ' . $botonClase . '">' . $botonTexto . '</button>
+                      </form>';
+            }
+        } else if ($registro['estatusplano'] === '2') {
+            echo '<form action="codeactividad.php" method="post">
+                    <input type="hidden" value="' . $id . '" name="id">
+                    <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
+                  </form>';
+        }
+    }
+} elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+    $id = $registro['id'];
+    echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+          <form action="codemaquinados.php" method="POST" class="d-inline">
+              <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
+          </form>';
+}
+?>
+</td>
+
                                                 </tr>
                                         <?php
                                             }
@@ -831,7 +840,33 @@ if (mysqli_num_rows($result) > 0) {
             });
         });
 
-        
+        function handleNonPriorityClick(id) {
+    Swal.fire({
+        title: 'Iniciar actividad no prioritaria',
+        html: `
+            <p>Va a iniciar una actividad no prioritaria</p>
+            <select id="motivoSelect" class="swal2-select">
+                <option value="">Seleccione un motivo</option>
+                <?php echo $motivosOptions; ?>
+            </select>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Iniciar',
+        preConfirm: () => {
+            const motivo = document.getElementById('motivoSelect').value;
+            if (!motivo) {
+                Swal.showValidationMessage('Debe seleccionar un motivo');
+                return false;
+            }
+            return { motivo: motivo };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Redirigir al formulario con los datos necesarios
+            window.location.href = `codeactividad.php?id=${id}&motivo=${result.value.motivo}&action=start`;
+        }
+    });
+}
     </script>
 </body>
 
