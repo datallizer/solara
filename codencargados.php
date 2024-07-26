@@ -60,12 +60,12 @@ if (isset($_POST['deleteplano'])) {
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Operador asignado a maquinado eliminado exitosamente";
-        header("Location: encargadoplanos.php");
+        $_SESSION['message'] = "Operador eliminado exitosamente";
+        header("Location: maquinados.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al eliminar al operador, contácte a soporte";
-        header("Location: encargadoplanos.php");
+        $_SESSION['message'] = "Error al eliminar el operador, contacte a soporte";
+        header("Location: maquinados.php");
         exit(0);
     }
 }

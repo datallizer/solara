@@ -379,8 +379,7 @@ require 'dbcon.php';
                                 }
 
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                                    echo '<a class="nav-link" href="encargadoplanos.php">Maquinados</a>
-                                            <a class="nav-link" href="encargadocontrol.php">Ensamble</a>';
+                                    echo '<a class="nav-link" href="encargadocontrol.php">Ensamble</a>';
                                 }
 
                                 ?>
