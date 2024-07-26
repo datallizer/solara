@@ -54,7 +54,7 @@ if (isset($_SESSION['codigo'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Motivos de paro | Solara</title>
+    <title>Motivos | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
@@ -67,7 +67,7 @@ if (isset($_SESSION['codigo'])) {
         <div id="layoutSidenav_content">
             <div class="container-fluid">
                 <div class="row mb-5 mt-5">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
                                 <h4>MOTIVOS DE PARO MAQUINADOS
@@ -120,7 +120,7 @@ if (isset($_SESSION['codigo'])) {
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
                                 <h4>MOTIVOS DE PARO ENSAMBLE
@@ -159,6 +159,52 @@ if (isset($_SESSION['codigo'])) {
                                                         <?php
                                                         }
                                                         ?>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            }
+                                        } else {
+                                            echo "<td><p>No se encontro ningún registro</p></td><td></td>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>MOTIVOS INICIO
+                                    <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModalTres">
+                                        Nuevo motivo
+                                    </button>
+                                </h4>
+                            </div>
+                            <div class="card-body" style="overflow-y:scroll;">
+                                <?php include('message.php'); ?>
+                                <table class="table table-bordered table-striped" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Motivo de paro</th>
+                                            <th class="text-center">Accion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $query = "SELECT * FROM motivosinicio ORDER BY id DESC";
+                                        $query_run = mysqli_query($con, $query);
+                                        if (mysqli_num_rows($query_run) > 0) {
+                                            foreach ($query_run as $registro) {
+                                        ?>
+                                                <tr>
+                                                    <td><?= $registro['motivo']; ?></td>
+                                                    <td class="text-center">
+                                                            <a href="editarmotivoinicio.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                            <form action="codemotivos.php" method="POST" class="d-inline">
+                                                                <button type="submit" name="deleteinicio" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            </form>
                                                     </td>
                                                 </tr>
                                         <?php
@@ -218,6 +264,30 @@ if (isset($_SESSION['codigo'])) {
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary" name="saveensamble">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Modal Tres -->
+     <div class="modal fade" id="exampleModalTres" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO MOTIVO DE PARO ENSAMBLE</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="codemotivos.php" method="POST" class="row">
+                        <div class="form-floating col-12 mb-3">
+                            <input type="text" class="form-control" name="motivo" id="motivo" placeholder="Motivo de inicio" autocomplete="off" required>
+                            <label for="motivo">Escriba un motivo</label>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary" name="saveinicio">Guardar</button>
                         </div>
                     </form>
                 </div>

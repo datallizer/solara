@@ -842,7 +842,7 @@ if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
 
         function handleNonPriorityClick(id) {
     Swal.fire({
-        title: 'Iniciar actividad no prioritaria',
+        title: 'ACTIVIDAD NO PRIORITARIA',
         html: `
             <p>Va a iniciar una actividad no prioritaria</p>
             <select id="motivoSelect" class="swal2-select">
