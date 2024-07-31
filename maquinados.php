@@ -224,7 +224,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         ?>
                                                     </td>
                                                     <td>
-                                                        <?php
+                                                    <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                                         $queryAsignacion = "SELECT asignacionplano.*, asignacionplano.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                         FROM asignacionplano
                                         JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
@@ -253,6 +253,11 @@ if (mysqli_num_rows($result) > 0) {
                                                         } else {
                                                             echo '-';
                                                         }
+                                                    } elseif(isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                        ?>
+                                                        <td><p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p></td>
+                                                        <?php
+                                                    }
                                                         ?>
                                                     </td>
                                                     <td class="text-center"><?= $registro['piezas']; ?></td>
@@ -862,10 +867,33 @@ if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            // Redirigir al formulario con los datos necesarios
-            window.location.href = `codeactividad.php?id=${id}&motivo=${result.value.motivo}&action=start`;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'codeactividad.php';
+
+            const inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'id';
+            inputId.value = id;
+            form.appendChild(inputId);
+
+            const inputMotivo = document.createElement('input');
+            inputMotivo.type = 'hidden';
+            inputMotivo.name = 'motivo';
+            inputMotivo.value = result.value.motivo;
+            form.appendChild(inputMotivo);
+
+            const inputAction = document.createElement('input');
+            inputAction.type = 'hidden';
+            inputAction.name = 'start';
+            inputAction.value = 'start ';
+            form.appendChild(inputAction);
+
+            document.body.appendChild(form);
+            form.submit();
         }
     });
+
 }
     </script>
 </body>
