@@ -159,25 +159,25 @@ if (isset($_SESSION['codigo'])) {
                                         <form action="codeactividad.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
-                                            <div class="row mt-1">
-                                                <div class="form-floating col-12">
-                                                    <input type="text" class="form-control" id="nombre" value="<?= $registro['nombre']; ?>" disabled>
-                                                    <label for="nombre">Nombre del proyecto</label>
+                                            <div class="row justify-content-between mt-1 p-2">
+                                                <div class="col-12 text-center p-3" style="background-color: #e7e7e7;border-radius:10px;">
+                                                    <h5 style="margin-bottom: 0px;">Proyecto</h5>
+                                                    <p style="font-size: 40px;"><?= $registro['nombre']; ?></p>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-4 mt-3">
-                                                    <input type="text" class="form-control" id="nombreplano" name="nombreplano" value="<?= $registro['nombreplano']; ?>" readonly>
-                                                    <label for="nombreplano">Nombre del diagrama</label>
+                                                <div class="col-6 text-center p-3 mt-3" style="background-color: #e7e7e7;border-radius:10px;">
+                                                <h5 style="margin-bottom: 0px;">Diagrama</h5>
+                                                <p style="font-size: 40px;"><?= $registro['nombreplano']; ?></p>
                                                 </div>
 
-                                                <div class="form-floating col-12 col-md-4 mt-3">
-                                                    <input type="text" class="form-control" id="nivel" value="<?= $registro['nivel']; ?>" disabled>
-                                                    <label for="nivel">Nivel </label>
+                                                <div class="col-2 text-center p-3 mt-3" style="background-color: #e7e7e7;border-radius:10px;">
+                                                <h5 style="margin-bottom: 0px;">Nivel</h5>
+                                                <p style="font-size: 40px;"><?= $registro['nivel']; ?></p>
                                                 </div>
 
-                                                <div class="form-floating col-4 mt-3">
-                                                    <input type="text" class="form-control" id="piezas" value="<?= $registro['piezas']; ?>" disabled>
-                                                    <label for="piezas">Numero de piezas</label>
+                                                <div class="col-3 text-center p-3 mt-3" style="background-color: #e7e7e7;border-radius:10px;">
+                                                <h5 style="margin-bottom: 0px;">Número de piezas</h5>
+                                                <p style="font-size: 40px;"><?= $registro['piezas']; ?></p>
                                                 </div>
 
                                                 <?php
@@ -412,6 +412,36 @@ if (isset($_SESSION['codigo'])) {
                     form.submit();
                
             });
+
+            function verificarNuevasActividades() {
+        $.ajax({
+            url: 'verificar_actividadesensamble.php', // Ruta del archivo PHP
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                let nuevas_actividades = response.nuevas_actividades;
+                let actividades_anteriores = response.actividades_anteriores;
+
+                if (nuevas_actividades > actividades_anteriores) {
+                    Swal.fire({
+                        title: 'Nueva actividad asignada',
+                        //text: 'Tienes una nueva actividad asignada',
+                        icon: 'info',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al verificar nuevas actividades:', error);
+            }
+        });
+    }
+
+    // Llama a la función al cargar la página
+    verificarNuevasActividades();
+
+    // Opcional: Puedes configurar un intervalo para verificar periódicamente
+    setInterval(verificarNuevasActividades, 1000); // Verifica cada minuto
         });
     </script>
 

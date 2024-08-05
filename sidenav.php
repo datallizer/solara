@@ -144,7 +144,7 @@ require 'dbcon.php';
                 }
 
                 ?>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="max-height:500px; overflow-y:auto;">
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
                     ?>
@@ -361,40 +361,13 @@ require 'dbcon.php';
                             </nav>
                         </div>
 
-                        <?php
-                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                            // Mostrar el enlace HTML solo si la condición se cumple
-                            echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePagesDos" aria-expanded="false" aria-controls="collapsePagesDos">
-                            <div class="sb-nav-link-icon"><i class="bi bi-trash-fill"></i></div>
-                            Asignaciones
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>';
-                        }
-                        ?>
-                        <div class="collapse" id="collapsePagesDos" aria-labelledby="headingThree" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                <?php
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                    echo '<a class="nav-link" href="encargadoproyecto.php">Proyectos</a>';
-                                }
-
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                                    echo '<a class="nav-link" href="encargadocontrol.php">Ensamble</a>';
-                                }
-
-                                ?>
-                            </nav>
-                        </div>
-
-
-
                         <div class="sb-sidenav-menu-heading">Panel de control</div>
                         <?php
                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                             // Mostrar el enlace HTML solo si la condición se cumple
                             echo '<a class="nav-link" href="motivos.php">
                             <div class="sb-nav-link-icon"><i class="bi bi-sign-stop"></i></div>
-                            Motivos de paro
+                            Motivos
                         </a>
                         
                         <a class="nav-link" href="actividades.php">
