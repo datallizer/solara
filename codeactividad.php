@@ -126,6 +126,31 @@ if (isset($_POST['start'])) {
     }
 }
 
+if (isset($_POST['start'])) {
+    $idcodigo = $_SESSION['codigo'];
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $fecha_actual = date("Y-m-d");
+    $hora_actual = date("H:i");
+
+    $query = "INSERT INTO historialoperadores SET idcodigo='$idcodigo',idplano='$id', motivoactividad='Inicio', hora='$hora_actual', fecha='$fecha_actual'";
+    $query_run = mysqli_query($con, $query);
+    if ($query_run) {
+        $querydos = "UPDATE `plano` SET `estatusplano` = '3' WHERE `plano`.`id` = '$id'";
+        $querydos_run = mysqli_query($con, $querydos);
+        if ($querydos_run) {
+            $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Maquinado en progreso' WHERE `usuarios`.`codigo` = '$idcodigo'";
+            $queryubicacion_run = mysqli_query($con, $queryubicacion);
+            $_SESSION['message'] = "Se inicio el maquinado exitosamente";
+            header("Location: inicioactividades.php?id=$id");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al reiniciar el maquinado, contacte a soporte";
+            header("Location: maquinados.php");
+            exit(0);
+        }
+    }
+}
+
 if (isset($_POST['finish'])) {
     $idcodigo = $_SESSION['codigo'];
     $id = mysqli_real_escape_string($con, $_POST['id']);

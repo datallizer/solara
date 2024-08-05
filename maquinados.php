@@ -159,19 +159,17 @@ if (mysqli_num_rows($result) > 0) {
                                         <?php
                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                                             $query = "SELECT proyecto.*, plano.*
-                  FROM plano 
-                  JOIN proyecto ON plano.idproyecto = proyecto.id 
-                  JOIN asignacionplano ON asignacionplano.idplano = plano.id 
-                  JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                  WHERE asignacionplano.codigooperador = $codigo 
-                  AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
-                  ORDER BY proyecto.prioridad ASC, plano.nivel ASC";
+                                            FROM plano 
+                                            JOIN proyecto ON plano.idproyecto = proyecto.id 
+                                            JOIN asignacionplano ON asignacionplano.idplano = plano.id 
+                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                                            WHERE asignacionplano.codigooperador = $codigo 
+                                            AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3) ORDER BY proyecto.prioridad ASC, plano.nivel ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                             $query = "SELECT proyecto.*, plano.*
-                  FROM plano 
-                  JOIN proyecto ON plano.idproyecto = proyecto.id
-                  WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3)
-                  ORDER BY proyecto.prioridad asc";
+                                            FROM plano 
+                                            JOIN proyecto ON plano.idproyecto = proyecto.id
+                                            WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3) ORDER BY proyecto.prioridad asc";
                                         }
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
@@ -224,28 +222,34 @@ if (mysqli_num_rows($result) > 0) {
                                                         ?>
                                                     </td>
                                                     <td>
-                                                    <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                        <?php
                                                         $queryAsignacion = "SELECT asignacionplano.*, asignacionplano.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
-                                        FROM asignacionplano
-                                        JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                        WHERE asignacionplano.idplano = " . $registro['id'];
+                                                        FROM asignacionplano
+                                                        JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
+                                                        WHERE asignacionplano.idplano = " . $registro['id'];
                                                         $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                         if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                             foreach ($query_run_asignacion as $asignacion) {
+                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
 
-                                                                if ($registro['estatusplano'] === '1') {
+                                                                    if ($registro['estatusplano'] === '1') {
                                                         ?>
-                                                                    <form action="codencargados.php" method="post">
-                                                                        <div style="display: flex; align-items: center;">
-                                                                            <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                                            <button type="submit" name="deleteplano" style="border: none;" class="btn btn-sm" value="<?= $asignacion['id_encargado']; ?>">
-                                                                                <i style="color: #d41111;" class="bi bi-x-lg"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </form>
-                                                                <?php
-                                                                } else {
-                                                                ?>
+                                                                        <form class="deleteForm" action="codencargados.php" method="post">
+                                                                            <div style="display: flex; align-items: center;">
+                                                                                <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                                <button type="button" class="deleteButton" name="deleteplano" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id_encargado']; ?>">
+                                                                                    <i style="color: #d41111;" class="bi bi-x-lg"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
+                                                                    <?php
+                                                                    } else {
+                                                                    ?>
+                                                                        <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                    <?php
+                                                                    }
+                                                                } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                                    ?>
                                                                     <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
                                                         <?php
                                                                 }
@@ -253,11 +257,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         } else {
                                                             echo '-';
                                                         }
-                                                    } elseif(isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
-                                                        ?>
-                                                        <td><p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p></td>
-                                                        <?php
-                                                    }
+
                                                         ?>
                                                     </td>
                                                     <td class="text-center"><?= $registro['piezas']; ?></td>
@@ -299,72 +299,72 @@ if (mysqli_num_rows($result) > 0) {
                                                     }
                                                     ?>
                                                     <td>
-    <?php
-$motivosQuery = "SELECT motivo FROM motivosinicio";
-$motivosResult = mysqli_query($con, $motivosQuery);
-$motivosOptions = "";
-while ($row = mysqli_fetch_assoc($motivosResult)) {
-    $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
-}
-if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
-    $countQuery = "SELECT COUNT(*) as count
+                                                        <?php
+                                                        $motivosQuery = "SELECT motivo FROM motivosinicio";
+                                                        $motivosResult = mysqli_query($con, $motivosQuery);
+                                                        $motivosOptions = "";
+                                                        while ($row = mysqli_fetch_assoc($motivosResult)) {
+                                                            $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
+                                                        }
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                            $countQuery = "SELECT COUNT(*) as count
         FROM plano
         JOIN asignacionplano ON asignacionplano.idplano = plano.id
         WHERE asignacionplano.codigooperador = $codigo AND plano.estatusplano = 3";
-    $countResult = mysqli_query($con, $countQuery);
-    $countRow = mysqli_fetch_assoc($countResult);
-    $planosConEstatus3 = $countRow['count'];
-    $id = $registro['id'];
-    if ($planosConEstatus3 >= 1) {
-        if ($registro['estatusplano'] === '3') {
-            echo '<form action="codeactividad.php" method="post">
+                                                            $countResult = mysqli_query($con, $countQuery);
+                                                            $countRow = mysqli_fetch_assoc($countResult);
+                                                            $planosConEstatus3 = $countRow['count'];
+                                                            $id = $registro['id'];
+                                                            if ($planosConEstatus3 >= 1) {
+                                                                if ($registro['estatusplano'] === '3') {
+                                                                    echo '<form action="codeactividad.php" method="post">
                     <input type="hidden" value="' . $id . '" name="id">
                     <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-danger"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
                   </form>';
-        } else {
-            echo '<button style="min-width:105px;" type="submit" class="btn btn-sm btn-outline-secondary" disabled><i class="bi bi-ban"></i> Bloqueado</button>';
-        }
-    } else {
-        if ($registro['estatusplano'] === '1') {
-            $prioridad = $registro['prioridad'];
-            $nivel = $registro['nivel'];
+                                                                } else {
+                                                                    echo '<button style="min-width:105px;" type="submit" class="btn btn-sm btn-outline-secondary" disabled><i class="bi bi-ban"></i> Bloqueado</button>';
+                                                                }
+                                                            } else {
+                                                                if ($registro['estatusplano'] === '1') {
+                                                                    $prioridad = $registro['prioridad'];
+                                                                    $nivel = $registro['nivel'];
 
-            if ($habilitarBoton && ($prevPrioridad === null || ($prioridad == $prevPrioridad && $nivel == $prevNivel))) {
-                $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
-                $botonClase = 'btn-success';
-                $botonEstado = '';
-                $prevPrioridad = $prioridad;
-                $prevNivel = $nivel;
-            } else {
-                $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
-                $botonClase = 'btn-outline-success';
-                $botonEstado = 'disabled';
-            }
+                                                                    if ($habilitarBoton && ($prevPrioridad === null || ($prioridad == $prevPrioridad && $nivel == $prevNivel))) {
+                                                                        $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
+                                                                        $botonClase = 'btn-success';
+                                                                        $botonEstado = '';
+                                                                        $prevPrioridad = $prioridad;
+                                                                        $prevNivel = $nivel;
+                                                                    } else {
+                                                                        $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
+                                                                        $botonClase = 'btn-outline-success';
+                                                                        $botonEstado = 'disabled';
+                                                                    }
 
-            if ($botonEstado === 'disabled') {
-                echo '<button id="btn-' . $id . '" style="min-width: 105px;" class="btn btn-sm ' . $botonClase . '" onclick="handleNonPriorityClick(\'' . $id . '\')">' . $botonTexto . '</button>';
-            } else {
-                echo '<form action="codeactividad.php" method="post">
+                                                                    if ($botonEstado === 'disabled') {
+                                                                        echo '<button id="btn-' . $id . '" style="min-width: 105px;" class="btn btn-sm ' . $botonClase . '" onclick="handleNonPriorityClick(\'' . $id . '\')">' . $botonTexto . '</button>';
+                                                                    } else {
+                                                                        echo '<form action="codeactividad.php" method="post">
                         <input type="hidden" value="' . $registro['id'] . '" name="id">
                         <button style="min-width: 105px;" type="submit" name="start" class="btn btn-sm ' . $botonClase . '">' . $botonTexto . '</button>
                       </form>';
-            }
-        } else if ($registro['estatusplano'] === '2') {
-            echo '<form action="codeactividad.php" method="post">
+                                                                    }
+                                                                } else if ($registro['estatusplano'] === '2') {
+                                                                    echo '<form action="codeactividad.php" method="post">
                     <input type="hidden" value="' . $id . '" name="id">
                     <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
                   </form>';
-        }
-    }
-} elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-    $id = $registro['id'];
-    echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                                }
+                                                            }
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                            $id = $registro['id'];
+                                                            echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
           <form action="codemaquinados.php" method="POST" class="d-inline">
               <button type="submit" name="delete" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
           </form>';
-}
-?>
-</td>
+                                                        }
+                                                        ?>
+                                                    </td>
 
                                                 </tr>
                                         <?php
@@ -690,48 +690,49 @@ if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
-    <script>document.getElementById('idplano').addEventListener('change', function() {
+    <script>
+        document.getElementById('idplano').addEventListener('change', function() {
             console.log('Cambio detectado en idplano');
-    var idPlano = this.value;
+            var idPlano = this.value;
 
-    // Hacer una solicitud AJAX al servidor para obtener los usuarios asignados
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'obtener_usuarios_asignados.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            var usuariosAsignados = JSON.parse(xhr.responseText);
-            console.log('Usuarios asignados:', usuariosAsignados); // Depuración
+            // Hacer una solicitud AJAX al servidor para obtener los usuarios asignados
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'obtener_usuarios_asignados.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var usuariosAsignados = JSON.parse(xhr.responseText);
+                    console.log('Usuarios asignados:', usuariosAsignados); // Depuración
 
-            // Habilitar todos los checkboxes primero
-            var checkboxes = document.querySelectorAll('.form-check-input');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.disabled = false;
-            });
+                    // Habilitar todos los checkboxes primero
+                    var checkboxes = document.querySelectorAll('.form-check-input');
+                    checkboxes.forEach(function(checkbox) {
+                        checkbox.disabled = false;
+                    });
 
-            // Deshabilitar los checkboxes de usuarios asignados
-            usuariosAsignados.forEach(function(usuarioId) {
-    var checkbox = document.getElementById('codigooperador_' + usuarioId);
-    if (checkbox) {
-        console.log('Deshabilitando checkbox:', checkbox);
-        setTimeout(function() {
-            checkbox.setAttribute('disabled', 'true');
-            console.log('Estado del checkbox:', checkbox.disabled);
-        }, 300);
-    } else {
-        console.log('Checkbox no encontrado:', 'codigooperador_' + usuarioId);
-    }
-});
+                    // Deshabilitar los checkboxes de usuarios asignados
+                    usuariosAsignados.forEach(function(usuarioId) {
+                        var checkbox = document.getElementById('codigooperador_' + usuarioId);
+                        if (checkbox) {
+                            console.log('Deshabilitando checkbox:', checkbox);
+                            setTimeout(function() {
+                                checkbox.setAttribute('disabled', 'true');
+                                console.log('Estado del checkbox:', checkbox.disabled);
+                            }, 300);
+                        } else {
+                            console.log('Checkbox no encontrado:', 'codigooperador_' + usuarioId);
+                        }
+                    });
 
-        } else {
-            console.error('Error en la solicitud AJAX:', xhr.statusText); // Depuración
-        }
-    };
-    xhr.onerror = function() {
-        console.error('Error en la solicitud AJAX'); // Depuración
-    };
-    xhr.send('idplano=' + encodeURIComponent(idPlano));
-});
+                } else {
+                    console.error('Error en la solicitud AJAX:', xhr.statusText); // Depuración
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Error en la solicitud AJAX'); // Depuración
+            };
+            xhr.send('idplano=' + encodeURIComponent(idPlano));
+        });
 
         function toggleElements() {
             var switchElement = document.getElementById('flexSwitchCheckDefault');
@@ -770,7 +771,40 @@ if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                     [5, "asc"]
                 ] // Ordenar la primera columna (índice 0) en orden descendente
             });
+
+            // Cambiar a usar clase en lugar de ID
+            $('.deleteButton').on('click', function(event) {
+                event.preventDefault(); // Previene el envío del formulario por defecto
+
+                const form = $(this).closest('form'); // Encuentra el formulario más cercano al botón
+                const deleteValue = $(this).data('id'); // Obtiene el valor del data-id del botón
+
+                Swal.fire({
+                    title: 'ADVERTENCIA',
+                    text: '¿Estás seguro que deseas eliminar la asignación del maquinado al usuario actual? Deberás asignar un usuario nuevo.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Añadir un campo oculto con el valor del botón al formulario
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'deleteplano',
+                            value: deleteValue
+                        }).appendTo(form);
+
+                        // Si el usuario confirma, se envía el formulario
+                        form.submit();
+                    }
+                });
+            });
         });
+
+
 
         // Función para cargar y mostrar el PDF en el iframe
         function showPDF(pdfUrl, iframeId) {
@@ -846,55 +880,57 @@ if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
         });
 
         function handleNonPriorityClick(id) {
-    Swal.fire({
-        title: 'ACTIVIDAD NO PRIORITARIA',
-        html: `
+            Swal.fire({
+                title: 'ACTIVIDAD NO PRIORITARIA',
+                html: `
             <p>Va a iniciar una actividad no prioritaria</p>
             <select id="motivoSelect" class="swal2-select">
                 <option value="">Seleccione un motivo</option>
                 <?php echo $motivosOptions; ?>
             </select>
         `,
-        showCancelButton: true,
-        confirmButtonText: 'Iniciar',
-        preConfirm: () => {
-            const motivo = document.getElementById('motivoSelect').value;
-            if (!motivo) {
-                Swal.showValidationMessage('Debe seleccionar un motivo');
-                return false;
-            }
-            return { motivo: motivo };
+                showCancelButton: true,
+                confirmButtonText: 'Iniciar',
+                preConfirm: () => {
+                    const motivo = document.getElementById('motivoSelect').value;
+                    if (!motivo) {
+                        Swal.showValidationMessage('Debe seleccionar un motivo');
+                        return false;
+                    }
+                    return {
+                        motivo: motivo
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'codeactividad.php';
+
+                    const inputId = document.createElement('input');
+                    inputId.type = 'hidden';
+                    inputId.name = 'id';
+                    inputId.value = id;
+                    form.appendChild(inputId);
+
+                    const inputMotivo = document.createElement('input');
+                    inputMotivo.type = 'hidden';
+                    inputMotivo.name = 'motivo';
+                    inputMotivo.value = result.value.motivo;
+                    form.appendChild(inputMotivo);
+
+                    const inputAction = document.createElement('input');
+                    inputAction.type = 'hidden';
+                    inputAction.name = 'start';
+                    inputAction.value = 'start ';
+                    form.appendChild(inputAction);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+
         }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'codeactividad.php';
-
-            const inputId = document.createElement('input');
-            inputId.type = 'hidden';
-            inputId.name = 'id';
-            inputId.value = id;
-            form.appendChild(inputId);
-
-            const inputMotivo = document.createElement('input');
-            inputMotivo.type = 'hidden';
-            inputMotivo.name = 'motivo';
-            inputMotivo.value = result.value.motivo;
-            form.appendChild(inputMotivo);
-
-            const inputAction = document.createElement('input');
-            inputAction.type = 'hidden';
-            inputAction.name = 'start';
-            inputAction.value = 'start ';
-            form.appendChild(inputAction);
-
-            document.body.appendChild(form);
-            form.submit();
-        }
-    });
-
-}
     </script>
 </body>
 

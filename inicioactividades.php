@@ -1,10 +1,9 @@
 <?php
 session_start();
 require 'dbcon.php';
-$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : '';
 
 if (!empty($message)) {
-    // HTML y JavaScript para mostrar la alerta...
     echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 const message = " . json_encode($message) . ";
@@ -22,14 +21,12 @@ if (!empty($message)) {
         </script>";
 }
 
-// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
 if (isset($_SESSION['codigo'])) {
     $idcodigo = $_SESSION['codigo'];
     $nombre = $_SESSION['nombre'];
     $apellidop = $_SESSION['apellidop'];
     $id_plano = $_GET['id'];
 
-    // Consultar el estatus del plano en la base de datos
     $queryEstatus = "SELECT estatusplano FROM plano WHERE id = $id_plano";
     $resultEstatus = mysqli_query($con, $queryEstatus);
 
@@ -38,7 +35,6 @@ if (isset($_SESSION['codigo'])) {
             $rowEstatus = mysqli_fetch_assoc($resultEstatus);
             $estatusPlano = $rowEstatus['estatusplano'];
 
-            // Verificar que el estatus sea 1
             if ($estatusPlano == 1) {
                 // El estatus del plano es 1, puedes proceder con la acción
                 $query = "SELECT nombreplano FROM plano WHERE id = $id_plano";
@@ -83,6 +79,7 @@ if (isset($_SESSION['codigo'])) {
     header('Location: login.php');
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -99,29 +96,30 @@ if (isset($_SESSION['codigo'])) {
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <style>
-        .spinner-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1050;
-        }
+    .spinner-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
 
-        .spinner-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
+    .spinner-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
 
-        .spinner {
-            width: 3rem;
-            height: 3rem;
-        }
-    </style>
+    .spinner {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
+
 <body class="sb-nav-fixed" style="background-color: #e7e7e7;">
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
@@ -407,15 +405,46 @@ if (isset($_SESSION['codigo'])) {
 
                 // Simular un retraso para demostrar el spinner (elimina esto en producción)
                 var form = this;
-                    // Agregar el valor del botón como un campo oculto al formulario
-                    $('<input>').attr({
-                        name: buttonName
-                    }).appendTo(form);
+                // Agregar el valor del botón como un campo oculto al formulario
+                $('<input>').attr({
+                    name: buttonName
+                }).appendTo(form);
 
-                    // Enviar el formulario después del retraso simulado
-                    form.submit();
-               
+                // Enviar el formulario después del retraso simulado
+                form.submit();
+
             });
+
+
+            function verificarNuevasActividades() {
+        $.ajax({
+            url: 'verificar_actividades.php', // Ruta del archivo PHP
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                let nuevas_actividades = response.nuevas_actividades;
+                let actividades_anteriores = response.actividades_anteriores;
+
+                if (nuevas_actividades > actividades_anteriores) {
+                    Swal.fire({
+                        title: 'Nueva actividad asignada',
+                        text: 'Tienes una nueva actividad asignada. Por favor revisa tu lista de tareas.',
+                        icon: 'info',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al verificar nuevas actividades:', error);
+            }
+        });
+    }
+
+    // Llama a la función al cargar la página
+    verificarNuevasActividades();
+
+    // Opcional: Puedes configurar un intervalo para verificar periódicamente
+    setInterval(verificarNuevasActividades, 1000); // Verifica cada minuto
         });
     </script>
 
