@@ -291,7 +291,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td>";
+                                            echo "<td colspan='10'><p>No se encontro ningun registro</p></td>";
                                         }
                                         ?>
                                     </tbody>
@@ -505,7 +505,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<td><p>No se encontro ningun registro</p></td><td></td><td></td>";
+                                            echo "<td colspan='10'><p>No se encontro ningun registro</p></td>";
                                         }
                                         ?>
                                     </tbody>

@@ -147,7 +147,7 @@ if (isset($_POST['aprobar'])) {
                     }
                     $html_content .= "</td>
                     <td>{$registro_aprobado['cotizacion']}</td>
-                    <td><a href='http://192.168.1.38:81/solara/vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
+                    <td><a href='http://192.168.1.23:81/solara/vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
                     <td>{$registro_aprobado['notas']}</td>
                     <td>Aprobado</td>
                 </tr>
