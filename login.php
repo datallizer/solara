@@ -64,7 +64,7 @@ if (isset($_POST['codigo'])) {
             header("Location: dashboard.php");
             exit();
         }elseif ($_SESSION['rol'] == 12) {
-            header("Location: sesiones.php");
+            header("Location: monitor.php");
             exit();
         } else {
             $idcodigo = $_SESSION['codigo'];
