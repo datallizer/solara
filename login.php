@@ -63,10 +63,7 @@ if (isset($_POST['codigo'])) {
             $_SESSION['message'] = $message;
             header("Location: dashboard.php");
             exit();
-        }elseif ($_SESSION['rol'] == 1 || $_SESSION['rol'] == 10) {
-            $hora_actual = date("H:i");
-            $message = "Bienvenido " . $nombre . ' ' . $apellidop . ', ' . "ingresaste a las " . $hora_actual;
-            $_SESSION['message'] = $message;
+        }elseif ($_SESSION['rol'] == 12) {
             header("Location: sesiones.php");
             exit();
         } else {

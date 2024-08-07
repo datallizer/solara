@@ -113,6 +113,8 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Ing. Control";
                                                         }else if ($registro['rol'] === '10') {
                                                             echo "Recursos humanos";
+                                                        } else if ($registro['rol'] === '12') {
+                                                            echo "Monitor Solara";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
