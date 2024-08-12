@@ -90,7 +90,7 @@ if (isset($_SESSION['codigo'])) {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Actividad en progreso | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -123,7 +123,7 @@ if (isset($_SESSION['codigo'])) {
 <body class="sb-nav-fixed" style="background-color: #e7e7e7;">
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
-            <div class="container mt-4">
+            <div class="container-fluid g-0">
                 <?php
                 if (isset($_GET['id'])) {
                     $registro_id = mysqli_real_escape_string($con, $_GET['id']);
@@ -138,20 +138,20 @@ if (isset($_SESSION['codigo'])) {
                         $registro = mysqli_fetch_array($query_run);
 
                 ?>
-                        <div class="row justify-content-center">
+                        <div class="row justify-content-center g-0">
                             <div class="col-md-12">
                                 <div class="card">
-                                    <div class="card-header pt-3">
+                                    <div class="card-header pt-3" style="border-radius: 0px;">
                                         <?php
                                         if ($registro['estatusplano'] === '3') {
-                                            echo '<h4>MAQUINADO EN PROGRESO</h4>';
+                                            echo '<h1 class="text-center"><b>MAQUINADO EN PROGRESO</b></h1>';
                                         } else {
-                                            echo '<h4>MAQUINADO EN PAUSA</h4>';
+                                            echo '<h1 class="text-center"><b>MAQUINADO EN PAUSA</b></h1>';
                                         }
                                         ?>
 
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" style="min-height: 91vh;">
                                         <?php include 'message.php'; ?>
                                         <form id="actividadForm" action="codeactividad.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
@@ -162,42 +162,47 @@ if (isset($_SESSION['codigo'])) {
                                                     <p style="font-size: 40px;"><?= $registro['nombre']; ?></p>
                                                 </div>
 
-                                                <div class="col-6 text-center p-3 mt-3" style="background-color: #e7e7e7;border-radius:10px;">
-                                                <h5 style="margin-bottom: 0px;">Plano</h5>
-                                                <p style="font-size: 40px;"><?= $registro['nombreplano']; ?></p>
+                                                <div class="col-12 text-center p-3 mt-3" style="background-color: #e7e7e7;border-radius:10px;">
+                                                    <h5 style="margin-bottom: 0px;">Plano</h5>
+                                                    <p style="font-size: 40px;"><?= $registro['nombreplano']; ?></p>
                                                 </div>
 
-                                                <div class="col-2 text-center p-3 mt-3" style="background-color: #e7e7e7;border-radius:10px;">
-                                                <h5 style="margin-bottom: 0px;">Nivel</h5>
-                                                <p style="font-size: 40px;"><?= $registro['nivel']; ?></p>
+                                                <div class="col-2 text-center p-3 mt-3 d-flex align-items-center justify-content-center" style="background-color: #e7e7e7;border-radius:10px;">
+                                                    <div>
+
+                                                        <h5 style="margin-bottom: 0px;">Nivel</h5>
+                                                        <p style="font-size: 40px;"><?= $registro['nivel']; ?></p>
+                                                    </div>
                                                 </div>
 
-                                                <div class="col-3 text-center p-3 mt-3" style="background-color: #e7e7e7;border-radius:10px;">
-                                                <h5 style="margin-bottom: 0px;">Número de piezas</h5>
-                                                <p style="font-size: 40px;"><?= $registro['piezas']; ?></p>
+                                                <div class="col-3 text-center p-3 mt-3 d-flex align-items-center justify-content-center" style="background-color: #e7e7e7;border-radius:10px;">
+                                                    <div>
+                                                        <h5 style="margin-bottom: 0px;">Número de piezas</h5>
+                                                        <p style="font-size: 40px;"><?= $registro['piezas']; ?></p>
+                                                    </div>
                                                 </div>
 
                                                 <?php
                                                 if ($registro['estatusplano'] === '3') {
-                                                    echo '<div class="col-5 mt-3">
+                                                    echo '<div class="col-3 mt-3">
                                                                 <img src="images/progreso.gif" alt="">
                                                             </div>';
                                                 } else {
-                                                    echo '<div class="col-5 m-4">
+                                                    echo '<div class="col-3 m-4">
                                                                 <img src="images/pausa.jpg" alt="">
                                                             </div>';
                                                 }
                                                 ?>
 
-                                                <div class="col-6 text-center mt-3 d-flex align-items-center justify-content-center">
+                                                <div class="col-3 text-center mt-3 d-flex align-items-center justify-content-center">
                                                     <?php
                                                     if ($registro['estatusplano'] === '3') {
-                                                        echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3'>
-                                                                Detener actividad
+                                                        echo "<button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-danger m-3' style='font-size:21px;'>
+                                                                <i class='bi bi-sign-stop'></i> Detener
                                                             </button>";
                                                     } else {
                                                         echo '<form action="codeactividad.php" method="post">
-                                                                <button type="submit" name="restart" class="btn btn-success m-3">Reiniciar actividad</button>
+                                                                <button type="submit" name="restart" class="btn btn-success m-3" style="font-size:21px;"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
                                                             </form>';
                                                     }
                                                     ?>
@@ -205,16 +210,16 @@ if (isset($_SESSION['codigo'])) {
                                                     <?php
                                                     if (empty($registro['medio'])) {
                                                     ?>
-                                                        <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver actividad</button>
+                                                        <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>" style="font-size:21px;">Actividad</button>
                                                         <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                        <h1 style="font-size: 40px;" class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h1>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <p><?= $registro['actividad']; ?></p>
+                                                                        <p style="font-size: 35px;"><?= $registro['actividad']; ?></p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -223,12 +228,12 @@ if (isset($_SESSION['codigo'])) {
 
                                                     } else {
                                                     ?>
-                                                        <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver plano</button>
+                                                        <button type="button" class="btn btn-primary m-3" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>" style="font-size:21px;">Ver plano</button>
                                                         <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                        <h1 style="font-size: 40px;" class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h1>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body">
@@ -248,7 +253,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">MOTIVO DE PARO</h1>
+                                                                    <h1 style="font-size: 40px;" class="modal-title fs-5" id="exampleModalLabel">MOTIVO DE PARO</h1>
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
                                                                 <div class="modal-body">
@@ -417,34 +422,36 @@ if (isset($_SESSION['codigo'])) {
 
 
             function verificarNuevasActividades() {
-        $.ajax({
-            url: 'verificar_actividades.php', // Ruta del archivo PHP
-            method: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                let nuevas_actividades = response.nuevas_actividades;
-                let actividades_anteriores = response.actividades_anteriores;
+                $.ajax({
+                    url: 'verificar_actividades.php', // Ruta del archivo PHP
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        let nuevas_actividades = response.nuevas_actividades;
+                        let actividades_anteriores = response.actividades_anteriores;
+                        let nombreplano = response.nombreplano;
 
-                if (nuevas_actividades > actividades_anteriores) {
-                    Swal.fire({
-                        title: 'Nueva actividad asignada',
-                        //text: 'Tienes una nueva actividad asignada',
-                        icon: 'info',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al verificar nuevas actividades:', error);
+                        if (nuevas_actividades > actividades_anteriores) {
+                            Swal.fire({
+                                title: 'Nueva actividad asignada',
+                                text: `${nombreplano}`,
+                                icon: 'info',
+                                confirmButtonText: 'Aceptar'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al verificar nuevas actividades:', error);
+                    }
+                });
             }
-        });
-    }
 
-    // Llama a la función al cargar la página
-    verificarNuevasActividades();
 
-    // Opcional: Puedes configurar un intervalo para verificar periódicamente
-    setInterval(verificarNuevasActividades, 1000); // Verifica cada minuto
+            // Llama a la función al cargar la página
+            verificarNuevasActividades();
+
+            // Opcional: Puedes configurar un intervalo para verificar periódicamente
+            setInterval(verificarNuevasActividades, 100); // Verifica cada minuto
         });
     </script>
 

@@ -883,18 +883,18 @@ if (mysqli_num_rows($result) > 0) {
             Swal.fire({
                 title: 'ACTIVIDAD NO PRIORITARIA',
                 html: `
-            <p>Va a iniciar una actividad no prioritaria</p>
+            <p>Selecciona un motivo para poder iniciar esta actividad que no es prioritaria</p>
             <select id="motivoSelect" class="swal2-select">
                 <option value="">Seleccione un motivo</option>
                 <?php echo $motivosOptions; ?>
             </select>
         `,
                 showCancelButton: true,
-                confirmButtonText: 'Iniciar',
+                confirmButtonText: 'Iniciar actividad',
                 preConfirm: () => {
                     const motivo = document.getElementById('motivoSelect').value;
                     if (!motivo) {
-                        Swal.showValidationMessage('Debe seleccionar un motivo');
+                        Swal.showValidationMessage('Debes seleccionar un motivo');
                         return false;
                     }
                     return {

@@ -9,7 +9,7 @@ include 'dbcon.php';
 $codigo = $_SESSION['codigo'];
 
 // Realizar la consulta a la base de datos
-$query = "SELECT COUNT(*) as total
+$query = "SELECT COUNT(diagrama.id) as total, MAX(diagrama.nombreplano) as nombreplano
           FROM diagrama 
           JOIN asignaciondiagrama ON asignaciondiagrama.idplano = diagrama.id 
           JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
@@ -19,15 +19,22 @@ $query = "SELECT COUNT(*) as total
 $result = mysqli_query($con, $query);
 $row = mysqli_fetch_assoc($result);
 $nuevas_actividades = $row['total'];
+$nombreplano = $row['nombreplano'];
 
 // Verificar el número de actividades anteriores
 $actividades_anteriores = isset($_SESSION['actividades_anteriores']) ? $_SESSION['actividades_anteriores'] : 0;
 
-// Actualizar el número de actividades en la sesión
-$_SESSION['actividades_anteriores'] = $nuevas_actividades;
+// Actualizar el número de actividades en la sesión si hay nuevas actividades
+if ($nuevas_actividades > $actividades_anteriores) {
+    $_SESSION['actividades_anteriores'] = $nuevas_actividades;
+}
 
 // Crear la respuesta en formato JSON
-$response = array('nuevas_actividades' => $nuevas_actividades, 'actividades_anteriores' => $actividades_anteriores);
+$response = array(
+    'nuevas_actividades' => $nuevas_actividades,
+    'actividades_anteriores' => $actividades_anteriores,
+    'nombreplano' => $nombreplano
+);
 echo json_encode($response);
 
 // Cerrar la conexión a la base de datos
