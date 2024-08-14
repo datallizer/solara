@@ -147,7 +147,11 @@ if (mysqli_num_rows($result) > 0) {
                                         <tr>
                                             <th>Proyecto</th>
                                             <th>Plano / actividad asociados</th>
-                                            <th>Operadores asignados</th>
+                                            <?php
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                echo '<th>Operadores asignados</th>';
+                                            }
+                                            ?>
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
@@ -221,45 +225,51 @@ if (mysqli_num_rows($result) > 0) {
                                                         }
                                                         ?>
                                                     </td>
-                                                    <td>
-                                                        <?php
-                                                        $queryAsignacion = "SELECT asignacionplano.*, asignacionplano.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+                                                    <?php
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                    ?>
+                                                        <td>
+                                                            <?php
+                                                            $queryAsignacion = "SELECT asignacionplano.*, asignacionplano.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                         FROM asignacionplano
                                                         JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                                         WHERE asignacionplano.idplano = " . $registro['id'];
-                                                        $query_run_asignacion = mysqli_query($con, $queryAsignacion);
-                                                        if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                            foreach ($query_run_asignacion as $asignacion) {
-                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
+                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
+                                                                foreach ($query_run_asignacion as $asignacion) {
+                                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
 
-                                                                    if ($registro['estatusplano'] === '1') {
-                                                        ?>
-                                                                        <form class="deleteForm" action="codencargados.php" method="post">
-                                                                            <div style="display: flex; align-items: center;">
-                                                                                <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                                                <button type="button" class="deleteButton" name="deleteplano" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id_encargado']; ?>">
-                                                                                    <i style="color: #d41111;" class="bi bi-x-lg"></i>
-                                                                                </button>
-                                                                            </div>
-                                                                        </form>
-                                                                    <?php
-                                                                    } else {
-                                                                    ?>
+                                                                        if ($registro['estatusplano'] === '1') {
+                                                            ?>
+                                                                            <form class="deleteForm" action="codencargados.php" method="post">
+                                                                                <div style="display: flex; align-items: center;">
+                                                                                    <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                                    <button type="button" class="deleteButton" name="deleteplano" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id_encargado']; ?>">
+                                                                                        <i style="color: #d41111;" class="bi bi-x-lg"></i>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </form>
+                                                                        <?php
+                                                                        } else {
+                                                                        ?>
+                                                                            <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                        <?php
+                                                                        }
+                                                                    } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                                        ?>
                                                                         <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                                    <?php
+                                                            <?php
                                                                     }
-                                                                } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
-                                                                    ?>
-                                                                    <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                        <?php
                                                                 }
+                                                            } else {
+                                                                echo '-';
                                                             }
-                                                        } else {
-                                                            echo '-';
-                                                        }
 
-                                                        ?>
-                                                    </td>
+                                                            ?>
+                                                        </td>
+                                                    <?php
+                                                    }
+                                                    ?>
                                                     <td class="text-center"><?= $registro['piezas']; ?></td>
                                                     <td class="text-center"><?= $registro['prioridad']; ?></td>
                                                     <?php

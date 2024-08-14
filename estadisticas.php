@@ -70,8 +70,10 @@ if (isset($_SESSION['codigo'])) {
         <div id="layoutSidenav_content">
             <div class="container-fluid">
                 <div class="row justify-content-start mt-5 mb-5">
-                    <div class="col-12">
-                        <h2 class="mb-3">ESTADÍSTICAS</h2>
+                    <div class="col-12 mb-3">
+                        <div class="card-header">
+                            <h2>ESTADÍSTICAS</h2>
+                        </div>
                     </div>
                     <div class="col-2 p-3 cardstats m-1">
                         <div class="row">
@@ -209,6 +211,9 @@ if (isset($_SESSION['codigo'])) {
                         </div>
                     </div>
                     <div class="col-12 mt-3">
+                        <div class="card-header mb-3">
+                            <h2>PROYECTOS ACTIVOS</h2>
+                        </div>
                         <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
                             <thead>
                                 <tr>
@@ -229,7 +234,7 @@ if (isset($_SESSION['codigo'])) {
                                     foreach ($query_run as $registro) {
                                 ?>
                                         <tr class="text-center">
-                                            <td>
+                                            <td style="width: 10px;">
                                                 <p class="text-center"><?= $registro['id']; ?></p>
                                             </td>
                                             <td>
@@ -362,13 +367,16 @@ if (isset($_SESSION['codigo'])) {
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-6 mt-3">
+                    <div class="col-12 mt-3">
+                        <div class="card-header mb-3">
+                            <h2>MAQUINADOS FINALIZADOS</h2>
+                        </div>
                         <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="background-color: #2c5b87;color:#fff;width: 10px;">ID</th>
-                                    <th style="background-color: #2c5b87;color:#fff;">TIEMPO</th>
-                                    <th style="background-color: #2c5b87;color:#fff;">PLANOS/ACTIVIDAD</th>
+                                    <th style="width: 10px;">#</th>
+                                    <th>TIEMPO</th>
+                                    <th>PLANO/ACTIVIDAD</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -418,7 +426,7 @@ if (isset($_SESSION['codigo'])) {
                                                     <p><?= $horas ?> h <?= $minutos ?> min</p>
                                                 <?php
                                                 } else {
-                                                    echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
+                                                    echo "<p>Error.</p>";
                                                 }
                                                 ?>
 
@@ -426,8 +434,8 @@ if (isset($_SESSION['codigo'])) {
                                             <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaplano.php?id=<?= $registro['id']; ?>">
                                                     <div class="row">
-                                                        <div class="col"><?= $registro['nombreplano']; ?></div>
-                                                        <div class="col"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
+                                                        <div class="col-11"><?= $registro['nombreplano']; ?></div>
+                                                        <div class="col"><i class="bi bi-chevron-right"></i></div>
                                                     </div>
                                                 </a>
                                             </td>
@@ -441,13 +449,16 @@ if (isset($_SESSION['codigo'])) {
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-6 mt-3">
+                    <div class="col-12 mt-3">
+                        <div class="card-header mb-3">
+                            <h2>ENSAMBLES FINALIZADOS</h2>
+                        </div>
                         <table id="miTablaTres" class="table table-bordered table-striped" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="background-color: #2c5b87;color:#fff;width: 10px;">ID</th>
-                                    <th style="background-color: #2c5b87;color:#fff;">TIEMPO</th>
-                                    <th style="background-color: #2c5b87;color:#fff;">DIAGRAMA/ACTIVIDAD</th>
+                                    <th style="width: 10px;">ID</th>
+                                    <th>TIEMPO</th>
+                                    <th>DIAGRAMA/ACTIVIDAD</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -498,8 +509,8 @@ if (isset($_SESSION['codigo'])) {
                                             <td>
                                                 <a style="text-decoration: none;color: #3f3f3f;" href="estadisticaensamble.php?id=<?= $registro['id']; ?>">
                                                     <div class="row">
-                                                        <div class="col"><?= $registro['nombreplano']; ?></div>
-                                                        <div class="col"><i class="bi bi-chevron-right" style="margin-left: 100px;"></i></div>
+                                                        <div class="col-11"><?= $registro['nombreplano']; ?></div>
+                                                        <div class="col"><i class="bi bi-chevron-right"></i></div>
                                                     </div>
                                                 </a>
                                             </td>
@@ -526,18 +537,20 @@ if (isset($_SESSION['codigo'])) {
                                     <div class="card" style="width: 100%;">
                                         <img class="card-img-top" style="object-fit:cover;height:350px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                                         <div class="card-body">
+                                            <div style="min-height: 50px;">
                                             <h5 class="card-title"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>
-                                            <p style="color: #000;" class="card-text">
-                                                <?php
-                                                if ($registro['rol'] === '4') {
-                                                    echo "Técnico controles";
-                                                } else if ($registro['rol'] === '8') {
-                                                    echo "Técnico mecanico";
-                                                } else {
-                                                    echo "Error, contacte a soporte";
-                                                }
-                                                ?>
-                                            </p>
+                                            </div>
+                                            <p style="color: #000;margin-left:0px;" class="card-text">
+                                                    <?php
+                                                    if ($registro['rol'] === '4') {
+                                                        echo "Técnico controles";
+                                                    } else if ($registro['rol'] === '8') {
+                                                        echo "Técnico mecanico";
+                                                    } else {
+                                                        echo "Error, contacte a soporte";
+                                                    }
+                                                    ?>
+                                                </p>
                                             <?php
                                             if ($registro['rol'] === '4') {
                                             ?><a href="estadisticacontrol.php?id=<?= $registro['id']; ?>" class="btn btn-secondary">Ver analítica</a><?php
