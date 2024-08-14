@@ -119,7 +119,30 @@ if (mysqli_num_rows($result) > 0) {
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
+<style>
+    .spinner-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
 
+    .spinner-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .spinner {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">
@@ -693,7 +716,13 @@ if (mysqli_num_rows($result) > 0) {
             </div>
         </div>
     </div>
-
+    <div class="spinner-overlay" style="z-index: 9999;">
+        <div class="spinner-container">
+            <div class="spinner-grow text-primary spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <!-- Incluir los archivos de PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
@@ -812,9 +841,30 @@ if (mysqli_num_rows($result) > 0) {
                     }
                 });
             });
+
+            
+            $('form').on('submit', function(e) {
+                e.preventDefault(); // Evitar el envío inmediato del formulario
+
+                // Mostrar el overlay con el spinner
+                $('.spinner-overlay').show();
+
+                // Obtener el valor del botón que se hizo clic
+                var buttonName = $(this).find('button[type=submit]:focus').attr('name');
+
+                // Simular un retraso para demostrar el spinner (elimina esto en producción)
+                var form = this;
+                // Agregar el valor del botón como un campo oculto al formulario
+                $('<input>').attr({
+                    name: buttonName
+                }).appendTo(form);
+
+                // Enviar el formulario después del retraso simulado
+                form.submit();
+
+            });
+
         });
-
-
 
         // Función para cargar y mostrar el PDF en el iframe
         function showPDF(pdfUrl, iframeId) {
