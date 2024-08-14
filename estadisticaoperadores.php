@@ -136,7 +136,7 @@ if (isset($_SESSION['codigo'])) {
                             JOIN asignacionplano ON asignacionplano.idplano = plano.id 
                             JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                             WHERE asignacionplano.codigooperador = $codigouser 
-                            AND plano.estatusplano = 0";
+                            AND plano.estatusplano = 0 ORDER BY plano.id DESC";
                             $resultPlanos = mysqli_query($con, $queryPlanos);
                             while ($plano = mysqli_fetch_assoc($resultPlanos)) {
                                 echo '<div class="form-check me-3">';
