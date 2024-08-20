@@ -143,6 +143,7 @@ if (mysqli_num_rows($result) > 0) {
         height: 3rem;
     }
 </style>
+
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <div id="layoutSidenav">
@@ -152,14 +153,18 @@ if (mysqli_num_rows($result) > 0) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MAQUINADOS
+                                <h4>MAQUINADOS ACTIVOS
                                     <?php
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Nuevo plano
-                                </button> <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalAsignar">
+                                </button> 
+                                <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalAsignar">
                                     Asignar operador
-                                </button>';
+                                </button>
+                                <a href="maquinadosfinalizados.php" class="btn btn-primary btn-sm" id="floatingButton">
+                                Maquinados<br>finalizados
+                            </a>';
                                     }
                                     ?>
                                 </h4>
@@ -412,108 +417,6 @@ if (mysqli_num_rows($result) > 0) {
                             </div>
                         </div>
                     </div>
-
-                    <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                    ?>
-                        <div class="col-12 mt-3">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>MAQUINADOS FINALIZADOS</h4>
-                                </div>
-                                <div class="card-body">
-                                    <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th>Proyecto</th>
-                                                <th>Plano / actividad asociados</th>
-                                                <th>Número de piezas</th>
-                                                <th>Operadores asignados</th>
-                                                <th>Prioridad</th>
-                                                <th>Nivel de pieza</th>
-                                                <th>Accion</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $query = "SELECT proyecto.*, plano.*
-                                        FROM plano 
-                                        JOIN proyecto ON plano.idproyecto = proyecto.id
-                                        WHERE estatusplano = 0 
-                                        ORDER BY proyecto.prioridad asc";
-                                            $query_run = mysqli_query($con, $query);
-                                            if (mysqli_num_rows($query_run) > 0) {
-                                                foreach ($query_run as $registro) {
-                                            ?>
-                                                    <tr>
-                                                        <td><?= $registro['nombre']; ?></td>
-                                                        <td>
-                                                            <?php
-                                                            // Verifica si 'medio' está vacío o no
-                                                            if (empty($registro['medio'])) {
-                                                            ?>
-                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
-                                                            <?php
-                                                            } else {
-                                                            ?>
-                                                                <a href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Plano <?= $registro['nombreplano']; ?></a>
-                                                            <?php
-                                                            }
-                                                            ?>
-                                                        </td>
-                                                        <td class="text-center"><?= $registro['piezas']; ?></td>
-                                                        <td>
-                                                            <?php
-                                                            $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
-                                                            FROM asignacionplano
-                                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                                            WHERE asignacionplano.idplano = " . $registro['id'];
-                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
-
-                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                                foreach ($query_run_asignacion as $asignacion) {
-                                                                    echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
-                                                                }
-                                                            } else {
-                                                                echo '-';
-                                                            }
-                                                            ?>
-                                                        </td>
-                                                        <td class="text-center"><?= $registro['prioridad']; ?></td>
-                                                        <?php
-                                                        if ($registro['nivel'] === '1') {
-                                                            echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
-                                                        } elseif ($registro['nivel'] === '2') {
-                                                            echo "<td style='background-color:#e56f00 !important;color:#fff;'>Nivel 2</td>";
-                                                        } elseif ($registro['nivel'] === '3') {
-                                                            echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
-                                                        } elseif ($registro['nivel'] === '4') {
-                                                            echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
-                                                        } else {
-                                                            echo "<td>Error, contacte a soporte</td>";
-                                                        }
-                                                        ?>
-                                                        <td>
-                                                            <a href="editarmaquinado.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-
-                                                            <!-- <form action="codemaquinados.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                            </form> -->
-                                                        </td>
-                                                    </tr>
-                                            <?php
-                                                }
-                                            } else {
-                                                echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    <?php
-                    }
-                    ?>
                 </div>
             </div>
         </div>
@@ -842,7 +745,7 @@ if (mysqli_num_rows($result) > 0) {
                 });
             });
 
-            
+
             $('form').on('submit', function(e) {
                 e.preventDefault(); // Evitar el envío inmediato del formulario
 
@@ -863,7 +766,6 @@ if (mysqli_num_rows($result) > 0) {
                 form.submit();
 
             });
-
         });
 
         // Función para cargar y mostrar el PDF en el iframe

@@ -77,3 +77,12 @@ a{
 .dataTable{
     border-top: 1px solid #c7c7c7 !important;
 }
+
+#floatingButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000; 
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    padding: 10px 10px;
+}

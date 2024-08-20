@@ -16,14 +16,13 @@ require 'dbcon.php';
         <ul class="navbar-nav ms-auto ms-md-12 me-3 me-lg-12">
             <li class="nav-item dropdown m-1">
                 <?php
-                $queryUsuarios = "
-                SELECT COUNT(*) as numUsuarios
+                $queryUsuarios = "SELECT COUNT(*) as numUsuarios
                 FROM (
                     SELECT usuarios.codigo, COUNT(plano.id) as cuenta
-                    FROM asignacionplano
-                    JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                    JOIN plano ON asignacionplano.idplano = plano.id
-                    WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
+                    FROM usuarios
+                    LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
+                    LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
+                    WHERE usuarios.rol = 8
                     GROUP BY usuarios.codigo
                     HAVING cuenta <= 3
                 ) as subquery";
@@ -32,24 +31,23 @@ require 'dbcon.php';
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numUsuarios = $usuarioData['numUsuarios'];
 
-                $queryControl = "
-                SELECT COUNT(*) as numEnsambles
-                FROM (
-                    SELECT usuarios.codigo, COUNT(diagrama.id) as cuenta
-                    FROM asignaciondiagrama
-                    JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
-                    JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id
-                    WHERE diagrama.estatusplano IN (1, 2, 3) AND usuarios.rol = 4
-                    GROUP BY usuarios.codigo
-                    HAVING cuenta <= 3
-                ) as subquery";
+                $queryControl = "SELECT COUNT(*) as numEnsambles
+    FROM (
+        SELECT usuarios.codigo, COUNT(diagrama.id) as cuenta
+        FROM usuarios
+        LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
+        LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
+        WHERE usuarios.rol = 4
+        GROUP BY usuarios.codigo
+        HAVING cuenta <= 3
+    ) as subquery";
+
 
                 $resultado = mysqli_query($con, $queryControl);
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numEnsambles = $usuarioData['numEnsambles'];
 
-                $queryAprobar = "
-                SELECT COUNT(*) as numQuotes
+                $queryAprobar = "SELECT COUNT(*) as numQuotes
                 FROM (
                 SELECT * FROM quotes WHERE estatusq = 1
                 ) as subquery";
@@ -58,8 +56,7 @@ require 'dbcon.php';
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numQuotes = $usuarioData['numQuotes'];
 
-                $queryBuy = "
-                SELECT COUNT(*) as numBuy
+                $queryBuy = "SELECT COUNT(*) as numBuy
                 FROM (
                 SELECT * FROM quotes WHERE estatusq = 0
                 ) as subquery";
@@ -103,42 +100,43 @@ require 'dbcon.php';
 
 
                 <?php
-                $queryUsuarios = "
-                SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(plano.id) as cuenta
-                FROM asignacionplano
-                JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                JOIN plano ON asignacionplano.idplano = plano.id
-                WHERE plano.estatusplano IN (1, 2, 3) AND usuarios.rol = 8
+                $queryUsuarios = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(plano.id) as cuenta
+                FROM usuarios
+                LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
+                LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
+                WHERE usuarios.rol = 8
                 GROUP BY usuarios.codigo
-                HAVING cuenta <= 3";
+                HAVING cuenta <= 3 ORDER BY cuenta ASC";
 
                 $resultado = mysqli_query($con, $queryUsuarios);
                 function numeroATexto($numero)
                 {
                     $textos = [
-                        1 => 'un maquinado asignado',
-                        2 => 'dos maquinados asignados',
-                        3 => 'tres maquinados asignados'
+                        0 => 'no tiene ningún maquinado asignado',
+                        1 => 'tiene un maquinado asignado',
+                        2 => 'tiene dos maquinados asignados',
+                        3 => 'tiene tres maquinados asignados'
                     ];
                     return $textos[$numero] ?? $numero; // Devuelve el texto o el número si no está en el array
                 }
 
-                $queryEnsambles = "
-                SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(diagrama.id) as cuenta
-                FROM asignaciondiagrama
-                JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
-                JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id
-                WHERE diagrama.estatusplano IN (1, 2, 3) AND usuarios.rol = 4
-                GROUP BY usuarios.codigo
-                HAVING cuenta <= 3";
+                $queryEnsambles = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(diagrama.id) as cuenta
+                                FROM usuarios
+                                LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
+                                LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
+                                WHERE usuarios.rol = 4
+                                GROUP BY usuarios.codigo
+                                HAVING cuenta <= 3 ORDER BY cuenta ASC";
+
 
                 $resultados = mysqli_query($con, $queryEnsambles);
                 function numeroATextos($numeros)
                 {
                     $texto = [
-                        1 => 'un ensamble asignado',
-                        2 => 'dos ensambles asignados',
-                        3 => 'tres ensambles asignados'
+                        0 => 'no tiene ningún ensamble asignado',
+                        1 => 'tiene un ensamble asignado',
+                        2 => 'tiene dos ensambles asignados',
+                        3 => 'tiene tres ensambles asignados'
                     ];
                     return $texto[$numeros] ?? $numeros; // Devuelve el texto o el número si no está en el array
                 }
@@ -150,15 +148,17 @@ require 'dbcon.php';
                     ?>
                         <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
                             <li style="width: 400px;padding:0px 15px;">
-                                <div class="row">
-                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
-                                    <div class="col-9">
-                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
-                                        <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> tiene <?php echo numeroATexto($usuario['cuenta']); ?>.</p>
+                                <a href="maquinados.php" style="color:#000;">
+                                    <div class="row">
+                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
+                                        <div class="col-9">
+                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
+                                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> <?php echo numeroATexto($usuario['cuenta']); ?>.</p>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </li>
-                            <hr class="dropdown-divider" />
+                            <hr style="color: #fcfcfc;" class="dropdown-divider" />
                         <?php endwhile; ?>
                     <?php
                     }
@@ -166,15 +166,17 @@ require 'dbcon.php';
                     ?>
                         <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
                             <li style="width: 400px;padding:0px 15px;">
-                                <div class="row">
-                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
-                                    <div class="col-9">
-                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
-                                        <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> tiene <?php echo numeroATextos($ensamble['cuenta']); ?>.</p>
+                                <a href="ensamble.php" style="color:#000;">
+                                    <div class="row">
+                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
+                                        <div class="col-9">
+                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
+                                            <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> <?php echo numeroATextos($ensamble['cuenta']); ?>.</p>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </li>
-                            <hr class="dropdown-divider" />
+                            <hr style="color: #fcfcfc;" class="dropdown-divider" />
                         <?php endwhile; ?>
                     <?php
                     }
@@ -182,51 +184,51 @@ require 'dbcon.php';
 
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                        $query = "SELECT * FROM quotes WHERE estatusq = 1";
+                        $query = "SELECT quotes.*, usuarios.* FROM quotes JOIN usuarios ON quotes.solicitante = CONCAT(usuarios.nombre,' ', usuarios.apellidop,' ', usuarios.apellidom) WHERE quotes.estatusq = 1";
 
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {
                             foreach ($query_run as $cotizaciones) {
-                                ?>
+                    ?>
                                 <li style="width: 400px;padding:0px 15px;">
-                                <a href="quotes.php" style="color:#000;">
-                                <div class="row">
-                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="images/ics.png" alt="Foto perfil"></div>
-                                    <div class="col-9">
-                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso quotes</small>
-                                        <p><?php echo $cotizaciones['solicitante']; ?> registro una nueva cotización.</p>
-                                    </div>
-                                </div>
-                                </a>
-                            </li>
-                            <hr class="dropdown-divider" />
-                                <?php
+                                    <a href="quotes.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($cotizaciones['medio']); ?>" alt="Foto perfil"></div>
+                                            <div class="col-9">
+                                                <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso quotes</small>
+                                                <p><?php echo $cotizaciones['solicitante']; ?> registro una nueva cotización.</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
                             }
                         }
                     }
                     ?>
 
-<?php
+                    <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 6, 7])) {
-                        $query = "SELECT * FROM quotes WHERE estatusq = 0";
+                        $query = "SELECT quotes.*, usuarios.* FROM quotes JOIN usuarios ON quotes.solicitante = CONCAT(usuarios.nombre,' ', usuarios.apellidop,' ', usuarios.apellidom) WHERE quotes.estatusq = 0";
 
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {
                             foreach ($query_run as $compras) {
-                                ?>
+                    ?>
                                 <li style="width: 400px;padding:0px 15px;">
-                                <a href="compras.php" style="color:#000;">
-                                <div class="row">
-                                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="images/ics.png" alt="Foto perfil"></div>
-                                    <div class="col-9">
-                                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso compras</small>
-                                        <p>Hay una nueva compra pendiente: <?php echo $compras['cotizacion']; ?></p>
-                                    </div>
-                                </div>
-                                </a>
-                            </li>
-                            <hr class="dropdown-divider" />
-                                <?php
+                                    <a href="compras.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($compras['medio']); ?>" alt="Foto perfil"></div>
+                                            <div class="col-9">
+                                                <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso compras</small>
+                                                <p>Hay una nueva compra pendiente: <?php echo $compras['cotizacion']; ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
                             }
                         }
                     }
@@ -440,4 +442,3 @@ require 'dbcon.php';
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="js/sidenav.js"></script>
-
