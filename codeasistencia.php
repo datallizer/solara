@@ -1,6 +1,8 @@
 <?php
 require 'dbcon.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (isset($_POST['propio'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);

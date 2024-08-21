@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'dbcon.php';
 $idcodigo = $_SESSION['codigo'];
 if (isset($_SESSION['rol']) && ($_SESSION['rol'] != 1 && $_SESSION['rol'] != 2)) {

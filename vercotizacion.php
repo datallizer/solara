@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'dbcon.php';
 
 // Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
@@ -59,6 +61,7 @@ if (isset($_GET['id'])) {
 
             <body class="sb-nav-fixed">
                 <?php include 'sidenav.php'; ?>
+<?php include 'mensajes.php'; ?>
                 <div id="layoutSidenav">
                     <div id="layoutSidenav_content">
                         <div class="container-fluid">

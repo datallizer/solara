@@ -1,5 +1,7 @@
 <?php
-session_start();
+    if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'dbcon.php';
 header('Content-Type: text/html; charset=UTF-8');
 $message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
@@ -146,6 +148,8 @@ if (mysqli_num_rows($result) > 0) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
+<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -231,7 +235,10 @@ if (mysqli_num_rows($result) > 0) {
                                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                             </div>
                                                                             <div class="modal-body">
-                                                                                <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                                <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="500px"></iframe>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                            <a href="imprimirplano.php?id=<?= $registro['id']; ?>" class="btn btn-primary"><i class="bi bi-file-pdf"></i> Imprmir</a>
                                                                             </div>
                                                                         </div>
                                                                     </div>

@@ -1,5 +1,39 @@
 <?php
 require 'dbcon.php';
+
+if (isset($_POST['save'])) {
+    $mensaje = mysqli_real_escape_string($con, $_POST['mensaje']);
+    
+    // Verificar si 'codigooperador' está definido y es un array
+    $codigosOperadores = isset($_POST['codigooperador']) ? $_POST['codigooperador'] : [];
+
+    $emisor = $_SESSION['codigo'];
+    $fecha = date("Y-m-d");
+    $hora = date("H:i");
+    $estatus = '1';
+
+    // Preparar la consulta para evitar inyecciones SQL
+    $query = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($con, $query);
+
+    if ($stmt) {
+        // Iterar sobre cada código de operador y realizar la inserción
+        foreach ($codigosOperadores as $idcodigo) {
+            // Enlazar parámetros
+            mysqli_stmt_bind_param($stmt, "ssssss", $mensaje, $idcodigo, $emisor, $fecha, $hora, $estatus);
+            
+            // Ejecutar la consulta
+            mysqli_stmt_execute($stmt);
+        }
+
+        // Cerrar el statement
+        mysqli_stmt_close($stmt);
+
+        $_SESSION['message'] = "Mensajes enviados exitosamente";
+    } else {
+        $_SESSION['message'] = "Error al enviar los mensajes, contacte a soporte";
+    }
+}
 ?>
 
 <link rel="stylesheet" href="css/sidenav.css">
@@ -237,6 +271,11 @@ require 'dbcon.php';
 
             </li>
             <li class="m-1">
+                <button type="button" style="color:#fff;padding:6px 7px;border-radius:5px;" class="btn nav-link btn-primary" name="save" data-bs-toggle="modal" data-bs-target="#exampleModalAsignar">
+                    <i class="bi bi-chat-left-dots-fill"></i>
+                </button>
+            </li>
+            <li class="m-1">
                 <a style="color:#000;padding:3px 7px;border-radius:5px;" class="nav-link btn-warning" href="logout.php" role="button">
                     <i class="bi bi-box-arrow-right"></i> Salir
                 </a>
@@ -439,6 +478,49 @@ require 'dbcon.php';
         </div>
     </div>
 </body>
+
+<!-- Modal Mensajes -->
+<div class="modal fade" id="exampleModalAsignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">ENVIAR MENSAJE</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST" class="row">
+                    <div class="form-floating col-12">
+                        <textarea type="text" class="form-control" placeholder="Mensaje" id="actividad" name="mensaje" style="min-height: 100px"></textarea>
+                        <label for="actividad">Mensaje</label>
+                    </div>
+
+                    <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
+                        <?php
+                        $query = "SELECT * FROM usuarios WHERE codigo <> $codigo";
+                        $result = mysqli_query($con, $query);
+
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($usuario = mysqli_fetch_assoc($result)) {
+                                $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
+                                $idUsuario = $usuario['codigo'];
+
+                                echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
+                                echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
+                            }
+                        }
+                        ?>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary" name="save">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="js/sidenav.js"></script>

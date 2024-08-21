@@ -1,6 +1,8 @@
 <?php
 // Iniciar la sesión para obtener el código del usuario y el número de actividades anteriores
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Incluir la conexión a la base de datos
 include 'dbcon.php';

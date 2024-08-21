@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'dbcon.php';
 $message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
 $codigo = $_SESSION['codigo'];
@@ -62,6 +64,7 @@ if (isset($_SESSION['codigo'])) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
+<?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container mt-5 mb-4">
