@@ -144,7 +144,7 @@ if (mysqli_num_rows($result) > 0) {
                                 <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
                                     Nuevo ensamble
                                 </button>
-                                </button> <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalAsignar">
+                                </button> <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalAsignarControl">
                                     Asignar técnico
                                 </button>';
                                     }
@@ -699,7 +699,7 @@ if (mysqli_num_rows($result) > 0) {
     </div>
 
     <!-- Modal Operadores -->
-    <div class="modal fade" id="exampleModalAsignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModalAsignarControl" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
