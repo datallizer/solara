@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require 'dbcon.php';
-$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; 
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : '';
 
 if (!empty($message)) {
     echo "<script>
@@ -33,7 +33,7 @@ if (isset($_SESSION['codigo'])) {
     if (mysqli_num_rows($result) > 0) {
         // El usuario está autorizado, se puede acceder al contenido
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Usuarios' WHERE `usuarios`.`codigo` = '$codigo'";
-            $queryubicacion_run = mysqli_query($con, $queryubicacion);
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
     } else {
         header('Location: login.php');
         exit();
@@ -60,7 +60,7 @@ if (isset($_SESSION['codigo'])) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -88,7 +88,7 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM usuarios ORDER BY id DESC";
+                                        $query = "SELECT * FROM usuarios WHERE rol <> '12' ORDER BY id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
@@ -102,7 +102,7 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Administrador";
                                                         } else if ($registro['rol'] === '2') {
                                                             echo "Gerencia";
-                                                        }  else if ($registro['rol'] === '4') {
+                                                        } else if ($registro['rol'] === '4') {
                                                             echo "Técnico controles";
                                                         } else if ($registro['rol'] === '5') {
                                                             echo "Ing. Diseño";
@@ -114,10 +114,12 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Técnico mecanico";
                                                         } else if ($registro['rol'] === '9') {
                                                             echo "Ing. Control";
-                                                        }else if ($registro['rol'] === '10') {
+                                                        } else if ($registro['rol'] === '10') {
                                                             echo "Recursos humanos";
                                                         } else if ($registro['rol'] === '12') {
                                                             echo "Monitor Solara";
+                                                        } else if ($registro['rol'] === '13') {
+                                                            echo "Ing. Laser";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
@@ -211,6 +213,8 @@ if (isset($_SESSION['codigo'])) {
                                 <option value="8">Técnico mecanico</option>
                                 <option value="9">Ing. Control</option>
                                 <option value="10">Recursos humanos</option>
+                                <option value="13">Ing. Laser</option>
+
                             </select>
                             <label for="rol">Rol</label>
                         </div>

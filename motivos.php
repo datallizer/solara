@@ -62,7 +62,11 @@ if (isset($_SESSION['codigo'])) {
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
+<style>
+    .card-body{
+        min-height:100vh;
+    }
+</style>
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
 <?php include 'mensajes.php'; ?>
@@ -73,10 +77,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MOTIVOS DE PARO MAQUINADOS
+                                <h4>
                                     <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         Nuevo motivo
-                                    </button>
+                                    </button>PARO DE MAQUINADOS
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
@@ -126,10 +130,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MOTIVOS DE PARO ENSAMBLE
+                                <h4>
                                     <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
                                         Nuevo motivo
-                                    </button>
+                                    </button>PARO DE ENSAMBLE
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
@@ -179,10 +183,10 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
-                                <h4>MOTIVOS INICIO
+                                <h4>
                                     <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#exampleModalTres">
                                         Nuevo motivo
-                                    </button>
+                                    </button>INICIO NO PRIORITARIO
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
@@ -190,7 +194,7 @@ if (isset($_SESSION['codigo'])) {
                                 <table class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>Motivo de paro</th>
+                                            <th>Motivo de inicio</th>
                                             <th class="text-center">Accion</th>
                                         </tr>
                                     </thead>

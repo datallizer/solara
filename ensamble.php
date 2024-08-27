@@ -116,7 +116,7 @@ if (mysqli_num_rows($result) > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ensamble | Solara</title>
+    <title>Ensambles | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
@@ -126,7 +126,7 @@ if (mysqli_num_rows($result) > 0) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -134,19 +134,22 @@ if (mysqli_num_rows($result) > 0) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>ENSAMBLES
+                                <h4>ENSAMBLES ACTIVOS
                                     <!-- <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     T. Mecánico
                                 </button> -->
                                     <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                         echo '
                                 <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
                                     Nuevo ensamble
                                 </button>
                                 </button> <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalAsignarControl">
                                     Asignar técnico
-                                </button>';
+                                </button>
+                                <a href="ensamblesfinalizados.php" class="btn btn-primary btn-sm" id="floatingButton">
+                                Ensambles<br>finalizados
+                            </a>';
                                     }
                                     ?>
                                 </h4>
@@ -162,7 +165,7 @@ if (mysqli_num_rows($result) > 0) {
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
                                             <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 13])) {
                                                 echo '<th>Estatus</th>';
                                             }
                                             ?>
@@ -180,7 +183,7 @@ if (mysqli_num_rows($result) > 0) {
                                                 WHERE asignaciondiagrama.codigooperador = $codigo 
                                                 AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2 OR diagrama.estatusplano = 3)
                                                 ORDER BY proyecto.prioridad ASC, diagrama.nivel ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id
@@ -223,7 +226,7 @@ if (mysqli_num_rows($result) > 0) {
                                                             }
                                                             ?>
                                                             <?php
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                                             if (empty($registro['medio'])) {
                                                             ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
@@ -245,7 +248,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                         if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                             foreach ($query_run_asignacion as $asignacion) {
-                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
 
                                                                     if ($registro['estatusplano'] === '1') {
                                                         ?>
@@ -290,7 +293,7 @@ if (mysqli_num_rows($result) > 0) {
                                                     }
                                                     ?>
                                                     <?php
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9, 13])) {
                                                         if ($registro['estatusplano'] === '1') {
                                                             echo "<td>Asignado</td>";
                                                         } elseif ($registro['estatusplano'] === '2') {
@@ -306,7 +309,7 @@ if (mysqli_num_rows($result) > 0) {
 
                                                     ?>
                                                     <td>
-                                                    <?php
+                                                        <?php
                                                         $motivosQuery = "SELECT motivo FROM motivosinicio";
                                                         $motivosResult = mysqli_query($con, $motivosQuery);
                                                         $motivosOptions = "";
@@ -363,7 +366,7 @@ if (mysqli_num_rows($result) > 0) {
                   </form>';
                                                                 }
                                                             }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
           <form action="codemaquinados.php" method="POST" class="d-inline">
@@ -384,210 +387,7 @@ if (mysqli_num_rows($result) > 0) {
                             </div>
                         </div>
                     </div>
-                    <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                    ?>
-                        <div class="col-12 mt-3">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>ENSAMBLES FINALIZADOS</h4>
-                                </div>
-                                <div class="card-body">
-                                    <table id="miTablaDos" class="table table-bordered table-striped text-center" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th>Proyecto</th>
-                                                <th>Diagrama / actividad asociados</th>
-                                                <th>Número de piezas</th>
-                                                <th>Técnicos asignados</th>
-                                                <th>Prioridad</th>
-                                                <th>Nivel de pieza</th>
-                                                <th>Accion</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $query = "SELECT proyecto.*, diagrama.*
-                                        FROM diagrama 
-                                        JOIN proyecto ON diagrama.idproyecto = proyecto.id
-                                        WHERE estatusplano = 0 
-                                        ORDER BY proyecto.prioridad asc";
-                                            $query_run = mysqli_query($con, $query);
-                                            if (mysqli_num_rows($query_run) > 0) {
-                                                foreach ($query_run as $registro) {
-                                            ?>
-                                                    <tr>
-                                                        <td><?= $registro['nombre']; ?></td>
-                                                        <td>
-                                                            <?php
-                                                            if (empty($registro['medio'])) {
-                                                            ?>
-                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
-                                                            <?php
-                                                            } else {
-                                                            ?>
-                                                                <a href="verdiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Diagrama <?= $registro['nombreplano']; ?></a>
-                                                            <?php
-                                                            }
-                                                            ?>
-                                                        </td>
-                                                        <td><?= $registro['piezas']; ?></td>
-                                                        <td>
-                                                            <?php
-                                                            $queryAsignacion = "SELECT asignaciondiagrama.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
-                                                            FROM asignaciondiagrama
-                                                            JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo
-                                                            WHERE asignaciondiagrama.idplano = " . $registro['id'];
-                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 
-                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                                foreach ($query_run_asignacion as $asignacion) {
-                                                                    echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
-                                                                }
-                                                            } else {
-                                                                echo '-';
-                                                            }
-                                                            ?>
-                                                        </td>
-                                                        <td class="text-center"><?= $registro['prioridad']; ?></td>
-                                                        <?php
-                                                        if ($registro['nivel'] === '1') {
-                                                            echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
-                                                        } elseif ($registro['nivel'] === '2') {
-                                                            echo "<td style='background-color:#e56f00 !important'>Nivel 2</td>";
-                                                        } elseif ($registro['nivel'] === '3') {
-                                                            echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
-                                                        } elseif ($registro['nivel'] === '4') {
-                                                            echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
-                                                        } else {
-                                                            echo "<td>Error, contacte a soporte</td>";
-                                                        }
-                                                        ?>
-                                                        <td>
-                                                            <a href="editardiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-
-                                                            <!-- <form action="codediagramas.php" method="POST" class="d-inline">
-                                                        <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                    </form> -->
-                                                        </td>
-                                                    </tr>
-                                            <?php
-                                                }
-                                            } else {
-                                                echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    <?php
-                    }
-                    ?>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal Mecanica-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="tituloPlano">NUEVO DIAGRAMA</h1>
-                    <h1 class="modal-title fs-5" id="tituloActividad" style="display: none;">NUEVA ACTIVIDAD</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="codediagramas.php" method="POST" class="row" enctype="multipart/form-data">
-                        <div class="form-floating col-8 mb-3">
-                            <select class="form-select" name="idproyecto" id="idproyecto">
-                                <option disabled selected>Seleccione un proyecto</option>
-                                <?php
-                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
-                                $result = mysqli_query($con, $query);
-                                if (mysqli_num_rows($result) > 0) {
-                                    while ($proyecto = mysqli_fetch_assoc($result)) {
-                                        $opcion = $proyecto['nombre'];
-                                        $idProyecto = $proyecto['id'];
-                                        echo "<option value='$idProyecto'>$opcion</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                            <label for="idproyecto">Proyecto asociado</label>
-                        </div>
-
-                        <div class="col-4 mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onchange="toggleElements()">
-                                <label class="form-check-label" for="flexSwitchCheckDefault" id="labelPlano">Diagrama</label>
-                                <label class="form-check-label" for="flexSwitchCheckDefault" id="labelActividad" style="display: none;">Actividad</label>
-                            </div>
-                        </div>
-
-                        <div class="form-floating col-12 mt-1">
-                            <input type="text" class="form-control" name="nombreplano" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
-                            <label for="nombreplano" id="nombrePlano">Nombre del diagrama</label>
-                            <label for="nombreplano" id="nombreActividad" style="display: none;">Nombre de la actividad</label>
-                        </div>
-
-                        <div class="mt-3" id="planoElements">
-                            <label for="medio" class="form-label">Diagrama PDF</label>
-                            <input class="form-control" type="file" id="medio" name="medio" max="100000">
-                        </div>
-
-                        <div class="form-floating col-12 mt-3" id="actividadElements" style="display: none;">
-                            <select class="form-select" name="actividad" id="actividad">
-                                <option disabled selected>Seleccione una actividad</option>
-                                <?php
-                                $query = "SELECT * FROM actividadesmecanica";
-                                $result = mysqli_query($con, $query);
-                                if (mysqli_num_rows($result) > 0) {
-                                    while ($proyecto = mysqli_fetch_assoc($result)) {
-                                        $opcion = $proyecto['actividad'];
-                                        echo "<option value='$opcion'>$opcion</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                            <label for="actividad">Actividad</label>
-                        </div>
-
-                        <div class="form-floating col-12 col-md-5 mt-3">
-                            <input type="text" class="form-control" name="piezas" id="piezas" placeholder="Piezas" autocomplete="off" required>
-                            <label for="piezas">Número de piezas</label>
-                        </div>
-
-                        <div class="form-floating col-12 col-md-7 mt-3">
-                            <select class="form-select" name="nivel" id="nivel" autocomplete="off" required>
-                                <option selected disabled>Seleccione el nivel</option>
-                                <option value="1">Nivel 1</option>
-                                <option value="2">Nivel 2</option>
-                                <option value="3">Nivel 3</option>
-                                <option value="4">Nivel 4</option>
-                            </select>
-                            <label for="nivel">Nivel de pieza</label>
-                        </div>
-
-                        <div class="form-check col-12 mt-3 m-3">
-                            <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 8";
-                            $result = mysqli_query($con, $query);
-                            if (mysqli_num_rows($result) > 0) {
-                                while ($usuario = mysqli_fetch_assoc($result)) {
-                                    $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
-                                    $idUsuario = $usuario['codigo'];
-                                    echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                    echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
-                                }
-                            }
-                            ?>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="save">Guardar</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -675,8 +475,9 @@ if (mysqli_num_rows($result) > 0) {
                         </div>
 
                         <div class="form-check col-12 mt-3 m-3">
+                            <p class="mb-1">Técnicos en control</p>
                             <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 4";
+                            $query = "SELECT * FROM usuarios WHERE rol = 4 or rol = 13";
                             $result = mysqli_query($con, $query);
                             if (mysqli_num_rows($result) > 0) {
                                 while ($usuario = mysqli_fetch_assoc($result)) {
@@ -740,8 +541,9 @@ if (mysqli_num_rows($result) > 0) {
                         </div>
 
                         <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
+                            <p class="mb-1">Técnicos en control</p>
                             <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 4";
+                            $query = "SELECT * FROM usuarios WHERE rol = 4 OR rol = 13";
                             $result = mysqli_query($con, $query);
 
                             if (mysqli_num_rows($result) > 0) {
@@ -838,7 +640,8 @@ if (mysqli_num_rows($result) > 0) {
                 "order": [
                     [4, "asc"],
                     [5, "asc"]
-                ] // Ordenar la primera columna (índice 0) en orden descendente
+                ],
+                "pageLength": 25
             });
 
             // Cambiar a usar clase en lugar de ID
@@ -943,6 +746,7 @@ if (mysqli_num_rows($result) > 0) {
                 });
             });
         });
+
         function handleNonPriorityClick(id) {
             Swal.fire({
                 title: 'ACTIVIDAD NO PRIORITARIA',

@@ -49,7 +49,7 @@ if (isset($_POST['codigo'])) {
             $_SESSION['message'] = $message;
             header("Location: maquinados.php");
             exit();
-        } elseif ($_SESSION['rol'] == 4 || $_SESSION['rol'] == 9) {
+        } elseif ($_SESSION['rol'] == 4 || $_SESSION['rol'] == 9 || $_SESSION['rol'] == 13) {
             $idcodigo = $_SESSION['codigo'];
             $fecha_actual = date("Y-m-d");
             $hora_actual = date("H:i");
@@ -65,7 +65,7 @@ if (isset($_POST['codigo'])) {
             $_SESSION['message'] = $message;
             header("Location: dashboard.php");
             exit();
-        }elseif ($_SESSION['rol'] == 12) {
+        } elseif ($_SESSION['rol'] == 12) {
             header("Location: monitor.php");
             exit();
         } else {

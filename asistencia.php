@@ -110,7 +110,7 @@ if (isset($_SESSION['codigo'])) {
                             </thead>
                             <tbody>
                                 <?php
-                                $query = "SELECT * FROM usuarios WHERE estatus=1 AND rol<>1 ORDER BY id DESC";
+                                $query = "SELECT * FROM usuarios WHERE estatus=1 AND rol<> 1 AND rol <> 12 ORDER BY id DESC";
                                 $query_run = mysqli_query($con, $query);
                                 if (mysqli_num_rows($query_run) > 0) {
                                     foreach ($query_run as $registro) {
@@ -137,6 +137,8 @@ if (isset($_SESSION['codigo'])) {
                                                     echo "Ing. Control";
                                                 } else if ($registro['rol'] === '10') {
                                                     echo "Recursos humanos";
+                                                } else if ($registro['rol'] === '13') {
+                                                    echo "Ing. Laser";
                                                 } else {
                                                     echo "Error, contacte a soporte";
                                                 }

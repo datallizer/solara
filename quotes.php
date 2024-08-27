@@ -66,7 +66,7 @@ if (isset($_SESSION['codigo'])) {
                             <div class="card-header">
                                 <h4>QUOTES
                                     <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 9])) {
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 9, 13])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Nueva quote
                                 </button>';
@@ -122,6 +122,8 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Técnico mecanico";
                                                         } else if ($registro['rol'] === '9') {
                                                             echo "Ing. Control";
+                                                        } else if ($registro['rol'] === '13') {
+                                                            echo "Ing. Laser";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
@@ -157,7 +159,7 @@ if (isset($_SESSION['codigo'])) {
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
                                                             <?php
-                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 8, 9])) {
+                                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 8, 9, 13])) {
                                                                 echo '<button type="submit" name="delete" value="' . $registro['id_quote'] . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>';
                                                             }
                                                             ?>

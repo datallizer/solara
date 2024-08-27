@@ -119,6 +119,8 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Técnico mecanico";
                                                         } else if ($registro['rol'] === '9') {
                                                             echo "Ing. Control";
+                                                        } else if ($registro['rol'] === '13') {
+                                                            echo "Ing. Laser";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }
@@ -246,6 +248,8 @@ if (isset($_SESSION['codigo'])) {
                                                             echo "Técnico mecanico";
                                                         } else if ($registro['rol'] === '9') {
                                                             echo "Ing. Control";
+                                                        } else if ($registro['rol'] === '13') {
+                                                            echo "Ing. Laser";
                                                         } else {
                                                             echo "Error, contacte a soporte";
                                                         }

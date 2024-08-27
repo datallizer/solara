@@ -3,7 +3,7 @@ require 'dbcon.php';
 
 if (isset($_POST['save'])) {
     $mensaje = mysqli_real_escape_string($con, $_POST['mensaje']);
-    
+
     // Verificar si 'codigooperador' está definido y es un array
     $codigosOperadores = isset($_POST['codigooperador']) ? $_POST['codigooperador'] : [];
 
@@ -21,7 +21,7 @@ if (isset($_POST['save'])) {
         foreach ($codigosOperadores as $idcodigo) {
             // Enlazar parámetros
             mysqli_stmt_bind_param($stmt, "ssssss", $mensaje, $idcodigo, $emisor, $fecha, $hora, $estatus);
-            
+
             // Ejecutar la consulta
             mysqli_stmt_execute($stmt);
         }
@@ -271,7 +271,7 @@ if (isset($_POST['save'])) {
 
             </li>
             <li class="m-1">
-                <button type="button" style="color:#fff;padding:6px 7px;border-radius:5px;" class="btn nav-link btn-primary" name="save" data-bs-toggle="modal" data-bs-target="#exampleModalAsignar">
+                <button type="button" style="color:#fff;padding:6px 7px;border-radius:5px;" class="btn nav-link btn-primary" name="save" data-bs-toggle="modal" data-bs-target="#exampleModalMensaje">
                     <i class="bi bi-chat-left-dots-fill"></i>
                 </button>
             </li>
@@ -325,7 +325,7 @@ if (isset($_POST['save'])) {
                                     <a class="nav-link" href="dashboard.php">Movimientos</a>
                                     <a class="nav-link" href="permisos.php">Permisos</a>
                                     ';
-                                } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [3, 4, 5, 6, 7, 8, 9])) {
+                                } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [3, 4, 5, 6, 7, 8, 9, 13])) {
                                     echo '
                                     <a class="nav-link" href="asistenciapersonal.php?id=' . $_SESSION['codigo'] . '">Asistencia</a>
                                     <a class="nav-link" href="dashboard.php">Movimientos</a>
@@ -337,7 +337,7 @@ if (isset($_POST['save'])) {
                         </div>
 
                         <?php
-                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 8, 9])) {
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 8, 9, 13])) {
                             // Mostrar el enlace HTML solo si la condición se cumple
                             echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                             <div class="sb-nav-link-icon"><i class="bi bi-shield-fill-check"></i></div>
@@ -350,26 +350,26 @@ if (isset($_POST['save'])) {
                             <nav class="sb-sidenav-menu-nested nav">
                                 <?php
                                 // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 8, 5, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 8, 5, 9, 13])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="maquinados.php">Maquinados</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 9, 13])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="ensamble.php">Ensamble</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="bom.php">BOM</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 10])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 10, 13])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="estadisticas.php">Estadisticas</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
+                                    
                                     echo '<a class="nav-link" href="proyectos.php">Proyectos</a>';
-                                    echo '<a class="nav-link" href="motivosdeparo.php">Motivos de paro</a>';
                                 }
                                 ?>
                             </nav>
@@ -383,7 +383,7 @@ if (isset($_POST['save'])) {
                         <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
                                 <?php
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 6, 7, 8, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 6, 7, 8, 9, 13])) {
                                     echo '
                                         <a class="nav-link" href="inventario.php">Inventario</a>
                                 ';
@@ -391,7 +391,7 @@ if (isset($_POST['save'])) {
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 6, 7])) {
                                     echo '<a class="nav-link" href="reorden.php">Reorden</a>';
                                 }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 6, 7, 9])) {
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 5, 6, 7, 9, 13])) {
                                     echo '
                                             <a class="nav-link" href="quotes.php">Quotes</a>
                                             <a class="nav-link" href="compras.php">Compras</a>
@@ -459,6 +459,8 @@ if (isset($_POST['save'])) {
                                                                             echo "Ing. Control";
                                                                         } else if ($registro['rol'] === '10') {
                                                                             echo "Recursos humanos";
+                                                                        } else if ($registro['rol'] === '13') {
+                                                                            echo "Ing. Laser";
                                                                         } else {
                                                                             echo "Error, contacte a soporte";
                                                                         }
@@ -480,7 +482,7 @@ if (isset($_POST['save'])) {
 </body>
 
 <!-- Modal Mensajes -->
-<div class="modal fade" id="exampleModalAsignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModalMensaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

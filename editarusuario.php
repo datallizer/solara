@@ -154,6 +154,7 @@ if (isset($_SESSION['codigo'])) {
                                                     <option value="8" <?= ($rol_actual == 8) ? 'selected' : ''; ?>>Tecnico mecanico</option>
                                                     <option value="9" <?= ($rol_actual == 9) ? 'selected' : ''; ?>>Ing.Control</option>
                                                     <option value="10" <?= ($rol_actual == 10) ? 'selected' : ''; ?>>Recursos humanos</option>
+                                                    <option value="13" <?= ($rol_actual == 13) ? 'selected' : ''; ?>>Ing. Laser</option>
                                                 </select>
                                                     <label for="rol">Rol</label>
                                                 </div>
