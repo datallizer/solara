@@ -498,7 +498,7 @@ if (isset($_POST['save'])) {
 
                     <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
                         <?php
-                        $query = "SELECT * FROM usuarios WHERE codigo <> $codigo";
+                        $query = "SELECT * FROM usuarios WHERE codigo <> $codigo AND rol <> 12";
                         $result = mysqli_query($con, $query);
 
                         if (mysqli_num_rows($result) > 0) {

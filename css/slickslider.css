@@ -2,7 +2,7 @@
     margin: 10px;
     color: #000000;
     text-align: left;
-    padding: 20px;
+    padding: 20px 0px;
   }
   
   .slickc img {
@@ -80,6 +80,8 @@
     border: none;
     background-image: url(https://tarkikromanski.github.io/files/arrow-slider.png);
     background-repeat: no-repeat;
+    z-index: 99;
+    padding: 0px 9px;
   }
   @media screen and (max-width: 1000px){
     .slickc{

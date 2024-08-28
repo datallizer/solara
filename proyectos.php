@@ -66,7 +66,7 @@ if (isset($_SESSION['codigo'])) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -74,7 +74,7 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>PROYECTOS
+                                <h4>PROYECTOS ACTIVOS
                                     <?php
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -86,6 +86,9 @@ if (isset($_SESSION['codigo'])) {
                                     }
                                     ?>
                                 </h4>
+                                <a href="proyectosfinalizados.php" class="btn btn-primary btn-sm" id="floatingButton">
+                                    Proyectos<br>finalizados
+                                </a>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
                                 <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
@@ -266,14 +269,14 @@ if (isset($_SESSION['codigo'])) {
                                                         if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                             foreach ($query_run_asignacion as $asignacion) {
                                                         ?>
-                                                                    <form class="deleteForm" action="codencargados.php" method="post">
-                                                                        <div style="display: flex; align-items: center;">
-                                                                            <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                                            <button type="button" class="deleteButton" name="deleteproyecto" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id']; ?>">
-                                                                                <i style="color: #d41111;" class="bi bi-x-lg"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </form>
+                                                                <form class="deleteForm" action="codencargados.php" method="post">
+                                                                    <div style="display: flex; align-items: center;">
+                                                                        <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                        <button type="button" class="deleteButton" name="deleteproyecto" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id']; ?>">
+                                                                            <i style="color: #d41111;" class="bi bi-x-lg"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
                                                         <?php
                                                             }
                                                         }
@@ -302,224 +305,11 @@ if (isset($_SESSION['codigo'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12 mt-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>PROYECTOS FINALIZADOS</h4>
-                            </div>
-                            <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Proyecto</th>
-                                            <th>Cliente</th>
-                                            <th>Otros datos</th>
-                                            <th>Prioridad</th>
-                                            <th>Etapa diseño</th>
-                                            <th>Etapa control</th>
-                                            <th>Detalles</th>
-                                            <th>Encargado(s) de proyecto</th>
-                                            <th>Accion</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9])) {
-                                            $query = "SELECT proyecto.*
-                                                FROM proyecto 
-                                                JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
-                                                JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
-                                                WHERE encargadoproyecto.codigooperador = $codigo 
-                                                AND proyecto.estatus = 0
-                                                ORDER BY proyecto.prioridad ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                            $query = "SELECT * FROM proyecto WHERE estatus = 0 ORDER BY prioridad ASC";
-                                        }
-                                        $query_run = mysqli_query($con, $query);
-                                        if (mysqli_num_rows($query_run) > 0) {
-                                            foreach ($query_run as $registro) {
-                                        ?>
-                                                <tr>
-                                                    <td>
-                                                        <p class="text-center"><?= $registro['id']; ?></p>
-                                                    </td>
-                                                    <td>
-                                                        <p class="text-center"><?= $registro['nombre']; ?></p>
-                                                    </td>
-                                                    <td>
-                                                        <p class="text-center"><?= $registro['cliente']; ?></p>
-                                                    </td>
-                                                    <td style="min-width: 250px;">
-                                                        <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                            echo '<p><b>Presupuesto: </b>$' . $registro['presupuesto'] . '</p>';
-                                                        }
-                                                        ?>
-                                                        <p><b>Fecha de inicio:</b> <?= $registro['fechainicio']; ?></p>
-                                                        <p><b>Fecha finalización:</b> <?= $registro['fechafin']; ?></p>
-                                                    </td>
-                                                    <?php
-                                                    if ($registro['prioridad'] == 1) {
-                                                        echo "<td style='background-color: #ff0000;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
-                                                    } elseif ($registro['prioridad'] == 2) {
-                                                        echo "<td style='background-color: #ff1a1a;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 3) {
-                                                        echo "<td style='background-color: #ff3333;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
-                                                    } elseif ($registro['prioridad'] == 4) {
-                                                        echo "<td style='background-color: #ff4d4d;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 5) {
-                                                        echo "<td style='background-color: #ff6666;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 6) {
-                                                        echo "<td style='background-color: #ff8080;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 7) {
-                                                        echo "<td style='background-color: #ff9999;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 8) {
-                                                        echo "<td style='background-color: #ffb2b2;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 9) {
-                                                        echo "<td style='background-color: #ffcccc;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 10) {
-                                                        echo "<td style='background-color: #ffe5e5;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 11) {
-                                                        echo "<td style='background-color: #ffffb3;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 12) {
-                                                        echo "<td style='background-color: #ffff99;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 13) {
-                                                        echo "<td style='background-color: #ffff80;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 14) {
-                                                        echo "<td style='background-color: #ffff66;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 15) {
-                                                        echo "<td style='background-color: #ffff4d;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 16) {
-                                                        echo "<td style='background-color: #ffff33;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 17) {
-                                                        echo "<td style='background-color: #ffff1a;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 18) {
-                                                        echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 19) {
-                                                        echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 20) {
-                                                        echo "<td style='background-color: #e5e500;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 21) {
-                                                        echo "<td style='background-color: #c6e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 22) {
-                                                        echo "<td style='background-color: #a8e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 23) {
-                                                        echo "<td style='background-color: #89e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 24) {
-                                                        echo "<td style='background-color: #67e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 25) {
-                                                        echo "<td style='background-color: #58e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 26) {
-                                                        echo "<td style='background-color: #39e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 27) {
-                                                        echo "<td style='background-color: #26e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 28) {
-                                                        echo "<td style='background-color: #00e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 29) {
-                                                        echo "<td style='background-color: #00e51b;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 30) {
-                                                        echo "<td style='background-color: #00e539;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } else {
-                                                        echo "<td>" . $registro['prioridad'] . "</td>"; // Valor fuera del rango
-                                                    }
-                                                    ?>
-
-                                                    <td>
-                                                        <p><?php
-                                                            if ($registro['etapadiseño'] === '1') {
-                                                                echo "Diseño";
-                                                            } else if ($registro['etapadiseño'] === '2') {
-                                                                echo "Revisión interna";
-                                                            } else if ($registro['etapadiseño'] === '3') {
-                                                                echo "Revisión con cliente";
-                                                            } else if ($registro['etapadiseño'] === '4') {
-                                                                echo "Planos";
-                                                            } else if ($registro['etapadiseño'] === '5') {
-                                                                echo "Bom";
-                                                            } else if ($registro['etapadiseño'] === '6') {
-                                                                echo "Manufactura";
-                                                            } else if ($registro['etapadiseño'] === '7') {
-                                                                echo "Remediación";
-                                                            } else if ($registro['etapadiseño'] === '8') {
-                                                                echo "Documentación";
-                                                            } else {
-                                                                echo "Error, contacte a soporte";
-                                                            }
-                                                            ?></p>
-                                                    </td>
-                                                    <td style="cursor: all-scroll;">
-                                                        <p><?php
-                                                            if ($registro['etapacontrol'] === '1') {
-                                                                echo "Diseño";
-                                                            } else if ($registro['etapacontrol'] === '2') {
-                                                                echo "Revisión interna";
-                                                            } else if ($registro['etapacontrol'] === '3') {
-                                                                echo "Revisión con cliente";
-                                                            } else if ($registro['etapacontrol'] === '4') {
-                                                                echo "Diagramas";
-                                                            } else if ($registro['etapacontrol'] === '5') {
-                                                                echo "Bom";
-                                                            } else if ($registro['etapacontrol'] === '6') {
-                                                                echo "Manufactura";
-                                                            } else if ($registro['etapacontrol'] === '7') {
-                                                                echo "Programación";
-                                                            } else if ($registro['etapacontrol'] === '8') {
-                                                                echo "Debugging";
-                                                            } else if ($registro['etapacontrol'] === '9') {
-                                                                echo "Documentación";
-                                                            } else {
-                                                                echo "Error, contacte a soporte";
-                                                            }
-                                                            ?></p>
-                                                    </td>
-                                                    <td>
-                                                        <p><?= $registro['detalles']; ?></p>
-                                                    </td>
-                                                    <td>
-                                                        <?php
-                                                        $queryAsignacion = "SELECT encargadoproyecto.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom
-                                                        FROM encargadoproyecto
-                                                        JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
-                                                        WHERE encargadoproyecto.idproyecto = " . $registro['id'];
-
-                                                        $query_run_asignacion = mysqli_query($con, $queryAsignacion);
-
-                                                        if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                            foreach ($query_run_asignacion as $asignacion) {
-                                                                echo '<p>' . $asignacion['nombre'] . ' ' . $asignacion['apellidop'] . ' ' . $asignacion['apellidom'] . '</p>';
-                                                            }
-                                                        } else {
-                                                            echo '-';
-                                                        }
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <a href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-                                                        <!-- <?php
-                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                                    echo '<form action="codeproyecto.php" method="POST" class="d-inline">
-                                                                        <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                                    </form>';
-                                                                }
-                                                                ?> -->
-                                                    </td>
-                                                </tr>
-                                        <?php
-                                            }
-                                        } else {
-                                            echo "<td colspan='10'><p>No se encontro ningun registro</p></td>";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -691,7 +481,7 @@ if (isset($_SESSION['codigo'])) {
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">ASIGNAR ENCARGADO DE PROYECTO</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">ENCARGADO DE PROYECTO</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -723,7 +513,7 @@ if (isset($_SESSION['codigo'])) {
                         <div class="form-check col-12 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9)";
+                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9,13)";
                             $result = mysqli_query($con, $query);
 
                             // Verificar si hay resultados
@@ -750,74 +540,7 @@ if (isset($_SESSION['codigo'])) {
         </div>
     </div>
 
-    <!-- Modal Operadores -->
-    <div class="modal fade" id="exampleModalAsignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">ENCARGADO DE PROYECTO</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="miFormulario" action="codetecnicos.php" method="POST" class="row">
-                        <div class="form-floating col-12 mb-3">
-                            <select class="form-select" name="idproyecto" id="idproyecto">
-                                <option disabled selected>Seleccione un proyecto</option>
-                                <?php
-                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
-                                $result = mysqli_query($con, $query);
 
-                                if (mysqli_num_rows($result) > 0) {
-                                    while ($proyecto = mysqli_fetch_assoc($result)) {
-                                        $opcion = $proyecto['nombre'];
-                                        $idProyecto = $proyecto['id'];
-
-                                        $queryAsignacion = "SELECT COUNT(*) as count FROM encargadoproyecto WHERE idproyecto = ?";
-                                        $stmt = $con->prepare($queryAsignacion);
-                                        $stmt->bind_param("i", $idProyecto);
-                                        $stmt->execute();
-                                        $resultAsignacion = $stmt->get_result();
-                                        $row = $resultAsignacion->fetch_assoc();
-                                        var_dump($row);
-                                        if ($row['count'] > 0) {
-                                            echo "<option value='$idProyecto'>" . htmlspecialchars($opcion) . " - Asignado</option>";
-                                        } else {
-                                            echo "<option value='$idProyecto'>" . htmlspecialchars($opcion) . " - No asignado</option>";
-                                        }
-                                    }
-                                }
-                                ?>
-                            </select>
-                            <label for="idproyecto">Proyecto a asociar</label>
-                        </div>
-
-                        <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
-                            <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 5 OR rol = 9";
-                            $result = mysqli_query($con, $query);
-
-                            if (mysqli_num_rows($result) > 0) {
-                                while ($usuario = mysqli_fetch_assoc($result)) {
-                                    $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
-                                    $idUsuario = $usuario['codigo'];
-
-                                    echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                    echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
-                                }
-                            }
-                            ?>
-
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="control">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
