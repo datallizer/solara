@@ -139,7 +139,7 @@ if (mysqli_num_rows($result) > 0) {
                                     T. Mecánico
                                 </button> -->
                                     <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                         echo '
                                 <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
                                     Nuevo ensamble
@@ -160,12 +160,16 @@ if (mysqli_num_rows($result) > 0) {
                                         <tr>
                                             <th>Proyecto</th>
                                             <th>Diagrama / actividad asociados</th>
-                                            <th>Técnino asignado</th>
+                                            <?php
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                echo '<th>Técnino asignado</th>';
+                                            }
+                                            ?>
                                             <th>Número de piezas</th>
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
                                             <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 13])) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7])) {
                                                 echo '<th>Estatus</th>';
                                             }
                                             ?>
@@ -174,7 +178,7 @@ if (mysqli_num_rows($result) > 0) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4])) {
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 13])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id 
@@ -183,7 +187,7 @@ if (mysqli_num_rows($result) > 0) {
                                                 WHERE asignaciondiagrama.codigooperador = $codigo 
                                                 AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2 OR diagrama.estatusplano = 3)
                                                 ORDER BY proyecto.prioridad ASC, diagrama.nivel ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id
@@ -201,14 +205,14 @@ if (mysqli_num_rows($result) > 0) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8, 13])) {
                                                             if (empty($registro['medio'])) {
                                                         ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
                                                             <?php
                                                             } else {
                                                             ?>
-                                                                <button style="min-width: 200px;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Diagrama <?= $registro['nombreplano']; ?></button>
+                                                                <button style="width: 100%;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Diagrama <?= $registro['nombreplano']; ?></button>
                                                                 <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                                     <div class="modal-dialog modal-lg">
                                                                         <div class="modal-content">
@@ -226,20 +230,23 @@ if (mysqli_num_rows($result) > 0) {
                                                             }
                                                             ?>
                                                             <?php
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             if (empty($registro['medio'])) {
                                                             ?>
                                                                 <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
                                                             <?php
                                                             } else {
                                                             ?>
-                                                                <a href="verdiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Diagrama <?= $registro['nombreplano']; ?></a>
+                                                                <a style="width: 100%;" href="verdiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Diagrama <?= $registro['nombreplano']; ?></a>
                                                         <?php
                                                             }
                                                         }
                                                         ?>
                                                     </td>
-                                                    <td>
+                                                    <?php
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                    ?>
+                                                        <td>
                                                         <?php
                                                         $queryAsignacion = "SELECT asignaciondiagrama.*, asignaciondiagrama.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                         FROM asignaciondiagrama
@@ -248,7 +255,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                         if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                             foreach ($query_run_asignacion as $asignacion) {
-                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
 
                                                                     if ($registro['estatusplano'] === '1') {
                                                         ?>
@@ -266,7 +273,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                         <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
                                                                     <?php
                                                                     }
-                                                                } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4])) {
+                                                                } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 13])) {
                                                                     ?>
                                                                     <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
                                                         <?php
@@ -276,7 +283,10 @@ if (mysqli_num_rows($result) > 0) {
                                                             echo '-';
                                                         }
                                                         ?>
-                                                    </td>
+                                                        </td>
+                                                    <?php
+                                                    }
+                                                    ?>
                                                     <td class="text-center"><?= $registro['piezas']; ?></td>
                                                     <td class="text-center"><?= $registro['prioridad']; ?></td>
                                                     <?php
@@ -293,7 +303,7 @@ if (mysqli_num_rows($result) > 0) {
                                                     }
                                                     ?>
                                                     <?php
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9, 13])) {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                                         if ($registro['estatusplano'] === '1') {
                                                             echo "<td>Asignado</td>";
                                                         } elseif ($registro['estatusplano'] === '2') {
@@ -316,7 +326,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         while ($row = mysqli_fetch_assoc($motivosResult)) {
                                                             $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
                                                         }
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 13])) {
                                                             $countQuery = "SELECT COUNT(*) as count
         FROM diagrama
         JOIN asignaciondiagrama ON asignaciondiagrama.idplano = diagrama.id
@@ -366,7 +376,7 @@ if (mysqli_num_rows($result) > 0) {
                   </form>';
                                                                 }
                                                             }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
           <form action="codemaquinados.php" method="POST" class="d-inline">

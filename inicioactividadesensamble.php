@@ -421,36 +421,36 @@ if (isset($_SESSION['codigo'])) {
 
             });
 
-            function verificarNuevasActividades() {
-                $.ajax({
-                    url: 'verificar_actividadesensamble.php', // Ruta del archivo PHP
-                    method: 'GET',
-                    dataType: 'json',
-                    success: function(response) {
-                        let nuevas_actividades = response.nuevas_actividades;
-                        let actividades_anteriores = response.actividades_anteriores;
-                        let nombreplano = response.nombreplano;
+            // function verificarNuevasActividades() {
+            //     $.ajax({
+            //         url: 'verificar_actividadesensamble.php', // Ruta del archivo PHP
+            //         method: 'GET',
+            //         dataType: 'json',
+            //         success: function(response) {
+            //             let nuevas_actividades = response.nuevas_actividades;
+            //             let actividades_anteriores = response.actividades_anteriores;
+            //             let nombreplano = response.nombreplano;
 
-                        if (nuevas_actividades > actividades_anteriores) {
-                            Swal.fire({
-                                title: 'Nuevo ensamble asignado',
-                                text: `${nombreplano}`,
-                                icon: 'info',
-                                confirmButtonText: 'Aceptar'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error al verificar nuevas actividades:', error);
-                    }
-                });
-            }
+            //             if (nuevas_actividades > actividades_anteriores) {
+            //                 Swal.fire({
+            //                     title: 'Nuevo ensamble asignado',
+            //                     text: `${nombreplano}`,
+            //                     icon: 'info',
+            //                     confirmButtonText: 'Aceptar'
+            //                 });
+            //             }
+            //         },
+            //         error: function(xhr, status, error) {
+            //             console.error('Error al verificar nuevas actividades:', error);
+            //         }
+            //     });
+            // }
 
-            // Llama a la función al cargar la página
-            verificarNuevasActividades();
+            // // Llama a la función al cargar la página
+            // verificarNuevasActividades();
 
-            // Opcional: Puedes configurar un intervalo para verificar periódicamente
-            setInterval(verificarNuevasActividades, 1000); // Verifica cada minuto
+            // // Opcional: Puedes configurar un intervalo para verificar periódicamente
+            // setInterval(verificarNuevasActividades, 1000); // Verifica cada minuto
         });
     </script>
 

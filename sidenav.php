@@ -322,7 +322,7 @@ if (isset($_POST['save'])) {
                                     <a class="nav-link" href="asistencia.php">Asistencia</a>
                                     <a class="nav-link" href="nomina.php">Nómina</a>
                                     <a class="nav-link" href="sesiones.php">Sesiones</a>
-                                    <a class="nav-link" href="dashboard.php">Movimientos</a>
+                                    <a class="nav-link" href="movimientos.php">Movimientos</a>
                                     <a class="nav-link" href="permisos.php">Permisos</a>
                                     ';
                                 } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [3, 4, 5, 6, 7, 8, 9, 13])) {
@@ -331,6 +331,29 @@ if (isset($_POST['save'])) {
                                     <a class="nav-link" href="dashboard.php">Movimientos</a>
                                     <a class="nav-link" href="permisos.php">Permisos</a>
                                 ';
+                                }
+                                ?>
+                            </nav>
+                        </div>
+
+                        <?php
+                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 5, 9, 13])) {
+                            // Mostrar el enlace HTML solo si la condición se cumple
+                            echo '<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseProjects" aria-expanded="false" aria-controls="collapseProjects">
+                            <div class="sb-nav-link-icon"><i class="bi bi-shield-fill-check"></i></div>
+                            Proyectos
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>';
+                        }
+                        ?>
+                        <div class="collapse" id="collapseProjects" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <?php
+                                // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
+                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                                    // Mostrar el enlace HTML solo si la condición se cumple
+                                    echo '<a class="nav-link" href="proyectos.php">Proyectos</a>
+                                    <a class="nav-link" href="ingenieria.php">Ingeniería</a>';
                                 }
                                 ?>
                             </nav>
@@ -365,11 +388,6 @@ if (isset($_POST['save'])) {
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 10, 13])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
                                     echo '<a class="nav-link" href="estadisticas.php">Estadisticas</a>';
-                                }
-                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
-                                    // Mostrar el enlace HTML solo si la condición se cumple
-                                    
-                                    echo '<a class="nav-link" href="proyectos.php">Proyectos</a>';
                                 }
                                 ?>
                             </nav>

@@ -7,16 +7,18 @@ if (session_status() === PHP_SESSION_NONE) {
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
 
-    $query = "DELETE FROM plano WHERE id='$registro_id' ";
+    $query = "DELETE FROM ingenieria WHERE id='$registro_id' ";
     $query_run = mysqli_query($con, $query);
+    $queryingenieria = "DELETE FROM asignacioningenieria WHERE idplano='$registro_id' ";
+    $queryingenieria_run = mysqli_query($con, $queryingenieria);
 
     if ($query_run) {
-        $_SESSION['message'] = "Maquinado eliminado exitosamente";
-        header("Location: maquinados.php");
+        $_SESSION['message'] = "Actividad eliminada exitosamente";
+        header("Location: ingenieria.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al eliminar el maquinado, contácte a soporte";
-        header("Location: maquinados.php");
+        $_SESSION['message'] = "Error al eliminar la actividad, contácte a soporte";
+        header("Location: ingenieria.php");
         exit(0);
     }
 }
@@ -49,36 +51,45 @@ if (isset($_POST['update'])) {
     exit(0);
 }
 
+if (isset($_POST['finalizar'])) {
+    $id = mysqli_real_escape_string($con, $_POST['finalizar']);
+    $estatusplano = 0;
+
+    $query = "UPDATE `ingenieria` SET `estatusplano` = '$estatusplano' WHERE `ingenieria`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Actividad finalizada exitosamente";
+        header("Location: ingenieria.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al finalizar la actividad";
+        header("Location: ingenieria.php");
+        exit(0);
+    }
+}
+
 if (isset($_POST['save'])) {
     // Escape other non-array POST values
     $idproyecto = isset($_POST['idproyecto']) ? mysqli_real_escape_string($con, $_POST['idproyecto']) : '';
     $nombreplano = isset($_POST['nombreplano']) ? mysqli_real_escape_string($con, $_POST['nombreplano']) : '';
-    if (isset($_FILES['medio']) && $_FILES['medio']['error'] !== UPLOAD_ERR_NO_FILE) {
-        $medio = file_get_contents($_FILES['medio']['tmp_name']);
-    } else {
-        // If no file is uploaded, set medio as an empty string
-        $medio = '';
-    }
-    $nivel = isset($_POST['nivel']) ? mysqli_real_escape_string($con, $_POST['nivel']) : '';
-    $piezas = isset($_POST['piezas']) ? mysqli_real_escape_string($con, $_POST['piezas']) : '';
+    $prioridad = isset($_POST['prioridad']) ? mysqli_real_escape_string($con, $_POST['prioridad']) : '';
     $actividad = isset($_POST['actividad']) ? mysqli_real_escape_string($con, $_POST['actividad']) : '';
 
     // Verify if checkboxes are selected and process each value
     if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
-        // Insertar el registro en la tabla `plano` una sola vez fuera del bucle
-        $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, ?, '1')";
+        $query = "INSERT INTO ingenieria (idproyecto, nombreplano, prioridad, actividad, estatusplano) VALUES (?, ?, ?, ?, '1')";
         $stmt = mysqli_prepare($con, $query);
 
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 'ssssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $actividad);
+            mysqli_stmt_bind_param($stmt, 'isis', $idproyecto, $nombreplano, $prioridad, $actividad);
             mysqli_stmt_execute($stmt);
 
-            // Obtener el ID del último registro insertado en la tabla `plano`
             $idplano = mysqli_insert_id($con);
 
             foreach ($_POST['codigooperador'] as $codigoOperador) {
                 // Insertar en la tabla `asignacionplano` utilizando el ID obtenido anteriormente
-                $queryplano = "INSERT INTO asignacionplano (idplano, codigooperador) VALUES (?, ?)";
+                $queryplano = "INSERT INTO asignacioningenieria (idplano, codigooperador) VALUES (?, ?)";
                 $stmtPlano = mysqli_prepare($con, $queryplano);
 
                 if ($stmtPlano) {
@@ -91,7 +102,7 @@ if (isset($_POST['save'])) {
                     $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
                     $query_rundos = mysqli_query($con, $querydos);
 
-                    $mensaje = 'Tienes un nuevo maquinado, Nombre: ' . $nombreplano . ' Actividad: ' . $actividad  . ' Prioridad: ' . $nivel;
+                    $mensaje = 'Tienes una nueva actividad de ingeniería, Nombre: ' . $nombreplano . ' Actividad: ' . $actividad  . ' Prioridad: ' . $prioridad;
 
                     $idcodigo = $codigoOperador;
 
@@ -101,25 +112,25 @@ if (isset($_POST['save'])) {
                     $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$idcodigo', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
                     $querymensajes_run = mysqli_query($con, $querymensajes);
                 } else {
-                    $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
-                    header("Location: maquinados.php");
+                    $_SESSION['message'] = "Error al crear la actividad, contacte a soporte";
+                    header("Location: ingenieria.php");
                     exit(0);
                 }
             }
-            $_SESSION['message'] = "Maquinado creado exitosamente";
-            header("Location: maquinados.php");
+            $_SESSION['message'] = "Actividad creada exitosamente";
+            header("Location: ingenieria.php");
             exit(0);
         } else {
-            $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
-            header("Location: maquinados.php");
+            $_SESSION['message'] = "Error al crear la actividad, contacte a soporte";
+            header("Location: ingenieria.php");
             exit(0);
         }
     } else {
-        $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, ?, '1')";
+        $query = "INSERT INTO ingenieria (idproyecto, nombreplano, prioridad, actividad, estatusplano) VALUES (?, ?, ?, ?, '1')";
         $stmt = mysqli_prepare($con, $query);
 
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 'ssssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $actividad);
+            mysqli_stmt_bind_param($stmt, 'isis', $idproyecto, $nombreplano, $prioridad, $actividad);
             mysqli_stmt_execute($stmt);
 
             $idcodigo = $_SESSION['codigo'];
@@ -129,12 +140,12 @@ if (isset($_POST['save'])) {
             $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
             $query_rundos = mysqli_query($con, $querydos);
 
-            $_SESSION['message'] = "Maquinado creado exitosamente";
-            header("Location: maquinados.php");
+            $_SESSION['message'] = "Actividad creada exitosamente";
+            header("Location: ingenieria.php");
             exit(0);
         } else {
-            $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
-            header("Location: maquinados.php");
+            $_SESSION['message'] = "Error al crear la actividad, contacte a soporte";
+            header("Location: ingenieria.php");
             exit(0);
         }
     }

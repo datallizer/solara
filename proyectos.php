@@ -102,7 +102,11 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Etapa diseño</th>
                                             <th>Etapa control</th>
                                             <th>Detalles</th>
-                                            <th>Encargado(s) de proyecto</th>
+                                            <?php
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                echo '<th>Encargado(s) de proyecto</th>';
+                                            }
+                                            ?>
                                             <th>Accion</th>
                                         </tr>
                                     </thead>
@@ -139,7 +143,7 @@ if (isset($_SESSION['codigo'])) {
                                                             echo '<p><b>Presupuesto: </b>$' . $registro['presupuesto'] . '</p>';
                                                         }
                                                         ?>
-                                                        <p><b>Fecha de inicio:</b> <?= $registro['fechainicio']; ?></p>
+                                                        <p><b>Fecha inicio:</b> <?= $registro['fechainicio']; ?></p>
                                                         <p><b>Fecha finalización:</b> <?= $registro['fechafin']; ?></p>
                                                     </td>
                                                     <?php
@@ -259,30 +263,39 @@ if (isset($_SESSION['codigo'])) {
                                                     <td>
                                                         <p><?= $registro['detalles']; ?></p>
                                                     </td>
-                                                    <td>
-                                                        <?php
-                                                        $queryAsignacion = "SELECT encargadoproyecto.*, encargadoproyecto.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+
+                                                    <?php
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                    ?>
+                                                        <td>
+                                                            <?php
+                                                            $queryAsignacion = "SELECT encargadoproyecto.*, encargadoproyecto.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                         FROM encargadoproyecto
                                                         JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo 
                                                         WHERE encargadoproyecto.idproyecto = " . $registro['id'];
-                                                        $query_run_asignacion = mysqli_query($con, $queryAsignacion);
-                                                        if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                            foreach ($query_run_asignacion as $asignacion) {
-                                                        ?>
-                                                                <form class="deleteForm" action="codencargados.php" method="post">
-                                                                    <div style="display: flex; align-items: center;">
-                                                                        <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                                        <button type="button" class="deleteButton" name="deleteproyecto" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id']; ?>">
-                                                                            <i style="color: #d41111;" class="bi bi-x-lg"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </form>
-                                                        <?php
-                                                            }
-                                                        }
+                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
+                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
+                                                                foreach ($query_run_asignacion as $asignacion) {
+                                                            ?>
 
-                                                        ?>
-                                                    </td>
+                                                                    <form class="deleteForm" action="codencargados.php" method="post">
+                                                                        <div style="display: flex; align-items: center;">
+                                                                            <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                            <button type="button" class="deleteButton" name="deleteproyecto" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id']; ?>">
+                                                                                <i style="color: #d41111;" class="bi bi-x-lg"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+
+
+                                                            <?php
+                                                                }
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    <?php
+                                                    }
+                                                    ?>
                                                     <td>
                                                         <a href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                         <?php
@@ -449,7 +462,7 @@ if (isset($_SESSION['codigo'])) {
                         <div class="form-check col-12 mt-3 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9)";
+                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9,13)";
                             $result = mysqli_query($con, $query);
 
                             // Verificar si hay resultados

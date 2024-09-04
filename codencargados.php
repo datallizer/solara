@@ -56,4 +56,21 @@ if (isset($_POST['deleteplano'])) {
     }
 }
 
+if (isset($_POST['deleteingeniero'])) {
+    $id_encargado = mysqli_real_escape_string($con, $_POST['deleteingeniero']);
+
+    $query = "DELETE FROM asignacioningenieria WHERE id='$id_encargado' ";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Ingeniero eliminado exitosamente";
+        header("Location: ingenieria.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al eliminar el ingeniero, contacte a soporte";
+        header("Location: ingenieria.php");
+        exit(0);
+    }
+}
+
 ?>

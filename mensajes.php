@@ -1,6 +1,6 @@
 <?php
 require 'dbcon.php';
-    if (session_status() === PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
@@ -24,7 +24,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'leido') {
 
 // Manejar la solicitud AJAX para verificar nuevos mensajes
 if (isset($_POST['action']) && $_POST['action'] == 'checkNewMessage') {
-    $sql = "SELECT * FROM mensajes WHERE estatus = 1 AND idcodigo = '$codigo' LIMIT 1";
+    $sql = "SELECT mensajes.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom 
+            FROM mensajes 
+            JOIN usuarios ON mensajes.emisor = usuarios.codigo
+            WHERE mensajes.estatus = 1 AND mensajes.idcodigo = '$codigo' LIMIT 1";
     $result = mysqli_query($con, $sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -32,7 +35,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'checkNewMessage') {
         $data = [
             'id' => $registro['id'],
             'mensaje' => $registro['mensaje'],
-            'emisor' => $registro['emisor'],
+            'nombre' => $registro['nombre'],
+            'apellidop' => $registro['apellidop'],
+            'apellidom' => $registro['apellidom'],
             'hora' => $registro['hora'],
             'fecha' => $registro['fecha']
         ];
@@ -44,14 +49,20 @@ if (isset($_POST['action']) && $_POST['action'] == 'checkNewMessage') {
 }
 
 // Código para mostrar el modal y demás contenido HTML si se carga la página
-$sql = "SELECT * FROM mensajes WHERE estatus = 1 AND idcodigo = '$codigo' LIMIT 1";
+$sql = "SELECT mensajes.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom 
+        FROM mensajes 
+        JOIN usuarios ON mensajes.emisor = usuarios.codigo
+        WHERE mensajes.estatus = 1 AND mensajes.idcodigo = '$codigo' 
+        LIMIT 1";
 $result = mysqli_query($con, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     $registro = mysqli_fetch_assoc($result);
     $id = $registro['id'];
     $mensaje = $registro['mensaje'];
-    $emisor = $registro['emisor'];
+    $nombre = $registro['nombre'];
+    $apellidop = $registro['apellidop'];
+    $apellidom = $registro['apellidom'];
     $hora = $registro['hora'];
     $fecha = $registro['fecha'];
 ?>
@@ -66,24 +77,25 @@ if (mysqli_num_rows($result) > 0) {
 }
 ?>
 
-
 <!-- Modal solicitud salida -->
 <div class="modal fade" id="mensaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel"><b>NUEVO MENSAJE DE <?= $registro['emisor']; ?></b></h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel" style="text-transform: uppercase;font-size:25px !important;">
+                    <b>MENSAJE DE <?= $nombre; ?> <?= $apellidop; ?> <?= $apellidom; ?></b>
+                </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="leidoForm" class="row">
                     <input type="hidden" name="id" value="<?= $id; ?>">
                     <div class="form-floating col-12 mb-3">
-                        <textarea type="text" class="form-control" placeholder="Mensaje" disabled style="min-height: 180px;"><?= $mensaje; ?></textarea>
-                        <label for="entrada">Mensaje</label>
+                        <textarea type="text" class="form-control" placeholder="Mensaje" disabled style="min-height: 280px;font-size:20px;"><?= $mensaje; ?></textarea>
+                        <label style="font-size:20px;" for="entrada"></label>
                     </div>
                     <div class="col-12">
-                        <p class="small">Recibido el <?= $fecha; ?> a las <?= $hora; ?></p>
+                        <p style="font-size:15px;" class="small">Recibido el <?= $fecha; ?> a las <?= $hora; ?></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" id="leidoBtn">Marcar leído</button>
@@ -106,7 +118,7 @@ if (mysqli_num_rows($result) > 0) {
                 success: function(response){
                     if(response.status !== 'no_message'){
                         // Mostrar el modal con el nuevo mensaje
-                        $('#mensaje').find('.modal-title').html('<b>NUEVO MENSAJE DE ' + response.emisor + '</b>');
+                        $('#mensaje').find('.modal-title').html('<b>MENSAJE DE ' + response.nombre + ' ' + response.apellidop + ' ' + response.apellidom + '</b>');
                         $('#mensaje').find('textarea').val(response.mensaje);
                         $('#mensaje').find('p.small').text('Recibido el ' + response.fecha + ' a las ' + response.hora);
                         $('input[name="id"]').val(response.id);
@@ -119,7 +131,7 @@ if (mysqli_num_rows($result) > 0) {
             });
         }
 
-        // Verificar nuevos mensajes cada 5 segundos (5000 milisegundos)
+        // Verificar nuevos mensajes cada 10 segundos (10000 milisegundos)
         setInterval(checkNewMessage, 10000);
 
         // Manejar el botón de "Marcar leído"

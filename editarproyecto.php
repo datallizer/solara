@@ -193,7 +193,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <option disabled>Seleccione la etapa</option>
                                                         <option value="1" <?= ($mecanica_actual == 1) ? 'selected' : ''; ?>>Revisión BOM mecánico</option>
                                                         <option value="2" <?= ($mecanica_actual == 2) ? 'selected' : ''; ?>>Armado de componentes mecánicos</option>
-                                                        <option value="3" <?= ($contromecanica_actuall_mecanica_actualactual == 3) ? 'selected' : ''; ?>>Pruebas de ensamble</option>
+                                                        <option value="3" <?= ($mecanica_actual == 3) ? 'selected' : ''; ?>>Pruebas de ensamble</option>
                                                         <option value="4" <?= ($mecanica_actual == 4) ? 'selected' : ''; ?>>Remediación</option>
                                                         <option value="5" <?= ($mecanica_actual == 5) ? 'selected' : ''; ?>>Desensamble para acabados</option>
                                                         <option value="6" <?= ($mecanica_actual == 6) ? 'selected' : ''; ?>>Armado final</option>

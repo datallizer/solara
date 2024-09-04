@@ -392,25 +392,24 @@ if (isset($_SESSION['codigo'])) {
                                 <tbody>
                                     <?php
                                     // Consulta para obtener usuarios con rol = 8 y contar los maquinados finalizados y pendientes
-                                    $query = "
-                SELECT 
-                    u.codigo,
-                    u.nombre,
-                    u.apellidop,
-                    u.apellidom,
-                    COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS maquinados_finalizados,
-                    COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS maquinados_pendientes
-                FROM 
-                    usuarios u
-                LEFT JOIN 
-                    asignacionplano a ON u.codigo = a.codigooperador
-                LEFT JOIN 
-                    plano p ON a.idplano = p.id
-                WHERE 
-                    u.rol = 8
-                GROUP BY 
-                    u.codigo
-                ";
+                                    $query = "SELECT 
+                                                u.codigo,
+                                                u.nombre,
+                                                u.apellidop,
+                                                u.apellidom,
+                                                COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS maquinados_finalizados,
+                                                COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS maquinados_pendientes
+                                            FROM 
+                                                usuarios u
+                                            LEFT JOIN 
+                                                asignacionplano a ON u.codigo = a.codigooperador
+                                            LEFT JOIN 
+                                                plano p ON a.idplano = p.id
+                                            WHERE 
+                                                u.rol = 8 OR u.rol = 13
+                                            GROUP BY 
+                                                u.codigo
+                                            ";
 
                                     $query_run = mysqli_query($con, $query);
 
@@ -458,6 +457,7 @@ if (isset($_SESSION['codigo'])) {
                             </table>
                         </div>
                     </div>
+                    
                     <div class="col-4 mt-5">
                         <canvas id="miGrafica"></canvas>
                     </div>
@@ -482,25 +482,24 @@ if (isset($_SESSION['codigo'])) {
                                 <tbody>
                                     <?php
                                     // Consulta para obtener usuarios con rol = 4 y contar los ensambles finalizados y pendientes
-                                    $query = "
-                SELECT 
-                    u.codigo,
-                    u.nombre,
-                    u.apellidop,
-                    u.apellidom,
-                    COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS ensambles_finalizados,
-                    COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS ensambles_pendientes
-                FROM 
-                    usuarios u
-                LEFT JOIN 
-                    asignaciondiagrama a ON u.codigo = a.codigooperador
-                LEFT JOIN 
-                    diagrama p ON a.idplano = p.id
-                WHERE 
-                    u.rol = 4
-                GROUP BY 
-                    u.codigo
-                ";
+                                    $query = "SELECT 
+                                                u.codigo,
+                                                u.nombre,
+                                                u.apellidop,
+                                                u.apellidom,
+                                                COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS ensambles_finalizados,
+                                                COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS ensambles_pendientes
+                                            FROM 
+                                                usuarios u
+                                            LEFT JOIN 
+                                                asignaciondiagrama a ON u.codigo = a.codigooperador
+                                            LEFT JOIN 
+                                                diagrama p ON a.idplano = p.id
+                                            WHERE 
+                                                u.rol = 4 OR u.rol = 13
+                                            GROUP BY 
+                                                u.codigo
+                                            ";
 
                                     $query_run = mysqli_query($con, $query);
 
@@ -543,7 +542,7 @@ if (isset($_SESSION['codigo'])) {
                                 $registro_id = $registro['id'];
                         ?>
                                 <div class="slickc">
-                                    <div class="card" style="width: 100%;">
+                                    <div class="card" style="width: 100%;border:none;">
                                         <img class="card-img-top" style="object-fit:cover;height:350px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
                                         <div class="card-body">
                                             <div style="min-height: 50px;">
@@ -681,7 +680,6 @@ if (isset($_SESSION['codigo'])) {
         var pendientesEnsambles = <?= json_encode($pendientesEnsambles); ?>;
         var usuariosEnsambles = <?= json_encode($usuariosEnsambles); ?>;
         var colorsEnsambles = <?= json_encode($colorsEnsambles); ?>;
-
 
         var ctx = document.getElementById('miGraficaDos').getContext('2d');
 

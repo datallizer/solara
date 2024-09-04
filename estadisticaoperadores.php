@@ -66,7 +66,7 @@ if (isset($_SESSION['codigo'])) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container mt-5">
@@ -129,49 +129,10 @@ if (isset($_SESSION['codigo'])) {
 
                         </h3>
                     </div>
-                    <div class="col m-3" style="background-color: #e7e7e7;padding:15px 0px;">
-                        <label style="margin-left: 25px;" for="filtroPlano"><b>Filtrar por Plano/Actividad:</b></label>
-                        <div id="filtroPlano" class="form-check d-flex flex-wrap mt-3" style="max-height: 60px;overflow-y:scroll;">
-                            <?php
-                            // Obtener todos los planos
-                            $queryPlanos = "SELECT plano.*
-                            FROM plano 
-                            JOIN asignacionplano ON asignacionplano.idplano = plano.id 
-                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                            WHERE asignacionplano.codigooperador = $codigouser 
-                            AND plano.estatusplano = 0 ORDER BY plano.id DESC";
-                            $resultPlanos = mysqli_query($con, $queryPlanos);
-                            while ($plano = mysqli_fetch_assoc($resultPlanos)) {
-                                echo '<div class="form-check me-3">';
-                                echo '<input class="form-check-input" type="checkbox" value="' . $plano['id'] . '" id="plano' . $plano['id'] . '">';
-                                echo '<label class="form-check-label" for="plano' . $plano['id'] . '">' . $plano['nombreplano'] . '</label>';
-                                echo '</div>';
-                            }
-                            ?>
-                        </div>
-                    </div>
+                    <?php
+                    $planosSeleccionados = isset($_POST['planos']) ? $_POST['planos'] : [];
 
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Plano/Actividad</th>
-                                            <th>Motivo</th>
-                                            <th>Fecha inicio</th>
-                                            <th>Hora inicio</th>
-                                            <th>Fecha fin</th>
-                                            <th>Hora fin</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cuerpoTabla">
-                                        <?php
-                                        $planosSeleccionados = isset($_POST['planos']) ? $_POST['planos'] : [];
-
-                                        $query = "SELECT historialoperadores.*, plano.nombreplano 
+                    $query = "SELECT historialoperadores.*, plano.nombreplano 
                                                   FROM historialoperadores 
                                                   INNER JOIN plano ON historialoperadores.idplano = plano.id 
                                                   WHERE historialoperadores.idcodigo = '$codigouser' 
@@ -180,66 +141,108 @@ if (isset($_SESSION['codigo'])) {
                                                   AND motivoactividad <> 'Fin de jornada laboral' 
                                                   AND motivoactividad <> 'Atención a otra prioridad'
                                                   AND plano.estatusplano = 0";
+                    $query_run = mysqli_query($con, $query);
 
-                                        // Aplicar filtro si hay planos seleccionados
-                                        if (!empty($planosSeleccionados)) {
-                                            $planosIds = implode(",", array_map('intval', $planosSeleccionados));
-                                            $query .= " AND historialoperadores.idplano IN ($planosIds)";
+                    // Array para acumular el tiempo total por motivoactividad
+                    $tiemposPorMotivo = [];
+
+                    if (mysqli_num_rows($query_run) > 0) {
+                        foreach ($query_run as $registro) {
+                            // Convertir las fechas y horas en objetos DateTime
+                            $fechaInicio = new DateTime($registro['fecha'] . ' ' . $registro['hora']);
+                            $fechaFin = new DateTime($registro['fechareinicio'] . ' ' . $registro['horareinicio']);
+
+                            // Calcular la diferencia
+                            $intervalo = $fechaInicio->diff($fechaFin);
+
+                            // Calcular el tiempo total en minutos
+                            $totalMinutos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
+
+                            // Acumular el tiempo por motivo
+                            $motivo = $registro['motivoactividad'];
+                            if (isset($tiemposPorMotivo[$motivo])) {
+                                $tiemposPorMotivo[$motivo] += $totalMinutos;
+                            } else {
+                                $tiemposPorMotivo[$motivo] = $totalMinutos;
+                            }
+
+                            // Formatear el resultado en días, horas y minutos
+                            $totalTiempo = $intervalo->format('%d días, %h horas, %i minutos');
+                        }
+                    }
+                    ?>
+
+
+
+
+                    <div class="col-6">
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th class="text-center">Maquinados finalizados</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    mysqli_query($con, "SET lc_time_names = 'es_ES';");
+
+                                    // Obtener el año actual
+                                    $year = date('Y');
+
+                                    // Consulta para agrupar por mes y contar maquinados finalizados por idplano en el año actual
+                                    $query = "
+                                        SELECT 
+                                            DATE_FORMAT(fecha, '%m') AS mes_num, 
+                                            DATE_FORMAT(fecha, '%M') AS mes,
+                                            COUNT(DISTINCT idplano) AS finalizados
+                                        FROM 
+                                            historialoperadores 
+                                        WHERE 
+                                            idcodigo = $codigouser AND 
+                                            YEAR(fecha) = '$year'
+                                        GROUP BY 
+                                            MONTH(fecha)
+                                        ORDER BY 
+                                            MONTH(fecha) ASC
+                                    ";
+
+                                    $query_run = mysqli_query($con, $query);
+
+                                    $meses = [];
+                                    $finalizados = [];
+
+                                    if (mysqli_num_rows($query_run) > 0) {
+                                        foreach ($query_run as $registro) {
+                                            $meses[] = $registro['mes']; // Nombres de los meses
+                                            $finalizados[] = $registro['finalizados']; // Cantidad de maquinados finalizados
+                                    ?>
+                                            <tr>
+                                                <td style="text-transform: capitalize;"><?php echo $registro['mes']; ?></td>
+                                                <td class="text-center"><?php echo $registro['finalizados']; ?></td>
+                                            </tr>
+                                    <?php
                                         }
-
-                                        $query .= " ORDER BY historialoperadores.id DESC";
-                                        $query_run = mysqli_query($con, $query);
-
-                                        // Array para acumular el tiempo total por motivoactividad
-                                        $tiemposPorMotivo = [];
-
-                                        if (mysqli_num_rows($query_run) > 0) {
-                                            foreach ($query_run as $registro) {
-                                                // Convertir las fechas y horas en objetos DateTime
-                                                $fechaInicio = new DateTime($registro['fecha'] . ' ' . $registro['hora']);
-                                                $fechaFin = new DateTime($registro['fechareinicio'] . ' ' . $registro['horareinicio']);
-
-                                                // Calcular la diferencia
-                                                $intervalo = $fechaInicio->diff($fechaFin);
-
-                                                // Calcular el tiempo total en minutos
-                                                $totalMinutos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
-
-                                                // Acumular el tiempo por motivo
-                                                $motivo = $registro['motivoactividad'];
-                                                if (isset($tiemposPorMotivo[$motivo])) {
-                                                    $tiemposPorMotivo[$motivo] += $totalMinutos;
-                                                } else {
-                                                    $tiemposPorMotivo[$motivo] = $totalMinutos;
-                                                }
-
-                                                // Formatear el resultado en días, horas y minutos
-                                                $totalTiempo = $intervalo->format('%d días, %h horas, %i minutos');
-                                        ?>
-                                                <tr>
-                                                    <td><?= $registro['id']; ?></td>
-                                                    <td><?= $registro['nombreplano']; ?></td>
-                                                    <td><?= $registro['motivoactividad']; ?></td>
-                                                    <td><?= $registro['fecha']; ?></td>
-                                                    <td><?= $registro['hora']; ?></td>
-                                                    <td><?= $registro['fechareinicio']; ?></td>
-                                                    <td><?= $registro['horareinicio']; ?></td>
-                                                    <td><?= $totalTiempo; ?></td>
-                                                </tr>
-                                        <?php
-                                            }
-                                        } else {
-                                            echo "<td colspan='8'><p>No se encontró ningún usuario</p></td>";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-
-                            </div>
+                                    } else {
+                                        echo "<td colspan='2'><p>No se encontró ningún registro</p></td>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+
+                    <div class="col-6 mt-5">
+                        <canvas id="miGrafica"></canvas>
+                    </div>
+
                     <div class="col-4 mt-3">
                         <canvas id="graficaMotivos"></canvas>
+                    </div>
+
+                    <div class="col-6">
+                        <h4>% De tiempo invertido en paro de actividades</h4>
                     </div>
                 </div>
                 <div class="row bg-dark p-5 mb-3 mt-3">
@@ -259,8 +262,8 @@ if (isset($_SESSION['codigo'])) {
 
                     // Calcular piezas terminadas
                     $query_piezas_terminadas = "SELECT SUM(piezas) AS piezas_terminadas FROM plano p 
-            INNER JOIN asignacionplano a ON p.id = a.idplano 
-            WHERE a.codigooperador = '$codigouser' AND p.estatusplano = 2";
+                                                INNER JOIN asignacionplano a ON p.id = a.idplano 
+                                                WHERE a.codigooperador = '$codigouser' AND p.estatusplano = 2";
                     $query_run_piezas_terminadas = mysqli_query($con, $query_piezas_terminadas);
                     $piezas_terminadas = 0;
 
@@ -285,57 +288,6 @@ if (isset($_SESSION['codigo'])) {
             <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
-                $(document).ready(function() {
-                    $('#miTabla').DataTable({
-                        "order": [
-                            [0, "desc"],
-                            [1, "desc"]
-                        ],
-                        "pageLength": 10
-                    });
-                });
-
-                function obtenerPlanosSeleccionados() {
-                    const selectedCheckboxes = Array.from(document.querySelectorAll('#filtroPlano .form-check-input:checked'));
-                    return selectedCheckboxes.map(checkbox => checkbox.value);
-                }
-
-                $('#filtroPlano').on('change', function() {
-                    const selectedOptions = obtenerPlanosSeleccionados();
-                    console.log('Planos seleccionados:', selectedOptions);
-                    fetch('operadoresstatics.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                planos: selectedOptions
-                            }),
-                        })
-                        .then(response => response.text()) // Cambia a response.text() para verificar el contenido
-                        .then(text => {
-                            console.log('Respuesta del servidor (texto):', text); // Verifica el contenido como texto
-
-                            // Intenta parsear el texto como JSON
-                            try {
-                                const data = JSON.parse(text);
-                                console.log('Respuesta del servidor (JSON):', data);
-
-                                document.getElementById('cuerpoTabla').innerHTML = data.tabla;
-
-                                graficaMotivos.data.labels = data.labels;
-                                graficaMotivos.data.datasets[0].data = data.datos;
-                                graficaMotivos.update();
-                            } catch (error) {
-                                console.error('Error al parsear JSON:', error);
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                });
-
-
-
-
                 const ctx = document.getElementById('graficaMotivos').getContext('2d');
                 const data = {
                     labels: <?php echo json_encode(array_keys($tiemposPorMotivo)); ?>,
@@ -389,6 +341,47 @@ if (isset($_SESSION['codigo'])) {
                 };
 
                 const graficaMotivos = new Chart(ctx, config);
+
+
+                const meses = <?php echo json_encode($meses); ?>;
+                const finalizados = <?php echo json_encode($finalizados); ?>;
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('miGrafica').getContext('2d');
+                    const miGrafica = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: meses, // Etiquetas para el eje X (nombres de los meses)
+                            datasets: [{
+                                label: 'Maquinados Finalizados',
+                                data: finalizados, // Datos para el eje Y (cantidad de maquinados finalizados)
+                                borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color del área debajo de la línea
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.1 // Suaviza la línea
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Mes'
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Cantidad de Maquinados Finalizados'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
             </script>
 </body>
 

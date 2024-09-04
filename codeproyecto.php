@@ -82,6 +82,18 @@ if (isset($_POST['save'])) {
                 if ($stmtPlano) {
                     mysqli_stmt_bind_param($stmtPlano, 'ii', $idproyecto, $codigoOperador);
                     mysqli_stmt_execute($stmtPlano);
+
+                    $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+                    $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+                    $mensaje = 'Tienes un nuevo proyecto, Nombre: ' . $nombre . ' Detalles: ' . $detalles  . ' Prioridad: ' . $prioridad;
+
+                    $idcodigo = $codigoOperador;
+
+                    $emisor = $_SESSION['codigo'];
+                    $estatus = '1';
+
+                    $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$idcodigo', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
+                    $querymensajes_run = mysqli_query($con, $querymensajes);
                 } else {
                     $_SESSION['message'] = "Error al crear el proyecto, contacte a soporte";
                     header("Location: proyectos.php");

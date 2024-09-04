@@ -218,98 +218,74 @@ if (mysqli_num_rows($result) > 0) {
     <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-    <title>Dashboard | Solara</title>
+    <title>Movimientos | Solara</title>
 </head>
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-    <?php include 'mensajes.php'; ?>
+<?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
-                <div class="row justify-content-start mt-5 mb-5">
+                <div class="row justify-content-md-center justify-content-start mt-5 mb-5">
                     <div class="col-12">
-                        <h2>DASHBOARD</h2>
+                        <h2 class="mb-3">MOVIMIENTOS DEL SISTEMA</h2>
                     </div>
+                    <div class="col-12 p-3 text-center" style="border: 1.5px solid #e7e7e7;">
+                        <table id="miTabla" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Usuario</th>
+                                    <th scope="col">Detalles</th>
+                                    <th scope="col">Hora</th>
+                                    <th scope="col">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                    $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
+                                    FROM historial h 
+                                    INNER JOIN usuarios u ON h.idcodigo = u.codigo
+                                    ORDER BY h.id DESC";
+                                } else {
+                                    $query = "SELECT h.*, u.nombre, u.apellidop, u.apellidom 
+                                    FROM historial h 
+                                    INNER JOIN usuarios u ON h.idcodigo = u.codigo 
+                                    WHERE u.codigo = $codigo
+                                    ORDER BY h.id DESC";
+                                }
 
-                    <div class="col-md-3 text-center mt-3">
-                        <a href="proyectos.php" style="color:#171717;text-decoration:none;">
-                            <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                <i class="bi bi-briefcase-fill"></i>
-                                <p>Proyectos</p>
-                            </div>
-                        </a>
+                                $query_run = mysqli_query($con, $query);
+
+                                if (mysqli_num_rows($query_run) > 0) {
+                                    foreach ($query_run as $registro) {
+                                ?>
+                                        <tr>
+                                            <td>
+                                                <p><?= $registro['id']; ?></p>
+                                            </td>
+                                            <td><?= $registro['nombre'] . ' ' . $registro['apellidop'] . ' ' . $registro['apellidom']; ?></td>
+                                            <td>
+                                                <p><?= $registro['detalles']; ?></p>
+                                            </td>
+                                            <td>
+                                                <p><?= $registro['hora']; ?></p>
+                                            </td>
+                                            <td>
+                                                <p><?= $registro['fecha']; ?></p>
+                                            </td>
+                                        </tr>
+                                <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='5'><p>No se encontró ningún registro</p></td></tr>";
+                                }
+                                ?>
+
+                            </tbody>
+                        </table>
                     </div>
-
-                    <div class="col-md-3 text-center mt-3">
-                        <a href="maquinados.php" style="color:#171717;text-decoration:none;">
-                            <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                <i class="bi bi-gear-wide-connected"></i>
-                                <p>Maquinados</p>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-md-3 text-center mt-3">
-                        <a href="ensambles.php" style="color:#171717;text-decoration:none;">
-                            <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                <i class="bi bi-puzzle-fill"></i>
-                                <p>Ensambles</p>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-md-3 text-center mt-3">
-                        <a href="ingenieria.php" style="color:#171717;text-decoration:none;">
-                            <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                <i class="bi bi-person-fill-gear"></i>
-                                <p>Ingeniería</p>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-md-3 text-center mt-3">
-                        <a href="quotes.php" style="color:#171717;text-decoration:none;">
-                            <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                <i class="bi bi-box-fill"></i>
-                                <p>Quotes</p>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="col-md-3 text-center mt-3">
-                        <a href="compras.php" style="color:#171717;text-decoration:none;">
-                            <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                <i class="bi bi-bag-check-fill"></i>
-                                <p>Compras</p>
-                            </div>
-                        </a>
-                    </div>
-
-                    <?php
-                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                    ?>
-                        <div class="col-md-3 text-center mt-3">
-                            <a href="estadisticas.php" style="color:#171717;text-decoration:none;">
-                                <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                    <i class="bi bi-bar-chart-fill"></i>
-                                    <p>Estadísticas</p>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 text-center mt-3">
-                        <a href="usuarios.php" style="color:#171717;text-decoration:none;">
-                            <div style="background-color: #e7e7e7;font-size:25px;" class="p-5">
-                                <i class="bi bi-people-fill"></i>
-                                <p>Usuarios</p>
-                            </div>
-                        </a>
-                    </div>
-                    <?php
-                    }
-                    ?>
-
 
                 </div>
             </div>
@@ -321,6 +297,7 @@ if (mysqli_num_rows($result) > 0) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
+
         $(document).ready(function() {
             $('#miTabla').DataTable({
                 "order": [

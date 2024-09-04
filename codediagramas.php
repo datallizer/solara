@@ -91,6 +91,16 @@ if (isset($_POST['save'])) {
 
                     $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo ensamble: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
                     $query_rundos = mysqli_query($con, $querydos);
+
+                    $mensaje = 'Tienes un nuevo ensamble, Nombre: ' . $nombreplano . ' Actividad: ' . $actividad  . ' Prioridad: ' . $nivel;
+
+                    $idcodigo = $codigoOperador;
+
+                    $emisor = $_SESSION['codigo'];
+                    $estatus = '1';
+
+                    $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$idcodigo', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
+                    $querymensajes_run = mysqli_query($con, $querymensajes);
                 } else {
                     $_SESSION['message'] = "Error al crear el ensamble, contacte a soporte";
                     header("Location: ensamble.php");

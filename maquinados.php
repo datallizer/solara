@@ -1,5 +1,5 @@
 <?php
-    if (session_status() === PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require 'dbcon.php';
@@ -148,7 +148,6 @@ if (mysqli_num_rows($result) > 0) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
     <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
@@ -193,7 +192,7 @@ if (mysqli_num_rows($result) > 0) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
                                             $query = "SELECT proyecto.*, plano.*
                                             FROM plano 
                                             JOIN proyecto ON plano.idproyecto = proyecto.id 
@@ -218,7 +217,7 @@ if (mysqli_num_rows($result) > 0) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
                                                             // Verifica si 'medio' está vacío o no
                                                             if (empty($registro['medio'])) {
                                                         ?>
@@ -238,7 +237,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                                 <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="500px"></iframe>
                                                                             </div>
                                                                             <div class="modal-footer">
-                                                                            <a href="imprimirplano.php?id=<?= $registro['id']; ?>" class="btn btn-primary"><i class="bi bi-file-pdf"></i> Imprmir</a>
+                                                                                <a href="imprimirplano.php?id=<?= $registro['id']; ?>" class="btn btn-primary"><i class="bi bi-file-pdf"></i> Imprmir</a>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -290,7 +289,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                             <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
                                                                         <?php
                                                                         }
-                                                                    } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                                    } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
                                                                         ?>
                                                                         <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
                                                             <?php
@@ -351,7 +350,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         while ($row = mysqli_fetch_assoc($motivosResult)) {
                                                             $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
                                                         }
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
                                                             $countQuery = "SELECT COUNT(*) as count
         FROM plano
         JOIN asignacionplano ON asignacionplano.idplano = plano.id
@@ -626,6 +625,7 @@ if (mysqli_num_rows($result) > 0) {
             </div>
         </div>
     </div>
+
     <div class="spinner-overlay" style="z-index: 9999;">
         <div class="spinner-container">
             <div class="spinner-grow text-primary spinner" role="status">
