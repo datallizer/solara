@@ -238,11 +238,11 @@ if (isset($_SESSION['codigo'])) {
                         <canvas id="miGrafica"></canvas>
                     </div>
 
-                    <div class="col-8 mt-3">
+                    <div class="col-5 mt-3">
                         <canvas id="graficaMotivos"></canvas>
                     </div>
 
-                    <div class="col-4 text-center">
+                    <div class="col-7 text-center">
                         <h4>% De tiempo invertido en paro de actividades</h4>
                     </div>
                 </div>
