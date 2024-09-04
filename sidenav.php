@@ -134,13 +134,31 @@ if (isset($_POST['save'])) {
 
 
                 <?php
-                $queryUsuarios = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(plano.id) as cuenta
-                FROM usuarios
-                LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
-                LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
-                WHERE usuarios.rol = 8  AND usuarios.estatus = 1
-                GROUP BY usuarios.codigo
-                HAVING cuenta <= 3 ORDER BY cuenta ASC";
+                $queryUsuarios = "SELECT 
+                usuarios.nombre, 
+                usuarios.apellidop, 
+                usuarios.apellidom, 
+                usuarios.medio, 
+                COUNT(plano.id) as cuenta,
+                MAX(historialoperadores.fechareinicio) as ultima_reinicio
+            FROM 
+                usuarios
+            LEFT JOIN 
+                asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
+            LEFT JOIN 
+                plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
+            LEFT JOIN 
+                historialoperadores ON historialoperadores.idcodigo = usuarios.codigo
+            WHERE 
+                usuarios.rol = 8  
+                AND usuarios.estatus = 1
+            GROUP BY 
+                usuarios.codigo
+            HAVING 
+                cuenta <= 3 
+            ORDER BY 
+                cuenta ASC";
+
 
                 $resultado = mysqli_query($con, $queryUsuarios);
                 function numeroATexto($numero)
@@ -154,13 +172,31 @@ if (isset($_POST['save'])) {
                     return $textos[$numero] ?? $numero; // Devuelve el texto o el número si no está en el array
                 }
 
-                $queryEnsambles = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(diagrama.id) as cuenta
-                                FROM usuarios
-                                LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
-                                LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
-                                WHERE usuarios.rol = 4  AND usuarios.estatus = 1
-                                GROUP BY usuarios.codigo
-                                HAVING cuenta <= 3 ORDER BY cuenta ASC";
+                $queryEnsambles = "SELECT 
+                        usuarios.nombre, 
+                        usuarios.apellidop, 
+                        usuarios.apellidom, 
+                        usuarios.medio, 
+                        COUNT(diagrama.id) as cuenta,
+                        MAX(historialensamble.fechareinicio) as ultima_reinicio
+                   FROM 
+                        usuarios
+                   LEFT JOIN 
+                        asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
+                   LEFT JOIN 
+                        diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
+                   LEFT JOIN 
+                        historialensamble ON historialensamble.idcodigo = usuarios.codigo
+                   WHERE 
+                        usuarios.rol = 4  
+                        AND usuarios.estatus = 1
+                   GROUP BY 
+                        usuarios.codigo
+                   HAVING 
+                        cuenta <= 3 
+                   ORDER BY 
+                        cuenta ASC";
+
 
 
                 $resultados = mysqli_query($con, $queryEnsambles);
@@ -180,38 +216,84 @@ if (isset($_POST['save'])) {
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
                     ?>
-                        <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
+                        <?php
+                        while ($usuario = mysqli_fetch_assoc($resultado)) :
+                            // Calcular el tiempo sin asignaciones
+                            $fechaReinicio = $usuario['ultima_reinicio'];
+                            $fechaActual = date('Y-m-d');
+
+                            if ($fechaReinicio) {
+                                $datetime1 = new DateTime($fechaReinicio);
+                                $datetime2 = new DateTime($fechaActual);
+                                $interval = $datetime1->diff($datetime2);
+                                $diasSinAsignacion = $interval->days;
+                            } else {
+                                $diasSinAsignacion = '<br><span style="font-size: 12px;color:red;">Nunca ha tenido asignaciones</span>';
+                            }
+                        ?>
                             <li style="width: 400px;padding:0px 15px;">
                                 <a href="maquinados.php" style="color:#000;">
                                     <div class="row">
                                         <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
                                         <div class="col-9">
                                             <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
-                                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> <?php echo numeroATexto($usuario['cuenta']); ?>.</p>
+                                            <p>
+                                                <?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?>
+                                                <?php echo numeroATexto($usuario['cuenta']); ?>.
+                                                <?php if (is_numeric($diasSinAsignacion)) : ?>
+                                                    <br><span style="font-size: 12px;color:red;">Lleva <?php echo $diasSinAsignacion; ?> días sin asignaciones.</span>
+                                                <?php else : ?>
+                                                    <?php echo $diasSinAsignacion; ?>.
+                                                <?php endif; ?>
+                                            </p>
                                         </div>
                                     </div>
                                 </a>
                             </li>
                             <hr style="color: #fcfcfc;" class="dropdown-divider" />
                         <?php endwhile; ?>
+
                     <?php
                     }
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 9])) {
                     ?>
-                        <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
-                            <li style="width: 400px;padding:0px 15px;">
-                                <a href="ensamble.php" style="color:#000;">
-                                    <div class="row">
-                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
-                                        <div class="col-9">
-                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
-                                            <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> <?php echo numeroATextos($ensamble['cuenta']); ?>.</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                            <hr style="color: #fcfcfc;" class="dropdown-divider" />
-                        <?php endwhile; ?>
+                        <?php 
+    while ($ensamble = mysqli_fetch_assoc($resultados)) : 
+        // Calcular el tiempo sin asignaciones
+        $fechaReinicio = $ensamble['ultima_reinicio'];
+        $fechaActual = date('Y-m-d');
+        
+        if ($fechaReinicio) {
+            $datetime1 = new DateTime($fechaReinicio);
+            $datetime2 = new DateTime($fechaActual);
+            $interval = $datetime1->diff($datetime2);
+            $diasSinAsignacion = $interval->days;
+        } else {
+            $diasSinAsignacion = '<br><span style="font-size: 12px;color:red;">Nunca ha tenido asignaciones</span>';
+        }
+?>
+        <li style="width: 400px;padding:0px 15px;">
+            <a href="ensamble.php" style="color:#000;">
+                <div class="row">
+                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
+                    <div class="col-9">
+                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
+                        <p>
+                            <?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> 
+                            <?php echo numeroATextos($ensamble['cuenta']); ?>.
+                            <?php if (is_numeric($diasSinAsignacion)) : ?>
+                                <br><span style="font-size: 12px;color:red;">Lleva <?php echo $diasSinAsignacion; ?> días sin asignaciones.</span>
+                            <?php else : ?>
+                                <?php echo $diasSinAsignacion; ?>.
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <hr style="color: #fcfcfc;" class="dropdown-divider" />
+<?php endwhile; ?>
+
                     <?php
                     }
                     ?>
