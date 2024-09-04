@@ -3,27 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require 'dbcon.php';
-$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
-
-if (!empty($message)) {
-    // HTML y JavaScript para mostrar la alerta...
-    echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const message = " . json_encode($message) . ";
-                Swal.fire({
-                    title: 'NOTIFICACIÓN',
-                    text: message,
-                    icon: 'info',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Hacer algo si se confirma la alerta
-                    }
-                });
-            });
-        </script>";
-    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
-}
 
 // Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
 if (isset($_SESSION['codigo'])) {
@@ -59,19 +38,19 @@ if (isset($_SESSION['codigo'])) {
     <title>Estadística Operador | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
-    <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container mt-5">
-                <div class="row justify-content-center align-items-center mb-5">
-                <div class="col-12">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-12">
                         <h3 class="p-2 bg-dark text-light align-items-top" style="text-transform: uppercase;border-radius:5px;">
                             <?php
                             if (isset($_GET['id'])) {
@@ -85,6 +64,7 @@ if (isset($_SESSION['codigo'])) {
                                     $apellidop = $registro['apellidop'];
                                     $apellidom = $registro['apellidom'];
                                     $codigouser = $registro['codigo'];
+                                    $_SESSION['userid'] = $registro['codigo'];
                             ?>
                                     <div class="row">
                                         <div class="col-1"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil"></div>
@@ -128,163 +108,129 @@ if (isset($_SESSION['codigo'])) {
 
                         </h3>
                     </div>
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <form class="row align-items-center p-4" method="get">
-                                    <!-- Agrega un campo oculto para enviar el id del usuario -->
-                                    <input type="hidden" name="id" value="<?php echo $registro_id; ?>">
+                    <?php
+                    $planosSeleccionados = isset($_POST['planos']) ? $_POST['planos'] : [];
+                    
+                    $query = "SELECT historialensamble.*, diagrama.nombreplano 
+                                                  FROM historialensamble 
+                                                  INNER JOIN diagrama ON historialensamble.idplano = diagrama.id 
+                                                  WHERE historialensamble.idcodigo = '$codigouser' 
+                                                  AND diagrama.estatusplano = 0
+                                                  AND motivoactividad <> 'Inicio' 
+                                                  AND motivoactividad <> 'Fin de jornada laboral' 
+                                                  AND motivoactividad <> 'Atención a otra prioridad'
+                                                  AND motivoactividad <> 'Lunch'
+                                                  AND diagrama.estatusplano = 0";
+                    $query_run = mysqli_query($con, $query);
 
-                                    <div class="form-floating col-3">
-                                    <input class="form-control" type="date" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha de inicio:" required>
-                                    <label for="fecha_inicio">Fecha de inicio:</label>
-                                    </div>
-                                    
-                                    <div class="form-floating col-3">
-                                    <input class="form-control" type="date" id="fecha_fin" name="fecha_fin" placeholder="Fecha de fin:" required>
-                                    <label for="fecha_fin">Fecha de fin:</label>
-                                    </div>
-                                    <div class="col-3">
-                                    <button class="btn btn-outline-dark" type="submit">Filtrar</button>
-                                    <a href="estadisticacontrol.php?id=<?= $registro['id']; ?>" class="btn btn-warning">Limpiar</a>
-                                    </div>
-                                </form>
+                    // Array para acumular el tiempo total por motivoactividad
+                    $tiemposPorMotivo = [];
 
-                                <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Motivo/Actividad</th>
-                                            <th>Tiempo en paro (minutos)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                    if (mysqli_num_rows($query_run) > 0) {
+                        foreach ($query_run as $registro) {
+                            // Convertir las fechas y horas en objetos DateTime
+                            $fechaInicio = new DateTime($registro['fecha'] . ' ' . $registro['hora']);
+                            $fechaFin = new DateTime($registro['fechareinicio'] . ' ' . $registro['horareinicio']);
+
+                            // Calcular la diferencia
+                            $intervalo = $fechaInicio->diff($fechaFin);
+
+                            // Calcular el tiempo total en minutos
+                            $totalMinutos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
+
+                            // Acumular el tiempo por motivo
+                            $motivo = $registro['motivoactividad'];
+                            if (isset($tiemposPorMotivo[$motivo])) {
+                                $tiemposPorMotivo[$motivo] += $totalMinutos;
+                            } else {
+                                $tiemposPorMotivo[$motivo] = $totalMinutos;
+                            }
+
+                            // Formatear el resultado en días, horas y minutos
+                            $totalTiempo = $intervalo->format('%d días, %h horas, %i minutos');
+                        }
+                    }
+                    ?>
+
+
+
+
+                    <div class="col-6">
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th class="text-center">Ensables finalizados</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                     <?php
-$fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
-$fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : null;
-$query_paro = "SELECT 
-                    motivoactividad,
-                    SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                FROM historialensamble 
-                WHERE idcodigo ='$codigouser'AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
+                                    mysqli_query($con, "SET lc_time_names = 'es_ES';");
 
-// Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
-if ($fecha_inicio && $fecha_fin) {
-    // Agregar condiciones de rango de fecha
-    $query_paro .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
-}
+                                    // Obtener el año actual
+                                    $year = date('Y');
 
-$query_paro .= " GROUP BY motivoactividad";
+                                    // Consulta para agrupar por mes y contar maquinados finalizados por idplano en el año actual
+                                    $query = "SELECT 
+                                            DATE_FORMAT(fecha, '%m') AS mes_num, 
+                                            DATE_FORMAT(fecha, '%M') AS mes,
+                                            COUNT(DISTINCT idplano) AS finalizados
+                                        FROM 
+                                            historialensamble 
+                                        WHERE 
+                                            idcodigo = $codigouser AND 
+                                            YEAR(fecha) = '$year'
+                                        GROUP BY 
+                                            MONTH(fecha)
+                                        ORDER BY 
+                                            MONTH(fecha) ASC
+                                    ";
 
-$query_run_paro = mysqli_query($con, $query_paro);
-$total_paro = 0;
+                                    $query_run = mysqli_query($con, $query);
 
-if (mysqli_num_rows($query_run_paro) > 0) {
-    foreach ($query_run_paro as $registro) {
-        ?>
-        <tr>
-            <td><?= $registro['motivoactividad']; ?></td>
-            <?php 
-            // Convertir minutos a horas y minutos
-            $horas = floor($registro['tiempo_total'] / 60);
-            $minutos = $registro['tiempo_total'] % 60;
-            ?>
-            <td><?= $horas ?> h <?= $minutos ?> min</td>
-        </tr>
-    <?php
-        // Calcular el tiempo de paro total en minutos
-        $total_paro += $registro['tiempo_total'];
-    }
-} else {
-    echo "<tr><td colspan='2'><p>No se encontró ningún registro</p></td></tr>";
-}
+                                    $meses = [];
+                                    $finalizados = [];
 
-// Convertir el tiempo total de paro a horas y minutos
-$total_horas = floor($total_paro / 60);
-$total_minutos = $total_paro % 60;
-?>
-<tr style="background-color: #c9c9c9;">
-    <td><b class="float-end small">Tiempo de paro total:</b></td>
-    <td id="paro"><?= $total_horas ?> h <?= $total_minutos ?> min</td>
-</tr>
-
-                                    </tbody>
-                                </table>
-
-                            </div>
+                                    if (mysqli_num_rows($query_run) > 0) {
+                                        foreach ($query_run as $registro) {
+                                            $meses[] = $registro['mes']; // Nombres de los meses
+                                            $finalizados[] = $registro['finalizados']; // Cantidad de maquinados finalizados
+                                    ?>
+                                            <tr>
+                                                <td style="text-transform: capitalize;"><?php echo $registro['mes']; ?></td>
+                                                <td class="text-center"><?php echo $registro['finalizados']; ?></td>
+                                            </tr>
+                                    <?php
+                                        }
+                                    } else {
+                                        echo "<td colspan='2'><p>No se encontró ningún registro</p></td>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="col-4 mt-5">
-                        <canvas id="myChart"></canvas>
+
+                    <div class="col-6 mt-5">
+                        <canvas id="miGrafica"></canvas>
                     </div>
-                    <div class="col-6 text-center mt-5">
-                        <?php
-                        // Consulta para obtener el tiempo total de "Inicio"
-                        $query_maquinado = "SELECT 
-                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_maquinado
-                                            FROM historialensamble 
-                                            WHERE idcodigo ='$codigouser'AND motivoactividad = 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
 
-                        // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
-                        if ($fecha_inicio && $fecha_fin) {
-                            // Agregar condiciones de rango de fecha
-                            $query_maquinado .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
-                        }
-
-                        $query_run_maquinado = mysqli_query($con, $query_maquinado);
-                        $tiempo_maquinado = 0;
-
-                        // Verificar si se encontraron registros para la consulta de maquinado
-                        if (mysqli_num_rows($query_run_maquinado) > 0) {
-                            $registro_maquinado = mysqli_fetch_assoc($query_run_maquinado);
-                            $tiempo_maquinado = $registro_maquinado['tiempo_maquinado'];
-
-                            // Consulta para obtener el tiempo total de paro
-                            $query_paro = "SELECT 
-                                                SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                                            FROM historialensamble 
-                                            WHERE idcodigo ='$codigouser'
-                                                AND motivoactividad <> 'Inicio' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
-
-                            // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
-                            if ($fecha_inicio && $fecha_fin) {
-                                // Agregar condiciones de rango de fecha
-                                $query_paro .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
-                            }
-
-                            $query_paro .= " GROUP BY motivoactividad";
-
-                            $query_run_paro = mysqli_query($con, $query_paro);
-                            $total_paro = 0;
-
-                            // Verificar si se encontraron registros para la consulta de paro
-                            if (mysqli_num_rows($query_run_paro) > 0) {
-                                foreach ($query_run_paro as $registro) {
-                                    $total_paro += $registro['tiempo_total'];
-                                }
-                            }
-
-                            // Calcular el tiempo total de maquinado restando el tiempo de "Fin de jornada laboral" del tiempo de "Inicio"
-                            $tiempo_maquinado = $tiempo_maquinado - $total_paro;
-                            $horas = floor($tiempo_maquinado / 60);
-    $minutos = $tiempo_maquinado % 60;
-                            ?>
-
-<p><b>TIEMPO TOTAL DE ENSAMBLE</b></p>
-    <p style="font-size: 40px;"><?= $horas; ?> h <?= $minutos; ?> min</p>
-
-
-                        <?php
-                        } else {
-                            echo "<p>No se encontró información suficiente para calcular el tiempo total de maquinado.</p>";
-                        }
-                        ?>
+                    <div class="col-4 mt-3">
+                        <canvas id="graficaMotivos"></canvas>
                     </div>
+
+                    <div class="col-6">
+                        <h4>% De tiempo invertido en paro de actividades</h4>
+                    </div>
+                </div>
+                <div class="row bg-dark p-5 mb-3 mt-3">
                     <?php
 
                     // Calcular piezas totales
                     $query_piezas_totales = "SELECT SUM(piezas) AS piezas_totales FROM diagrama p 
-                            INNER JOIN asignaciondiagrama a ON p.id = a.idplano 
-                            WHERE a.codigooperador = '$codigouser'";
+        INNER JOIN asignaciondiagrama a ON p.id = a.idplano 
+        WHERE a.codigooperador = '$codigouser'AND p.estatusplano = 1";
                     $query_run_piezas_totales = mysqli_query($con, $query_piezas_totales);
                     $piezas_totales = 0;
 
@@ -295,8 +241,8 @@ $total_minutos = $total_paro % 60;
 
                     // Calcular piezas terminadas
                     $query_piezas_terminadas = "SELECT SUM(piezas) AS piezas_terminadas FROM diagrama p 
-                                INNER JOIN asignaciondiagrama a ON p.id = a.idplano 
-                                WHERE a.codigooperador = '$codigouser' AND p.estatusplano = 0";
+                                                INNER JOIN asignaciondiagrama a ON p.id = a.idplano 
+                                                WHERE a.codigooperador = '$codigouser' AND p.estatusplano = 2";
                     $query_run_piezas_terminadas = mysqli_query($con, $query_piezas_terminadas);
                     $piezas_terminadas = 0;
 
@@ -306,103 +252,116 @@ $total_minutos = $total_paro % 60;
                     }
 
                     ?>
-
-
-                </div>
-                <div class="row bg-dark p-5 mb-3">
                     <div class="col-6 text-center">
                         <p style="color: #fff;font-size:18px;">Piezas asignadas: <br><?php echo $piezas_totales; ?></p>
                     </div>
 
                     <div class="col-6 text-center">
-                        <p style="color: #fff;font-size:18px;">Piezas terminadas: <br><?php echo $piezas_terminadas; ?></p>
+                        <p style="color: #fff;font-size:18px;">Piezas pausadas: <br><?php echo $piezas_terminadas; ?></p>
                     </div>
                 </div>
-
-                </div>
             </div>
-        </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Obtener los datos para el gráfico
-        var motivos = [];
-        var tiempos = [];
-        <?php
-        $query = "SELECT 
-                        motivoactividad,
-                        SUM(TIMESTAMPDIFF(MINUTE, CONCAT(fecha, ' ', hora), CONCAT(fechareinicio, ' ', horareinicio))) AS tiempo_total
-                    FROM historialensamble 
-                    WHERE idcodigo ='$codigouser' AND motivoactividad <> 'Inicio' AND motivoactividad <> 'Fin de jornada laboral' AND horareinicio <> '' AND fechareinicio IS NOT NULL ";
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+            <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const ctx = document.getElementById('graficaMotivos').getContext('2d');
+                const data = {
+                    labels: <?php echo json_encode(array_keys($tiemposPorMotivo)); ?>,
+                    datasets: [{
+                        label: 'Tiempo total por motivo (minutos)',
+                        data: <?php echo json_encode(array_values($tiemposPorMotivo)); ?>,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                };
 
-        // Si se han seleccionado fechas, agregar condiciones de rango de fecha a la consulta SQL
-        if ($fecha_inicio && $fecha_fin) {
-            // Agregar condiciones de rango de fecha
-            $query .= " AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'";
-        }
-
-        $query .= " GROUP BY motivoactividad";
-        $query_run = mysqli_query($con, $query);
-        if (mysqli_num_rows($query_run) > 0) {
-            foreach ($query_run as $registro) {
-                ?>
-                motivos.push("<?php echo $registro['motivoactividad']; ?>");
-                tiempos.push(<?php echo $registro['tiempo_total']; ?>);
-        <?php
-            }
-        }
-        ?>
-
-        // Calcular el tiempo total
-        var tiempoTotal = tiempos.reduce((total, tiempo) => total + tiempo, 0);
-
-        // Calcular el porcentaje de tiempo para cada motivo de actividad
-        var porcentajes = tiempos.map(tiempo => tiempo / tiempoTotal * 100);
-
-        // Crear el gráfico
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: motivos,
-                datasets: [{
-                    data: porcentajes,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)',
-                        'rgba(255, 159, 64, 0.7)',
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)',
-                        'rgba(255, 159, 64, 0.7)'
-                        // Puedes agregar más colores si tienes más motivos de actividad
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Distribución del tiempo por motivo de actividad'
+                const config = {
+                    type: 'pie',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        let label = tooltipItem.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += Math.round(tooltipItem.raw * 100) / 100;
+                                        label += ' minutos';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
-            }
-        });
-    </script>
+                };
+
+                const graficaMotivos = new Chart(ctx, config);
 
 
+                const meses = <?php echo json_encode($meses); ?>;
+                const finalizados = <?php echo json_encode($finalizados); ?>;
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('miGrafica').getContext('2d');
+                    const miGrafica = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: meses, // Etiquetas para el eje X (nombres de los meses)
+                            datasets: [{
+                                label: 'Ensambles Finalizados',
+                                data: finalizados, // Datos para el eje Y (cantidad de maquinados finalizados)
+                                borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color del área debajo de la línea
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.1 // Suaviza la línea
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Mes'
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Cantidad de Maquinados Finalizados'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
 </body>
 
 </html>

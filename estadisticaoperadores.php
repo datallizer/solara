@@ -140,6 +140,7 @@ if (isset($_SESSION['codigo'])) {
                                                   AND motivoactividad <> 'Inicio' 
                                                   AND motivoactividad <> 'Fin de jornada laboral' 
                                                   AND motivoactividad <> 'Atención a otra prioridad'
+                                                  AND motivoactividad <> 'Lunch'
                                                   AND plano.estatusplano = 0";
                     $query_run = mysqli_query($con, $query);
 
