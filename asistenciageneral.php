@@ -29,7 +29,7 @@ if (!empty($message)) {
 if (isset($_SESSION['codigo'])) {
 
     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
 
     // Si se encuentra un registro coincidente, el usuario está autorizado

@@ -27,7 +27,7 @@ if (!empty($message)) {
 
 if (isset($_POST['codigo'])) {
     $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
-    $query = "SELECT * FROM usuarios WHERE codigo='$codigo'";
+    $query = "SELECT * FROM usuarios WHERE codigo='$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) == 1) {
         $row = mysqli_fetch_assoc($result);

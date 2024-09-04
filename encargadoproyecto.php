@@ -30,7 +30,7 @@ if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
 
     // Si se encuentra un registro coincidente, el usuario está autorizado
@@ -170,7 +170,7 @@ if (isset($_SESSION['codigo'])) {
                         <div class="form-check col-12 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9)";
+                            $query = "SELECT * FROM usuarios WHERE rol IN (5,9) AND estatus = 1";
                             $result = mysqli_query($con, $query);
 
                             // Verificar si hay resultados

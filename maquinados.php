@@ -25,7 +25,7 @@ if (!empty($message)) {
     unset($_SESSION['message']);
 }
 if (isset($_SESSION['codigo'])) {
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) > 0) {
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Maquinados' WHERE `usuarios`.`codigo` = '$codigo'";
@@ -505,7 +505,7 @@ if (mysqli_num_rows($result) > 0) {
                         <div class="form-check col-12 mt-3 m-3">
                             <?php
                             // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 13";
+                            $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 13 AND estatus = 1";
                             $result = mysqli_query($con, $query);
 
                             // Verificar si hay resultados
@@ -600,7 +600,7 @@ if (mysqli_num_rows($result) > 0) {
 
                         <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
                             <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 13";
+                            $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 13 AND estatus = 1";
                             $result = mysqli_query($con, $query);
 
                             if (mysqli_num_rows($result) > 0) {

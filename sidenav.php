@@ -56,7 +56,7 @@ if (isset($_POST['save'])) {
                     FROM usuarios
                     LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
                     LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
-                    WHERE usuarios.rol = 8
+                    WHERE usuarios.rol = 8  AND usuarios.estatus = 1
                     GROUP BY usuarios.codigo
                     HAVING cuenta <= 3
                 ) as subquery";
@@ -71,7 +71,7 @@ if (isset($_POST['save'])) {
         FROM usuarios
         LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
         LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
-        WHERE usuarios.rol = 4
+        WHERE usuarios.rol = 4  AND usuarios.estatus = 1
         GROUP BY usuarios.codigo
         HAVING cuenta <= 3
     ) as subquery";
@@ -138,7 +138,7 @@ if (isset($_POST['save'])) {
                 FROM usuarios
                 LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
                 LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
-                WHERE usuarios.rol = 8
+                WHERE usuarios.rol = 8  AND usuarios.estatus = 1
                 GROUP BY usuarios.codigo
                 HAVING cuenta <= 3 ORDER BY cuenta ASC";
 
@@ -158,7 +158,7 @@ if (isset($_POST['save'])) {
                                 FROM usuarios
                                 LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
                                 LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
-                                WHERE usuarios.rol = 4
+                                WHERE usuarios.rol = 4  AND usuarios.estatus = 1
                                 GROUP BY usuarios.codigo
                                 HAVING cuenta <= 3 ORDER BY cuenta ASC";
 
@@ -446,7 +446,7 @@ if (isset($_POST['save'])) {
                     <?php
                     if (isset($_SESSION['codigo'])) {
                         $registro_id = $_SESSION['codigo'];
-                        $query = "SELECT * FROM usuarios WHERE codigo='$registro_id' ";
+                        $query = "SELECT * FROM usuarios WHERE codigo='$registro_id' AND estatus = 1";
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {
                             $registro = mysqli_fetch_array($query_run);
@@ -516,7 +516,7 @@ if (isset($_POST['save'])) {
 
                     <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
                         <?php
-                        $query = "SELECT * FROM usuarios WHERE codigo <> $codigo AND rol <> 12";
+                        $query = "SELECT * FROM usuarios WHERE codigo <> $codigo AND rol <> 12 AND estatus = 1";
                         $result = mysqli_query($con, $query);
 
                         if (mysqli_num_rows($result) > 0) {

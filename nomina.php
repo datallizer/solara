@@ -27,7 +27,7 @@ if (!empty($message)) {
 if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
 
     if (mysqli_num_rows($result) > 0) {
@@ -83,7 +83,7 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM usuarios WHERE rol <> 1 AND rol <> 12 ORDER BY id DESC";
+                                        $query = "SELECT * FROM usuarios WHERE rol <> 1 AND rol <> 12 AND estatus = 1 ORDER BY id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {

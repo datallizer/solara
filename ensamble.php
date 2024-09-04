@@ -25,7 +25,7 @@ if (!empty($message)) {
     unset($_SESSION['message']);
 }
 if (isset($_SESSION['codigo'])) {
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo'";
+    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) > 0) {
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Ensambles' WHERE `usuarios`.`codigo` = '$codigo'";
@@ -487,7 +487,7 @@ if (mysqli_num_rows($result) > 0) {
                         <div class="form-check col-12 mt-3 m-3">
                             <p class="mb-1">Técnicos en control</p>
                             <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 4 or rol = 13";
+                            $query = "SELECT * FROM usuarios WHERE rol = 4 or rol = 13 AND estatus = 1";
                             $result = mysqli_query($con, $query);
                             if (mysqli_num_rows($result) > 0) {
                                 while ($usuario = mysqli_fetch_assoc($result)) {
@@ -553,7 +553,7 @@ if (mysqli_num_rows($result) > 0) {
                         <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
                             <p class="mb-1">Técnicos en control</p>
                             <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 4 OR rol = 13";
+                            $query = "SELECT * FROM usuarios WHERE rol = 4 OR rol = 13 AND estatus = 1";
                             $result = mysqli_query($con, $query);
 
                             if (mysqli_num_rows($result) > 0) {
