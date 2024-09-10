@@ -397,6 +397,7 @@ if (isset($_SESSION['codigo'])) {
                                                 u.nombre,
                                                 u.apellidop,
                                                 u.apellidom,
+                                                u.estatus,
                                                 COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS maquinados_finalizados,
                                                 COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS maquinados_pendientes
                                             FROM 
@@ -406,7 +407,7 @@ if (isset($_SESSION['codigo'])) {
                                             LEFT JOIN 
                                                 plano p ON a.idplano = p.id
                                             WHERE 
-                                                u.rol = 8 OR u.rol = 13  AND u.estatus = 1
+                                                (u.rol = 8 OR u.rol = 13) AND u.estatus = 1
                                             GROUP BY 
                                                 u.codigo
                                             ";
@@ -487,6 +488,7 @@ if (isset($_SESSION['codigo'])) {
                                                 u.nombre,
                                                 u.apellidop,
                                                 u.apellidom,
+                                                u.estatus,
                                                 COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS ensambles_finalizados,
                                                 COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS ensambles_pendientes
                                             FROM 
@@ -496,7 +498,7 @@ if (isset($_SESSION['codigo'])) {
                                             LEFT JOIN 
                                                 diagrama p ON a.idplano = p.id
                                             WHERE 
-                                                u.rol = 4 OR u.rol = 13  AND u.estatus = 1
+                                                (u.rol = 4 OR u.rol = 13)  AND u.estatus = 1
                                             GROUP BY 
                                                 u.codigo
                                             ";
@@ -535,7 +537,7 @@ if (isset($_SESSION['codigo'])) {
                     </div>
                     <div class="col-12 mt-5 slickcard bg-dark" id="operadores" style="border-radius: 5px;">
                         <?php
-                        $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 4 AND estatus = 1 ORDER BY id DESC";
+                        $query = "SELECT * FROM usuarios WHERE (rol = 8 OR rol = 4) AND estatus = 1 ORDER BY id DESC";
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {
                             foreach ($query_run as $registro) {
