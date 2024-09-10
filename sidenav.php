@@ -151,11 +151,12 @@ if (isset($_POST['save'])) {
             ";
 
 
+
                 $resultado = mysqli_query($con, $queryUsuarios);
-                function numeroATexto($numero)
+                function numeroATexto($numero, $diasSinAsignacion)
                 {
                     $textos = [
-                        0 => 'no tiene ningún maquinado asignado',
+                        0 => "no tiene ningún maquinado asignado <br><span style='color: red;font-size:12px;'>Tiene $diasSinAsignacion días sin asignación</span>",
                         1 => 'tiene un maquinado asignado',
                         2 => 'tiene dos maquinados asignados',
                         3 => 'tiene tres maquinados asignados'
@@ -179,10 +180,10 @@ if (isset($_POST['save'])) {
 
 
                 $resultados = mysqli_query($con, $queryEnsambles);
-                function numeroATextos($numeros)
+                function numeroATextos($numeros, $diasEnsambleSinAsignacion)
                 {
                     $texto = [
-                        0 => 'no tiene ningún ensamble asignado',
+                        0 => "no tiene ningún ensamble asignado <br><span style='color: red;font-size:12px;'>Tiene $diasEnsambleSinAsignacion días sin asignación</span>",
                         1 => 'tiene un ensamble asignado',
                         2 => 'tiene dos ensambles asignados',
                         3 => 'tiene tres ensambles asignados'
@@ -195,14 +196,26 @@ if (isset($_POST['save'])) {
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
                     ?>
-                        <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
-                            <li style="width: 400px;padding:0px 15px;">
-                                <a href="maquinados.php" style="color:#000;">
+                        <?php
+                        // Asegúrate de que la función numeroATexto esté incluida o definida en este archivo.
+                        while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
+                            <li style="width: 400px; padding: 0px 15px;">
+                                <a href="maquinados.php" style="color: #000;">
                                     <div class="row">
-                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $usuario['medio']; ?>" alt="Foto perfil"></div>
+                                        <div class="col-3">
+                                            <img
+                                                style="width: 100%; border-radius: 35px; height: 75px; object-fit: cover; object-position: top;"
+                                                src="<?= htmlspecialchars($usuario['medio']); ?>"
+                                                alt="Foto perfil">
+                                        </div>
                                         <div class="col-9">
-                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
-                                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> <?php echo numeroATexto($usuario['cuenta']); ?>. <br><span style="color: red;font-size:12px;">Tiene <?= $usuario['diasSinAsignacion']; ?> días sin asignación</span></p>
+                                            <small style="text-transform: uppercase; font-size: 11px;">
+                                                <i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados
+                                            </small>
+                                            <p>
+                                                <?= htmlspecialchars($usuario['nombre']) . ' ' . htmlspecialchars($usuario['apellidop']) . ' ' . htmlspecialchars($usuario['apellidom']); ?>
+                                                <?= numeroATexto($usuario['cuenta'], $usuario['diasSinAsignacion']); ?>.
+                                            </p>
                                         </div>
                                     </div>
                                 </a>
@@ -210,18 +223,22 @@ if (isset($_POST['save'])) {
                             <hr style="color: #fcfcfc;" class="dropdown-divider" />
                         <?php endwhile; ?>
 
+
                     <?php
                     }
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 9])) {
                     ?>
-                         <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
+                        <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
                             <li style="width: 400px;padding:0px 15px;">
                                 <a href="ensamble.php" style="color:#000;">
                                     <div class="row">
                                         <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $ensamble['medio']; ?>" alt="Foto perfil"></div>
                                         <div class="col-9">
                                             <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
-                                            <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> <?php echo numeroATextos($ensamble['cuenta']); ?>. <br><span style="color: red;font-size:12px;">Tiene <?= $ensamble['diasEnsambleSinAsignacion']; ?> días sin asignación</span></p>
+                                            <p>
+                                                <?= htmlspecialchars($ensamble['nombre']) . ' ' . htmlspecialchars($ensamble['apellidop']) . ' ' . htmlspecialchars($ensamble['apellidom']); ?>
+                                                <?= numeroATexto($ensamble['cuenta'], $ensamble['diasEnsambleSinAsignacion']); ?>.
+                                            </p>
                                         </div>
                                     </div>
                                 </a>
