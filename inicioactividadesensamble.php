@@ -239,7 +239,7 @@ if (isset($_SESSION['codigo'])) {
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                        <iframe src="<?= $registro['medio']; ?>" width="100%" height="600px"></iframe>
                                                                     </div>
                                                                 </div>
                                                             </div>

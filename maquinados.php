@@ -25,7 +25,7 @@ if (!empty($message)) {
     unset($_SESSION['message']);
 }
 if (isset($_SESSION['codigo'])) {
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) > 0) {
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Maquinados' WHERE `usuarios`.`codigo` = '$codigo'";
@@ -39,7 +39,7 @@ if (isset($_SESSION['codigo'])) {
     exit();
 }
 
-$sql = "SELECT * FROM asistencia WHERE estatus = 1 AND idcodigo = '$codigo' LIMIT 1";
+$sql = "SELECT estatus, idcodigo, entrada, salida, fecha FROM asistencia WHERE estatus = 1 AND idcodigo = '$codigo' LIMIT 1";
 $result = mysqli_query($con, $sql);
 
 // If a matching record is found, set variables for modal content
@@ -193,7 +193,7 @@ if (mysqli_num_rows($result) > 0) {
                                     <tbody>
                                         <?php
                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
-                                            $query = "SELECT proyecto.*, plano.*
+                                            $query = "SELECT proyecto.id, proyecto.prioridad, proyecto.nombre, plano.*
                                             FROM plano 
                                             JOIN proyecto ON plano.idproyecto = proyecto.id 
                                             JOIN asignacionplano ON asignacionplano.idplano = plano.id 
@@ -201,7 +201,7 @@ if (mysqli_num_rows($result) > 0) {
                                             WHERE asignacionplano.codigooperador = $codigo 
                                             AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3) ORDER BY proyecto.prioridad ASC, plano.nivel ASC";
                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-                                            $query = "SELECT proyecto.*, plano.*
+                                            $query = "SELECT proyecto.id, proyecto.prioridad, proyecto.nombre, plano.id, plano.idproyecto, plano.nivel, plano.piezas, plano.estatusplano, plano.actividad, plano.nombreplano
                                             FROM plano 
                                             JOIN proyecto ON plano.idproyecto = proyecto.id
                                             WHERE (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3) ORDER BY proyecto.prioridad asc";
@@ -234,7 +234,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                             </div>
                                                                             <div class="modal-body">
-                                                                                <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="500px"></iframe>
+                                                                                <iframe src="<?= $registro['medio']; ?>" width="100%" height="500px"></iframe>
                                                                             </div>
                                                                             <div class="modal-footer">
                                                                                 <a href="imprimirplano.php?id=<?= $registro['id']; ?>" class="btn btn-primary"><i class="bi bi-file-pdf"></i> Imprmir</a>

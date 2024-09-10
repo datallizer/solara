@@ -30,7 +30,7 @@ if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
 
     // Si se encuentra un registro coincidente, el usuario está autorizado
@@ -543,7 +543,7 @@ if (isset($_SESSION['codigo'])) {
                         ?>
                                 <div class="slickc">
                                     <div class="card" style="width: 100%;border:none;">
-                                        <img class="card-img-top" style="object-fit:cover;height:350px;width: 100%;border-radius:5px;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                        <img class="card-img-top" style="object-fit:cover;height:350px;width: 100%;border-radius:5px;" src="<?= $registro['medio']; ?>" alt="Foto perfil">
                                         <div class="card-body">
                                             <div style="min-height: 50px;">
                                                 <h5 class="card-title"><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></h5>

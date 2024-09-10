@@ -25,7 +25,7 @@ if (!empty($message)) {
     unset($_SESSION['message']);
 }
 if (isset($_SESSION['codigo'])) {
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) > 0) {
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Ensambles' WHERE `usuarios`.`codigo` = '$codigo'";
@@ -161,7 +161,7 @@ if (mysqli_num_rows($result) > 0) {
                                             <th>Proyecto</th>
                                             <th>Diagrama / actividad asociados</th>
                                             <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 5, 6, 7, 9])) {
                                                 echo '<th>Técnino asignado</th>';
                                             }
                                             ?>
@@ -221,7 +221,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                             </div>
                                                                             <div class="modal-body">
-                                                                                <iframe src="data:application/pdf;base64,<?= base64_encode($registro['medio']); ?>" width="100%" height="600px"></iframe>
+                                                                                <iframe src="<?= $registro['medio']; ?>" width="100%" height="600px"></iframe>
                                                                             </div>
                                                                         </div>
                                                                     </div>

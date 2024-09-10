@@ -51,30 +51,30 @@ if (isset($_POST['save'])) {
             <li class="nav-item dropdown m-1">
                 <?php
                 $queryUsuarios = "SELECT COUNT(*) as numUsuarios
-                FROM (
-                    SELECT usuarios.codigo, COUNT(plano.id) as cuenta
-                    FROM usuarios
-                    LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
-                    LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
-                    WHERE usuarios.rol = 8  AND usuarios.estatus = 1
-                    GROUP BY usuarios.codigo
-                    HAVING cuenta <= 3
-                ) as subquery";
+                                    FROM (
+                                        SELECT usuarios.codigo, COUNT(plano.id) as cuenta
+                                        FROM usuarios
+                                        LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
+                                        LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
+                                        WHERE usuarios.rol = 8  AND usuarios.estatus = 1
+                                        GROUP BY usuarios.codigo
+                                        HAVING cuenta <= 3
+                                    ) as subquery";
 
                 $resultado = mysqli_query($con, $queryUsuarios);
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numUsuarios = $usuarioData['numUsuarios'];
 
                 $queryControl = "SELECT COUNT(*) as numEnsambles
-    FROM (
-        SELECT usuarios.codigo, COUNT(diagrama.id) as cuenta
-        FROM usuarios
-        LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
-        LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
-        WHERE usuarios.rol = 4  AND usuarios.estatus = 1
-        GROUP BY usuarios.codigo
-        HAVING cuenta <= 3
-    ) as subquery";
+                                FROM (
+                                    SELECT usuarios.codigo, COUNT(diagrama.id) as cuenta
+                                    FROM usuarios
+                                    LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
+                                    LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
+                                    WHERE usuarios.rol = 4  AND usuarios.estatus = 1
+                                    GROUP BY usuarios.codigo
+                                    HAVING cuenta <= 3
+                                ) as subquery";
 
 
                 $resultado = mysqli_query($con, $queryControl);
@@ -82,18 +82,18 @@ if (isset($_POST['save'])) {
                 $numEnsambles = $usuarioData['numEnsambles'];
 
                 $queryAprobar = "SELECT COUNT(*) as numQuotes
-                FROM (
-                SELECT * FROM quotes WHERE estatusq = 1
-                ) as subquery";
+                                    FROM (
+                                    SELECT estatusq FROM quotes WHERE estatusq = 1
+                                    ) as subquery";
 
                 $resultado = mysqli_query($con, $queryAprobar);
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numQuotes = $usuarioData['numQuotes'];
 
                 $queryBuy = "SELECT COUNT(*) as numBuy
-                FROM (
-                SELECT * FROM quotes WHERE estatusq = 0
-                ) as subquery";
+                                FROM (
+                                SELECT estatusq FROM quotes WHERE estatusq = 0
+                                ) as subquery";
 
                 $resultado = mysqli_query($con, $queryBuy);
                 $usuarioData = mysqli_fetch_assoc($resultado);
@@ -134,30 +134,21 @@ if (isset($_POST['save'])) {
 
 
                 <?php
-                $queryUsuarios = "SELECT 
-                usuarios.nombre, 
-                usuarios.apellidop, 
-                usuarios.apellidom, 
-                usuarios.medio, 
-                COUNT(plano.id) as cuenta,
-                MAX(historialoperadores.fechareinicio) as ultima_reinicio
-            FROM 
-                usuarios
-            LEFT JOIN 
-                asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
-            LEFT JOIN 
-                plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
-            LEFT JOIN 
-                historialoperadores ON historialoperadores.idcodigo = usuarios.codigo
-            WHERE 
-                usuarios.rol = 8  
-                AND usuarios.estatus = 1
-            GROUP BY 
-                usuarios.codigo
-            HAVING 
-                cuenta <= 3 
-            ORDER BY 
-                cuenta ASC";
+                $queryUsuarios = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, 
+                    COUNT(plano.id) AS cuenta,
+                    DATEDIFF(CURDATE(), COALESCE((
+                        SELECT MAX(fechareinicio)
+                        FROM historialoperadores
+                        WHERE idcodigo = usuarios.codigo AND fechareinicio IS NOT NULL
+                    ), CURDATE())) AS diasSinAsignacion
+                FROM usuarios
+                LEFT JOIN asignacionplano ON asignacionplano.codigooperador = usuarios.codigo
+                LEFT JOIN plano ON asignacionplano.idplano = plano.id AND plano.estatusplano IN (1, 2, 3)
+                WHERE usuarios.rol = 8 AND usuarios.estatus = 1
+                GROUP BY usuarios.codigo
+                HAVING cuenta <= 3 
+                ORDER BY cuenta ASC
+            ";
 
 
                 $resultado = mysqli_query($con, $queryUsuarios);
@@ -172,30 +163,18 @@ if (isset($_POST['save'])) {
                     return $textos[$numero] ?? $numero; // Devuelve el texto o el número si no está en el array
                 }
 
-                $queryEnsambles = "SELECT 
-                        usuarios.nombre, 
-                        usuarios.apellidop, 
-                        usuarios.apellidom, 
-                        usuarios.medio, 
-                        COUNT(diagrama.id) as cuenta,
-                        MAX(historialensamble.fechareinicio) as ultima_reinicio
-                   FROM 
-                        usuarios
-                   LEFT JOIN 
-                        asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
-                   LEFT JOIN 
-                        diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
-                   LEFT JOIN 
-                        historialensamble ON historialensamble.idcodigo = usuarios.codigo
-                   WHERE 
-                        usuarios.rol = 4  
-                        AND usuarios.estatus = 1
-                   GROUP BY 
-                        usuarios.codigo
-                   HAVING 
-                        cuenta <= 3 
-                   ORDER BY 
-                        cuenta ASC";
+                $queryEnsambles = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(diagrama.id) as cuenta,
+                DATEDIFF(CURDATE(), COALESCE((
+                        SELECT MAX(fechareinicio)
+                        FROM historialensamble
+                        WHERE idcodigo = usuarios.codigo AND fechareinicio IS NOT NULL
+                    ), CURDATE())) AS diasEnsambleSinAsignacion
+                                FROM usuarios
+                                LEFT JOIN asignaciondiagrama ON asignaciondiagrama.codigooperador = usuarios.codigo
+                                LEFT JOIN diagrama ON asignaciondiagrama.idplano = diagrama.id AND diagrama.estatusplano IN (1, 2, 3)
+                                WHERE usuarios.rol = 4  AND usuarios.estatus = 1
+                                GROUP BY usuarios.codigo
+                                HAVING cuenta <= 3 ORDER BY cuenta ASC";
 
 
 
@@ -216,36 +195,14 @@ if (isset($_POST['save'])) {
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
                     ?>
-                        <?php
-                        while ($usuario = mysqli_fetch_assoc($resultado)) :
-                            // Calcular el tiempo sin asignaciones
-                            $fechaReinicio = $usuario['ultima_reinicio'];
-                            $fechaActual = date('Y-m-d');
-
-                            if ($fechaReinicio) {
-                                $datetime1 = new DateTime($fechaReinicio);
-                                $datetime2 = new DateTime($fechaActual);
-                                $interval = $datetime1->diff($datetime2);
-                                $diasSinAsignacion = $interval->days;
-                            } else {
-                                $diasSinAsignacion = '<br><span style="font-size: 12px;color:red;">Nunca ha tenido asignaciones</span>';
-                            }
-                        ?>
+                        <?php while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
                             <li style="width: 400px;padding:0px 15px;">
                                 <a href="maquinados.php" style="color:#000;">
                                     <div class="row">
-                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['medio']); ?>" alt="Foto perfil"></div>
+                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $usuario['medio']; ?>" alt="Foto perfil"></div>
                                         <div class="col-9">
                                             <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados</small>
-                                            <p>
-                                                <?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?>
-                                                <?php echo numeroATexto($usuario['cuenta']); ?>.
-                                                <?php if (is_numeric($diasSinAsignacion)) : ?>
-                                                    <br><span style="font-size: 12px;color:red;">Lleva <?php echo $diasSinAsignacion; ?> días sin asignaciones.</span>
-                                                <?php else : ?>
-                                                    <?php echo $diasSinAsignacion; ?>.
-                                                <?php endif; ?>
-                                            </p>
+                                            <p><?php echo $usuario['nombre'] . ' ' . $usuario['apellidop'] . ' ' . $usuario['apellidom']; ?> <?php echo numeroATexto($usuario['cuenta']); ?>. <br><span style="color: red;font-size:12px;">Tiene <?= $usuario['diasSinAsignacion']; ?> días sin asignación</span></p>
                                         </div>
                                     </div>
                                 </a>
@@ -257,42 +214,20 @@ if (isset($_POST['save'])) {
                     }
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 9])) {
                     ?>
-                        <?php 
-    while ($ensamble = mysqli_fetch_assoc($resultados)) : 
-        // Calcular el tiempo sin asignaciones
-        $fechaReinicio = $ensamble['ultima_reinicio'];
-        $fechaActual = date('Y-m-d');
-        
-        if ($fechaReinicio) {
-            $datetime1 = new DateTime($fechaReinicio);
-            $datetime2 = new DateTime($fechaActual);
-            $interval = $datetime1->diff($datetime2);
-            $diasSinAsignacion = $interval->days;
-        } else {
-            $diasSinAsignacion = '<br><span style="font-size: 12px;color:red;">Nunca ha tenido asignaciones</span>';
-        }
-?>
-        <li style="width: 400px;padding:0px 15px;">
-            <a href="ensamble.php" style="color:#000;">
-                <div class="row">
-                    <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($ensamble['medio']); ?>" alt="Foto perfil"></div>
-                    <div class="col-9">
-                        <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
-                        <p>
-                            <?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> 
-                            <?php echo numeroATextos($ensamble['cuenta']); ?>.
-                            <?php if (is_numeric($diasSinAsignacion)) : ?>
-                                <br><span style="font-size: 12px;color:red;">Lleva <?php echo $diasSinAsignacion; ?> días sin asignaciones.</span>
-                            <?php else : ?>
-                                <?php echo $diasSinAsignacion; ?>.
-                            <?php endif; ?>
-                        </p>
-                    </div>
-                </div>
-            </a>
-        </li>
-        <hr style="color: #fcfcfc;" class="dropdown-divider" />
-<?php endwhile; ?>
+                         <?php while ($ensamble = mysqli_fetch_assoc($resultados)) : ?>
+                            <li style="width: 400px;padding:0px 15px;">
+                                <a href="ensamble.php" style="color:#000;">
+                                    <div class="row">
+                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $ensamble['medio']; ?>" alt="Foto perfil"></div>
+                                        <div class="col-9">
+                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
+                                            <p><?php echo $ensamble['nombre'] . ' ' . $ensamble['apellidop'] . ' ' . $ensamble['apellidom']; ?> <?php echo numeroATextos($ensamble['cuenta']); ?>. <br><span style="color: red;font-size:12px;">Tiene <?= $ensamble['diasEnsambleSinAsignacion']; ?> días sin asignación</span></p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                        <?php endwhile; ?>
 
                     <?php
                     }
@@ -300,7 +235,7 @@ if (isset($_POST['save'])) {
 
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                        $query = "SELECT quotes.*, usuarios.* FROM quotes JOIN usuarios ON quotes.solicitante = CONCAT(usuarios.nombre,' ', usuarios.apellidop,' ', usuarios.apellidom) WHERE quotes.estatusq = 1";
+                        $query = "SELECT quotes.solicitante, quotes.estatusq, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio FROM quotes JOIN usuarios ON quotes.solicitante = CONCAT(usuarios.nombre,' ', usuarios.apellidop,' ', usuarios.apellidom) WHERE quotes.estatusq = 1";
 
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {
@@ -309,7 +244,7 @@ if (isset($_POST['save'])) {
                                 <li style="width: 400px;padding:0px 15px;">
                                     <a href="quotes.php" style="color:#000;">
                                         <div class="row">
-                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($cotizaciones['medio']); ?>" alt="Foto perfil"></div>
+                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $cotizaciones['medio']; ?>" alt="Foto perfil"></div>
                                             <div class="col-9">
                                                 <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso quotes</small>
                                                 <p><?php echo $cotizaciones['solicitante']; ?> registro una nueva cotización.</p>
@@ -326,7 +261,7 @@ if (isset($_POST['save'])) {
 
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 4, 6, 7])) {
-                        $query = "SELECT quotes.*, usuarios.* FROM quotes JOIN usuarios ON quotes.solicitante = CONCAT(usuarios.nombre,' ', usuarios.apellidop,' ', usuarios.apellidom) WHERE quotes.estatusq = 0";
+                        $query = "SELECT quotes.solicitante, quotes.estatusq, quotes.cotizacion, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio FROM quotes JOIN usuarios ON quotes.solicitante = CONCAT(usuarios.nombre,' ', usuarios.apellidop,' ', usuarios.apellidom) WHERE quotes.estatusq = 0";
 
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {
@@ -335,7 +270,7 @@ if (isset($_POST['save'])) {
                                 <li style="width: 400px;padding:0px 15px;">
                                     <a href="compras.php" style="color:#000;">
                                         <div class="row">
-                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="data:image/jpeg;base64,<?php echo base64_encode($compras['medio']); ?>" alt="Foto perfil"></div>
+                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $compras['medio']; ?>" alt="Foto perfil"></div>
                                             <div class="col-9">
                                                 <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso compras</small>
                                                 <p>Hay una nueva compra pendiente: <?php echo $compras['cotizacion']; ?></p>
@@ -528,13 +463,13 @@ if (isset($_POST['save'])) {
                     <?php
                     if (isset($_SESSION['codigo'])) {
                         $registro_id = $_SESSION['codigo'];
-                        $query = "SELECT * FROM usuarios WHERE codigo='$registro_id' AND estatus = 1";
+                        $query = "SELECT usuarios.medio, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.rol FROM usuarios WHERE codigo='$registro_id' AND estatus = 1";
                         $query_run = mysqli_query($con, $query);
                         if (mysqli_num_rows($query_run) > 0) {
                             $registro = mysqli_fetch_array($query_run);
                     ?>
                             <div class="row">
-                                <div class="col-5"><img style="width: 100%;border-radius:5px;height:92px;object-fit: cover;object-position:top;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil">
+                                <div class="col-5"><img style="width: 100%;border-radius:5px;height:92px;object-fit: cover;object-position:top;" src="<?= $registro['medio']; ?>" alt="Foto perfil">
                                 </div>
                                 <div class="col-7">
                                     <p style="margin-left: -10px;"><?= $registro['nombre']; ?>
@@ -598,7 +533,7 @@ if (isset($_POST['save'])) {
 
                     <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
                         <?php
-                        $query = "SELECT * FROM usuarios WHERE codigo <> $codigo AND rol <> 12 AND estatus = 1";
+                        $query = "SELECT usuarios.codigo, usuarios.rol, usuarios.estatus, usuarios.nombre, usuarios.apellidop, usuarios.apellidom FROM usuarios WHERE codigo <> $codigo AND rol <> 12 AND estatus = 1";
                         $result = mysqli_query($con, $query);
 
                         if (mysqli_num_rows($result) > 0) {

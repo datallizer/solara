@@ -9,7 +9,7 @@ if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
 
     // Si se encuentra un registro coincidente, el usuario está autorizado
@@ -68,7 +68,7 @@ if (isset($_GET['id'])) {
                             <div class="row" style="margin-top: 35px;">
 
                                 <div class="col-md-7" style="height: 85vh;">
-                                    <embed src="data:application/pdf;base64,<?= base64_encode($pdf_content); ?>" type="application/pdf" width="100%" height="100%" />
+                                    <embed src="<?= $pdf_content; ?>" type="application/pdf" width="100%" height="100%" />
                                 </div>
 
                                 <div class="col-5">

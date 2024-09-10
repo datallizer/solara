@@ -25,7 +25,7 @@ if (!empty($message)) {
     unset($_SESSION['message']);
 }
 if (isset($_SESSION['codigo'])) {
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
     if (mysqli_num_rows($result) > 0) {
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Ingenieria' WHERE `usuarios`.`codigo` = '$codigo'";

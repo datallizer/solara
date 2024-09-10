@@ -50,92 +50,100 @@ if (isset($_POST['update'])) {
 }
 
 if (isset($_POST['save'])) {
-    // Escape other non-array POST values
+    // Escapar otros valores POST no array
     $idproyecto = isset($_POST['idproyecto']) ? mysqli_real_escape_string($con, $_POST['idproyecto']) : '';
     $nombreplano = isset($_POST['nombreplano']) ? mysqli_real_escape_string($con, $_POST['nombreplano']) : '';
-    if (isset($_FILES['medio']) && $_FILES['medio']['error'] !== UPLOAD_ERR_NO_FILE) {
-        $medio = file_get_contents($_FILES['medio']['tmp_name']);
-    } else {
-        // If no file is uploaded, set medio as an empty string
-        $medio = '';
-    }
     $nivel = isset($_POST['nivel']) ? mysqli_real_escape_string($con, $_POST['nivel']) : '';
     $piezas = isset($_POST['piezas']) ? mysqli_real_escape_string($con, $_POST['piezas']) : '';
     $actividad = isset($_POST['actividad']) ? mysqli_real_escape_string($con, $_POST['actividad']) : '';
 
-    // Verify if checkboxes are selected and process each value
-    if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
-        // Insertar el registro en la tabla `plano` una sola vez fuera del bucle
-        $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, ?, '1')";
-        $stmt = mysqli_prepare($con, $query);
+    // Comprobar si se ha subido un archivo
+    if (isset($_FILES['medio']) && $_FILES['medio']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['medio']['tmp_name'];
+        $fileName = $_FILES['medio']['name'];
+        $fileSize = $_FILES['medio']['size'];
+        $fileType = $_FILES['medio']['type'];
 
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 'ssssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $actividad);
-            mysqli_stmt_execute($stmt);
+        // Verificar que el archivo sea un PDF
+        if ($fileType === 'application/pdf') {
+            // Aquí, en lugar de almacenar el archivo, primero insertamos el registro para obtener el ID
+            $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, ?, '1')";
+            $stmt = mysqli_prepare($con, $query);
 
-            // Obtener el ID del último registro insertado en la tabla `plano`
-            $idplano = mysqli_insert_id($con);
+            // Medio solo será la referencia del archivo, inicialmente vacío
+            $medio = ''; // Lo actualizaremos después
 
-            foreach ($_POST['codigooperador'] as $codigoOperador) {
-                // Insertar en la tabla `asignacionplano` utilizando el ID obtenido anteriormente
-                $queryplano = "INSERT INTO asignacionplano (idplano, codigooperador) VALUES (?, ?)";
-                $stmtPlano = mysqli_prepare($con, $queryplano);
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 'ssssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $actividad);
+                mysqli_stmt_execute($stmt);
 
-                if ($stmtPlano) {
-                    mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
-                    mysqli_stmt_execute($stmtPlano);
-                    $idcodigo = $_SESSION['codigo'];
-                    $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-                    $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+                // Obtener el ID del registro recién creado
+                $idplano = mysqli_insert_id($con);
 
-                    $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
-                    $query_rundos = mysqli_query($con, $querydos);
+                // Crear la ruta donde se guardará el archivo
+                $uploadFileDir = './planos/';
+                $dest_path = $uploadFileDir . $idplano . '.pdf';
 
-                    $mensaje = 'Tienes un nuevo maquinado, Nombre: ' . $nombreplano . ' Actividad: ' . $actividad  . ' Prioridad: ' . $nivel;
+                // Mover el archivo a la carpeta "planos" con el ID del registro como nombre
+                if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                    // Actualizar el campo `medio` con la ruta del archivo
+                    $queryUpdate = "UPDATE plano SET medio = ? WHERE id = ?";
+                    $stmtUpdate = mysqli_prepare($con, $queryUpdate);
 
-                    $idcodigo = $codigoOperador;
+                    if ($stmtUpdate) {
+                        mysqli_stmt_bind_param($stmtUpdate, 'si', $dest_path, $idplano);
+                        mysqli_stmt_execute($stmtUpdate);
+                    }
 
-                    $emisor = $_SESSION['codigo'];
-                    $estatus = '1';
+                    // Procesar otros valores (por ejemplo, asignar a operadores)
+                    if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
+                        foreach ($_POST['codigooperador'] as $codigoOperador) {
+                            $queryplano = "INSERT INTO asignacionplano (idplano, codigooperador) VALUES (?, ?)";
+                            $stmtPlano = mysqli_prepare($con, $queryplano);
 
-                    $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$idcodigo', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
-                    $querymensajes_run = mysqli_query($con, $querymensajes);
+                            if ($stmtPlano) {
+                                mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
+                                mysqli_stmt_execute($stmtPlano);
+
+                                // Código para notificaciones, etc.
+                                $idcodigo = $_SESSION['codigo'];
+                                $fecha_actual = date("Y-m-d");
+                                $hora_actual = date("H:i");
+
+                                $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+                                mysqli_query($con, $querydos);
+
+                                $mensaje = 'Tienes un nuevo maquinado, Nombre: ' . $nombreplano . ' Actividad: ' . $actividad  . ' Prioridad: ' . $nivel;
+                                $emisor = $_SESSION['codigo'];
+                                $estatus = '1';
+
+                                $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$codigoOperador', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
+                                mysqli_query($con, $querymensajes);
+                            }
+                        }
+                    }
+
+                    $_SESSION['message'] = "Maquinado creado exitosamente";
+                    header("Location: maquinados.php");
+                    exit(0);
                 } else {
-                    $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
+                    $_SESSION['message'] = "Error al mover el archivo PDF.";
                     header("Location: maquinados.php");
                     exit(0);
                 }
+            } else {
+                $_SESSION['message'] = "Error al crear el maquinado.";
+                header("Location: maquinados.php");
+                exit(0);
             }
-            $_SESSION['message'] = "Maquinado creado exitosamente";
-            header("Location: maquinados.php");
-            exit(0);
         } else {
-            $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
+            $_SESSION['message'] = "Por favor, sube un archivo PDF válido.";
             header("Location: maquinados.php");
             exit(0);
         }
     } else {
-        $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, ?, '1')";
-        $stmt = mysqli_prepare($con, $query);
-
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 'ssssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $actividad);
-            mysqli_stmt_execute($stmt);
-
-            $idcodigo = $_SESSION['codigo'];
-            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
-            $query_rundos = mysqli_query($con, $querydos);
-
-            $_SESSION['message'] = "Maquinado creado exitosamente";
-            header("Location: maquinados.php");
-            exit(0);
-        } else {
-            $_SESSION['message'] = "Error al crear el maquinado, contacte a soporte";
-            header("Location: maquinados.php");
-            exit(0);
-        }
+        $_SESSION['message'] = "Error al cargar el archivo.";
+        header("Location: maquinados.php");
+        exit(0);
     }
 }

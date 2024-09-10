@@ -30,7 +30,7 @@ if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
 
     // Si se encuentra un registro coincidente, el usuario está autorizado
@@ -106,7 +106,7 @@ if (isset($_SESSION['codigo'])) {
                                                 <?php
                                                 // Mostrar la imagen actual si existe
                                                 if (!empty($registro['medio'])) {
-                                                    echo '<img src="data:image/jpeg;base64,' . base64_encode($registro['medio']) . '" alt="Foto actual" style="width:100%;">';
+                                                    echo '<img src="' . $registro['medio'] . '" alt="Foto actual" style="width:100%;">';
                                                 } else {
                                                     echo 'No hay foto actual.';
                                                 }

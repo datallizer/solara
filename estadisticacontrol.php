@@ -9,7 +9,7 @@ if (isset($_SESSION['codigo'])) {
     $codigo = $_SESSION['codigo'];
 
     // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
-    $query = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
 
     // Si se encuentra un registro coincidente, el usuario está autorizado
@@ -67,7 +67,7 @@ if (isset($_SESSION['codigo'])) {
                                     $_SESSION['userid'] = $registro['codigo'];
                             ?>
                                     <div class="row">
-                                        <div class="col-1"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="data:image/jpeg;base64,<?php echo base64_encode($registro['medio']); ?>" alt="Foto perfil"></div>
+                                        <div class="col-1"><img style="width: 100%;border-radius:5px;height:100px;object-fit: cover;" src="<?= $registro['medio']; ?>" alt="Foto perfil"></div>
                                         <div class="col-11">
                                             <a href="estadisticas.php#operadores" class="btn btn-primary btn-sm float-end">Regresar</a>
                                             <b>Estadística</b><br>
