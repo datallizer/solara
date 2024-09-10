@@ -29,58 +29,71 @@ if (isset($_POST['update'])) {
     $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
     $rol = mysqli_real_escape_string($con, $_POST['rol']);
     $estatus = mysqli_real_escape_string($con, $_POST['estatus']);
-    // Obtener la nueva imagen cargada
-    if ($_FILES['nuevaFoto']['size'] > 0) {
-        $medio = file_get_contents($_FILES['nuevaFoto']['tmp_name']);
-        $medio = mysqli_real_escape_string($con, $medio);
 
-        // Actualizar la imagen en la base de datos
+    // Directorio donde se guardarán las imágenes
+    $upload_dir = './usuarios/';
+    $file_path = $upload_dir . $id . '.jpg';
+
+    // Verificar si se ha subido una nueva imagen
+    if ($_FILES['nuevaFoto']['size'] > 0) {
+        // Obtener información de la imagen
+        $image_tmp_name = $_FILES['nuevaFoto']['tmp_name'];
+        $image_info = getimagesize($image_tmp_name);
+        $image_type = $image_info[2];
+
+        // Convertir la imagen a formato jpg
+        switch ($image_type) {
+            case IMAGETYPE_JPEG:
+                $src_image = imagecreatefromjpeg($image_tmp_name);
+                break;
+            case IMAGETYPE_PNG:
+                $src_image = imagecreatefrompng($image_tmp_name);
+                break;
+            case IMAGETYPE_GIF:
+                $src_image = imagecreatefromgif($image_tmp_name);
+                break;
+            default:
+                $_SESSION['message'] = "Formato de imagen no soportado";
+                header("Location: usuarios.php");
+                exit(0);
+        }
+
+        // Guardar la imagen convertida como .jpg
+        imagejpeg($src_image, $file_path);
+        imagedestroy($src_image);
+
+        // Actualizar la base de datos con la ruta de la imagen
+        $medio = mysqli_real_escape_string($con, $file_path);
         $update_query = "UPDATE usuarios SET medio='$medio' WHERE id='$id'";
         $update_result = mysqli_query($con, $update_query);
 
-        if ($update_result) {
-            $query = "UPDATE `usuarios` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `codigo` = '$codigo', `rol` = '$rol', `estatus` = '$estatus' WHERE `usuarios`.`id` = '$id'";
-            $query_run = mysqli_query($con, $query);
-
-            if ($query_run) {
-                $idcodigo = $_SESSION['codigo'];
-                $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-                $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-                $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito un usuario, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol, estatus: $estatus', hora='$hora_actual', fecha='$fecha_actual'";
-                $query_rundos = mysqli_query($con, $querydos);
-                $_SESSION['message'] = "Usuario editado exitosamente";
-                header("Location: usuarios.php");
-                exit(0);
-            } else {
-                $_SESSION['message'] = "Error al editar el usuario, contácte a soporte";
-                header("Location: usuarios.php");
-                exit(0);
-            }
-        } else {
+        if (!$update_result) {
             $_SESSION['message'] = "Error al actualizar la imagen del usuario, contácte a soporte";
             header("Location: usuarios.php");
             exit(0);
         }
-    } else {
-        $query = "UPDATE `usuarios` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `codigo` = '$codigo', `rol` = '$rol', `estatus` = '$estatus' WHERE `usuarios`.`id` = '$id'";
-        $query_run = mysqli_query($con, $query);
+    }
 
-        if ($query_run) {
-            $idcodigo = $_SESSION['codigo'];
-            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito un usuario, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol, estatus: $estatus', hora='$hora_actual', fecha='$fecha_actual'";
-            $query_rundos = mysqli_query($con, $querydos);
-            $_SESSION['message'] = "Usuario editado exitosamente";
-            header("Location: usuarios.php");
-            exit(0);
-        } else {
-            $_SESSION['message'] = "Error al editar el usuario, contácte a soporte";
-            header("Location: usuarios.php");
-            exit(0);
-        }
+    // Actualizar los datos del usuario
+    $query = "UPDATE `usuarios` SET `nombre` = '$nombre', `apellidop` = '$apellidop', `apellidom` = '$apellidom', `codigo` = '$codigo', `rol` = '$rol', `estatus` = '$estatus' WHERE `usuarios`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $idcodigo = $_SESSION['codigo'];
+        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito un usuario, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol, estatus: $estatus', hora='$hora_actual', fecha='$fecha_actual'";
+        $query_rundos = mysqli_query($con, $querydos);
+        $_SESSION['message'] = "Usuario editado exitosamente";
+        header("Location: usuarios.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar el usuario, contácte a soporte";
+        header("Location: usuarios.php");
+        exit(0);
     }
 }
+
 
 if (isset($_POST['nominaupdate'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
@@ -106,31 +119,70 @@ if (isset($_POST['nominaupdate'])) {
 }
 
 
-
 if (isset($_POST['save'])) {
     $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
     $apellidop = mysqli_real_escape_string($con, $_POST['apellidop']);
     $apellidom = mysqli_real_escape_string($con, $_POST['apellidom']);
     $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
     $rol = mysqli_real_escape_string($con, $_POST['rol']);
-    $medio = addslashes(file_get_contents($_FILES['medio']['tmp_name']));
+    
+    // Verificar si el código ya existe en la tabla
+    $query_check = "SELECT * FROM usuarios WHERE codigo='$codigo'";
+    $result_check = mysqli_query($con, $query_check);
 
-    $query = "INSERT INTO usuarios SET nombre='$nombre', apellidop='$apellidop', apellidom='$apellidom', codigo='$codigo', estatus='1', rol='$rol',medio='$medio'";
-
-    $query_run = mysqli_query($con, $query);
-    if ($query_run) {
-        $idcodigo = $_SESSION['codigo'];
-        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-
-        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Registro un nuevo usuario, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol', hora='$hora_actual', fecha='$fecha_actual'";
-        $query_rundos = mysqli_query($con, $querydos);
-        $_SESSION['message'] = "Usuario creado exitosamente";
+    if (mysqli_num_rows($result_check) > 0) {
+        // Si el código ya existe
+        $_SESSION['message'] = "Este código ya está en uso";
         header("Location: usuarios.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al crear el usuario, contacte a soporte";
-        header("Location: usuarios.php");
-        exit(0);
+        // Preparar los datos para la inserción
+        $query = "INSERT INTO usuarios (nombre, apellidop, apellidom, codigo, estatus, rol) VALUES ('$nombre', '$apellidop', '$apellidom', '$codigo', '1', '$rol')";
+        $query_run = mysqli_query($con, $query);
+
+        if ($query_run) {
+            $id = mysqli_insert_id($con); // Obtener el ID del nuevo registro
+
+            // Inicializar la ruta de la imagen
+            $ruta_imagen = '';
+
+            // Procesar la imagen si se ha subido
+            if (isset($_FILES['medio']) && $_FILES['medio']['error'] == 0) {
+                $imagen_tmp = $_FILES['medio']['tmp_name'];
+                $imagen_ext = strtolower(pathinfo($_FILES['medio']['name'], PATHINFO_EXTENSION));
+                $imagen_nombre = $id . '.jpg'; // Nombre del archivo con extensión .jpg
+                $imagen_destino = 'usuarios/' . $imagen_nombre;
+
+                // Convertir a JPG
+                $imagen = imagecreatefromstring(file_get_contents($imagen_tmp));
+                if ($imagen) {
+                    imagejpeg($imagen, $imagen_destino, 100); // Guardar como JPG con calidad 100
+                    imagedestroy($imagen);
+                    
+                    // Establecer la ruta de la imagen
+                    $ruta_imagen = $imagen_destino;
+                }
+            }
+
+            // Actualizar la base de datos con la ruta de la imagen
+            $query_update = "UPDATE usuarios SET medio='./$ruta_imagen' WHERE id='$id'";
+            $query_update_run = mysqli_query($con, $query_update);
+
+            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+
+            $querydos = "INSERT INTO historial (idcodigo, detalles, hora, fecha) VALUES ('$id', 'Registro un nuevo usuario, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol', '$hora_actual', '$fecha_actual')";
+            $query_rundos = mysqli_query($con, $querydos);
+
+            $_SESSION['message'] = "Usuario creado exitosamente";
+            header("Location: usuarios.php");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al crear el usuario, contacte a soporte";
+            header("Location: usuarios.php");
+            exit(0);
+        }
     }
 }
+
+?>

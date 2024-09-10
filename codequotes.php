@@ -223,21 +223,40 @@ if (isset($_POST['aprobar'])) {
     }
 }
 
-
-
 if (isset($_POST['save'])) {
     $solicitante = mysqli_real_escape_string($con, $_POST['solicitante']);
     $rol = mysqli_real_escape_string($con, $_POST['rol']);
     $proyecto = mysqli_real_escape_string($con, $_POST['proyecto']);
     $cotizacion = mysqli_real_escape_string($con, $_POST['cotizacion']);
-    $medio = addslashes(file_get_contents($_FILES['medio']['tmp_name']));
     $notas = mysqli_real_escape_string($con, $_POST['notas']);
 
-    $query = "INSERT INTO quotes SET solicitante='$solicitante', rol='$rol', proyecto='$proyecto', cotizacion='$cotizacion', estatusq='1', medio='$medio', notas='$notas'";
-
+    // Inserta el registro en la base de datos sin el campo 'medio'
+    $query = "INSERT INTO quotes SET solicitante='$solicitante', rol='$rol', proyecto='$proyecto', cotizacion='$cotizacion', estatusq='1', notas='$notas'";
     $query_run = mysqli_query($con, $query);
+
     if ($query_run) {
-        $_SESSION['message'] = "Quote creado exitosamente";
+        $quote_id = mysqli_insert_id($con); // Obtén el ID del registro insertado
+
+        // Manejo del archivo PDF
+        if (isset($_FILES['medio']) && $_FILES['medio']['error'] === UPLOAD_ERR_OK) {
+            $file_tmp_name = $_FILES['medio']['tmp_name'];
+            $file_name = $quote_id . '.pdf';
+            $upload_dir = './quotes/';
+            $file_path = $upload_dir . $file_name;
+
+            if (move_uploaded_file($file_tmp_name, $file_path)) {
+                // Actualiza la base de datos con la ruta del archivo
+                $update_query = "UPDATE quotes SET medio='$file_path' WHERE id='$quote_id'";
+                mysqli_query($con, $update_query);
+                
+                $_SESSION['message'] = "Quote creado exitosamente";
+            } else {
+                $_SESSION['message'] = "Error al subir el archivo PDF, contacte a soporte";
+            }
+        } else {
+            $_SESSION['message'] = "No se ha subido ningún archivo PDF";
+        }
+
         header("Location: quotes.php");
         exit(0);
     } else {
@@ -246,4 +265,6 @@ if (isset($_POST['save'])) {
         exit(0);
     }
 }
+
+
 ?>

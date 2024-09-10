@@ -378,8 +378,8 @@ if (mysqli_num_rows($result) > 0) {
                                                             }
                                                         } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
                                                             $id = $registro['id'];
-                                                            echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-          <form action="codemaquinados.php" method="POST" class="d-inline">
+                                                            echo '<a href="editardiagrama.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+          <form action="codediagramas.php" method="POST" class="d-inline">
               <button type="submit" name="deleteensamble" value="' . $id . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
           </form>';
                                                         }

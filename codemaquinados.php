@@ -10,6 +10,12 @@ if (isset($_POST['delete'])) {
     $query = "DELETE FROM plano WHERE id='$registro_id' ";
     $query_run = mysqli_query($con, $query);
 
+    $queryAsignacion = "DELETE FROM asignacionplano WHERE idplano='$registro_id' ";
+    $query_run = mysqli_query($con, $queryAsignacion);
+
+    $queryHistorial = "DELETE FROM historialoperadores WHERE idplano='$registro_id' ";
+    $query_run = mysqli_query($con, $queryHistorial);
+
     if ($query_run) {
         $_SESSION['message'] = "Maquinado eliminado exitosamente";
         header("Location: maquinados.php");
@@ -28,12 +34,23 @@ if (isset($_POST['update'])) {
     $piezas = mysqli_real_escape_string($con, $_POST['piezas']);
     $estatusplano = mysqli_real_escape_string($con, $_POST['estatusplano']);
     $actividad = mysqli_real_escape_string($con, $_POST['actividad']);
-
+    
     $query = "UPDATE `plano` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano', `actividad` = '$actividad'";
 
+    // Verifica si se ha subido un archivo
     if (isset($_FILES['medio']) && $_FILES['medio']['error'] == UPLOAD_ERR_OK) {
-        $medio = file_get_contents($_FILES['medio']['tmp_name']);
-        $query .= ", `medio` = '" . mysqli_real_escape_string($con, $medio) . "'";
+        $file_tmp = $_FILES['medio']['tmp_name'];
+        $file_name = $id . '.pdf'; // El nombre del archivo será el ID seguido de la extensión .pdf
+        $file_dest = 'planos/' . $file_name;
+
+        // Mueve el archivo a la carpeta 'planos'
+        if (move_uploaded_file($file_tmp, $file_dest)) {
+            $query .= ", `medio` = './planos/$file_name'"; // Solo almacena el nombre del archivo en la base de datos
+        } else {
+            $_SESSION['message'] = "Error al mover el archivo. Intente de nuevo.";
+            header("Location: maquinados.php");
+            exit(0);
+        }
     }
 
     $query .= " WHERE `plano`.`id` = '$id'";
@@ -48,6 +65,7 @@ if (isset($_POST['update'])) {
     header("Location: maquinados.php");
     exit(0);
 }
+
 
 if (isset($_POST['save'])) {
     // Escapar otros valores POST no array

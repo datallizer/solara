@@ -79,7 +79,7 @@ if (isset($_SESSION['codigo'])) {
                                 ?>
                             <div class="card-header">
                                 <h4>EDITAR QUOTE
-                                <a href="reorden.php" class="btn btn-danger btn-sm float-end m-1">Regresar</a>
+                                <a href="quotes.php" class="btn btn-danger btn-sm float-end m-1">Regresar</a>
                                 <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Ver cotizacion <?= $registro['cotizacion']; ?></button>
                                                         <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-lg">
