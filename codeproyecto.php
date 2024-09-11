@@ -48,6 +48,27 @@ if (isset($_POST['update'])) {
     }
 }
 
+if (isset($_POST['etapas'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $etapamecanica = mysqli_real_escape_string($con, $_POST['etapamecanica']);
+    $etapatcontrol = mysqli_real_escape_string($con, $_POST['etapatcontrol']);
+    $etapadiseño = mysqli_real_escape_string($con, $_POST['etapadiseño']);
+    $etapacontrol = mysqli_real_escape_string($con, $_POST['etapacontrol']);
+
+    $query = "UPDATE `proyecto` SET `etapamecanica` = '$etapamecanica', `etapatcontrol` = '$etapatcontrol', `etapadiseño` = '$etapadiseño', `etapacontrol` = '$etapacontrol' WHERE `proyecto`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Etapa actualizada exitosamente";
+        header("Location: dashboard.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al actualizar la etapa, contacte a soporte";
+        header("Location: dashboard.php");
+        exit(0);
+    }
+}
+
 if (isset($_POST['save'])) {
     $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
     $cliente = mysqli_real_escape_string($con, $_POST['cliente']);
@@ -85,7 +106,7 @@ if (isset($_POST['save'])) {
 
                     $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
                     $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-                    $mensaje = 'Tienes un nuevo proyecto, Nombre: ' . $nombre . ' Detalles: ' . $detalles  . ' Prioridad: ' . $prioridad;
+                    $mensaje = 'Tienes un nuevo proyecto asignado, Nombre: ' . $nombre . ' Detalles: ' . $detalles  . ' Prioridad: ' . $prioridad;
 
                     $idcodigo = $codigoOperador;
 

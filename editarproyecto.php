@@ -125,7 +125,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <label for="presupuesto">Presupuesto</label>
                                                     </div>
                                                     <div class="form-floating col-7 mt-3">
-                                                        <input type="date" class="form-control" name="fechainicio" id="fechainicio" value="' . $registro['fechainicio'] . '" readonly>
+                                                        <input type="date" class="form-control" name="fechainicio" id="fechainicio" value="' . $registro['fechainicio'] . '">
                                                         <label for="fechainicio">Fecha de inicio</label>
                                                     </div>
 

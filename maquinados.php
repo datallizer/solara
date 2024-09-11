@@ -217,7 +217,6 @@ if (mysqli_num_rows($result) > 0) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
                                                             // Verifica si 'medio' está vacío o no
                                                             if (empty($registro['medio'])) {
                                                         ?>
@@ -226,7 +225,7 @@ if (mysqli_num_rows($result) > 0) {
                                                             } else {
                                                             ?>
                                                                 <button style="min-width: 200px;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Plano <?= $registro['nombreplano']; ?></button>
-                                                                <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                <div style="max-height: 95vh;" class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                                     <div class="modal-dialog modal-lg">
                                                                         <div class="modal-content">
                                                                             <div class="modal-header">
@@ -234,7 +233,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                             </div>
                                                                             <div class="modal-body">
-                                                                                <iframe src="<?= $registro['medio']; ?>" width="100%" height="500px"></iframe>
+                                                                                <iframe src="<?= $registro['medio']; ?>" width="100%" height="400px"></iframe>
                                                                             </div>
                                                                             <div class="modal-footer">
                                                                                 <a href="imprimirplano.php?id=<?= $registro['id']; ?>" class="btn btn-primary"><i class="bi bi-file-pdf"></i> Imprmir</a>
@@ -244,19 +243,6 @@ if (mysqli_num_rows($result) > 0) {
                                                                 </div>
                                                             <?php
                                                             }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
-
-                                                            // Verifica si 'medio' está vacío o no
-                                                            if (empty($registro['medio'])) {
-                                                            ?>
-                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
-                                                            <?php
-                                                            } else {
-                                                            ?>
-                                                                <a style="min-width: 200px;" href="verplano.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm"><i class="bi bi-file-pdf"></i> Plano <?= $registro['nombreplano']; ?></a>
-                                                        <?php
-                                                            }
-                                                        }
                                                         ?>
                                                     </td>
                                                     <?php

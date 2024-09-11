@@ -97,7 +97,13 @@ if (isset($_SESSION['codigo'])) {
                                             <th>#</th>
                                             <th>Proyecto</th>
                                             <th>Cliente</th>
-                                            <th>Otros datos</th>
+                                            <?php
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                echo '<th>Presupuesto</th>';
+                                            }
+                                            ?>
+                                            <th>Fecha inicio</th>
+                                            <th>Fecha fin</th>
                                             <th>Prioridad</th>
                                             <th>Etapa diseño</th>
                                             <th>Etapa control</th>
@@ -137,14 +143,16 @@ if (isset($_SESSION['codigo'])) {
                                                     <td>
                                                         <p class="text-center"><?= $registro['cliente']; ?></p>
                                                     </td>
-                                                    <td style="min-width: 250px;">
-                                                        <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                            echo '<p><b>Presupuesto: </b>$' . $registro['presupuesto'] . '</p>';
-                                                        }
-                                                        ?>
-                                                        <p><b>Fecha inicio:</b> <?= $registro['fechainicio']; ?></p>
-                                                        <p><b>Fecha finalización:</b> <?= $registro['fechafin']; ?></p>
+                                                    <?php
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                        echo '<td><p>$' . $registro['presupuesto'] . '</p></td>';
+                                                    }
+                                                    ?>
+                                                    <td>
+                                                        <p><?= $registro['fechainicio']; ?></p>
+                                                    </td>
+                                                    <td>
+                                                        <p><?= $registro['fechafin']; ?></p>
                                                     </td>
                                                     <?php
                                                     if ($registro['prioridad'] == 1) {
@@ -594,7 +602,7 @@ if (isset($_SESSION['codigo'])) {
             });
             $('#miTabla, #miTablaDos').DataTable({
                 "order": [
-                    [4, "asc"]
+                    [6, "asc"]
                 ] // Ordenar la primera columna (índice 0) en orden descendente
             });
         });

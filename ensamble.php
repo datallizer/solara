@@ -205,41 +205,27 @@ if (mysqli_num_rows($result) > 0) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 8, 13])) {
-                                                            if (empty($registro['medio'])) {
+                                                        if (empty($registro['medio'])) {
                                                         ?>
-                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
-                                                            <?php
-                                                            } else {
-                                                            ?>
-                                                                <button style="width: 100%;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Diagrama <?= $registro['nombreplano']; ?></button>
-                                                                <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-                                                                    <div class="modal-dialog modal-lg">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
-                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                            </div>
-                                                                            <div class="modal-body">
-                                                                                <iframe src="<?= $registro['medio']; ?>" width="100%" height="600px"></iframe>
-                                                                            </div>
+                                                            <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
+                                                        <?php
+                                                        } else {
+                                                        ?>
+                                                            <button style="width: 100%;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Diagrama <?= $registro['nombreplano']; ?></button>
+                                                            <div style="95vh" class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <iframe src="<?= $registro['medio']; ?>" width="100%" height="480px"></iframe>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            <?php
-                                                            }
-                                                            ?>
-                                                            <?php
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
-                                                            if (empty($registro['medio'])) {
-                                                            ?>
-                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?></p>
-                                                            <?php
-                                                            } else {
-                                                            ?>
-                                                                <a style="width: 100%;" href="verdiagrama.php?id=<?= $registro['id']; ?>" class="btn btn-outline-dark btn-sm">Diagrama <?= $registro['nombreplano']; ?></a>
+                                                            </div>
                                                         <?php
-                                                            }
                                                         }
                                                         ?>
                                                     </td>
@@ -247,42 +233,42 @@ if (mysqli_num_rows($result) > 0) {
                                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                     ?>
                                                         <td>
-                                                        <?php
-                                                        $queryAsignacion = "SELECT asignaciondiagrama.*, asignaciondiagrama.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+                                                            <?php
+                                                            $queryAsignacion = "SELECT asignaciondiagrama.*, asignaciondiagrama.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                         FROM asignaciondiagrama
                                                         JOIN usuarios ON asignaciondiagrama.codigooperador = usuarios.codigo 
                                                         WHERE asignaciondiagrama.idplano = " . $registro['id'];
-                                                        $query_run_asignacion = mysqli_query($con, $queryAsignacion);
-                                                        if (mysqli_num_rows($query_run_asignacion) > 0) {
-                                                            foreach ($query_run_asignacion as $asignacion) {
-                                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                                            $query_run_asignacion = mysqli_query($con, $queryAsignacion);
+                                                            if (mysqli_num_rows($query_run_asignacion) > 0) {
+                                                                foreach ($query_run_asignacion as $asignacion) {
+                                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
 
-                                                                    if ($registro['estatusplano'] === '1') {
-                                                        ?>
-                                                                        <form class="deleteForm" action="codencargados.php" method="post">
-                                                                            <div style="display: flex; align-items: center;">
-                                                                                <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                                                <button type="button" class="deleteButton" name="deletecontrol" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id_encargado']; ?>">
-                                                                                    <i style="color: #d41111;" class="bi bi-x-lg"></i>
-                                                                                </button>
-                                                                            </div>
-                                                                        </form>
-                                                                    <?php
-                                                                    } else {
-                                                                    ?>
+                                                                        if ($registro['estatusplano'] === '1') {
+                                                            ?>
+                                                                            <form class="deleteForm" action="codencargados.php" method="post">
+                                                                                <div style="display: flex; align-items: center;">
+                                                                                    <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                                    <button type="button" class="deleteButton" name="deletecontrol" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id_encargado']; ?>">
+                                                                                        <i style="color: #d41111;" class="bi bi-x-lg"></i>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </form>
+                                                                        <?php
+                                                                        } else {
+                                                                        ?>
+                                                                            <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                        <?php
+                                                                        }
+                                                                    } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 13])) {
+                                                                        ?>
                                                                         <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                                    <?php
+                                                            <?php
                                                                     }
-                                                                } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 13])) {
-                                                                    ?>
-                                                                    <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
-                                                        <?php
                                                                 }
+                                                            } else {
+                                                                echo '-';
                                                             }
-                                                        } else {
-                                                            echo '-';
-                                                        }
-                                                        ?>
+                                                            ?>
                                                         </td>
                                                     <?php
                                                     }
