@@ -229,7 +229,7 @@ if (mysqli_num_rows($result) > 0) {
             <div class="container-fluid">
                 <div class="row justify-content-start mt-4 mb-5">
                     <?php
-                    $query = "SELECT * FROM proyecto WHERE estatus = 1 ORDER BY prioridad ASC";
+                    $query = "SELECT * FROM proyecto WHERE estatus = 1 AND nombre <> 'Maquinados' AND nombre <> 'Cotizaciones y Pruebas' ORDER BY prioridad ASC";
                     $query_run = mysqli_query($con, $query);
                     if (mysqli_num_rows($query_run) > 0) {
                         foreach ($query_run as $registro) {
@@ -443,7 +443,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                            <input type="hidden" name="id" value="<?= $registro['id']; ?>">
+                                                                <input type="hidden" name="id" value="<?= $registro['id']; ?>">
                                                                 <div class="form-floating col-12 mt-3">
                                                                     <select class="form-select" name="etapadiseño" id="etapadiseño">
                                                                         <option disabled>Seleccione la etapa</option>
@@ -569,7 +569,7 @@ if (mysqli_num_rows($result) > 0) {
                                         <p style="margin-top:0px;font-weight:600;">Encargado de proyecto</p>
                                         <div class="row justify-content-end">
                                             <?php
-                                            $queryAsignacion = "SELECT encargadoproyecto.*, encargadoproyecto.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo, usuarios.medio
+                                            $queryAsignacion = "SELECT encargadoproyecto.*, encargadoproyecto.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo, usuarios.medio, usuarios.rol
                                                         FROM encargadoproyecto
                                                         JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo 
                                                         WHERE encargadoproyecto.idproyecto = " . $registro['id'];
@@ -580,7 +580,20 @@ if (mysqli_num_rows($result) > 0) {
 
                                                     <div class="col-5 mb-3">
                                                         <img class="mb-1" src="<?= $asignacion['medio']; ?>" alt="">
-                                                        <p class="text-center" style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                        <p class="text-start" style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?><br><span style="color: #878787;" class="small">
+                                                                <?php
+                                                                $rol = $asignacion['rol'];
+                                                                if ($rol == 5) {
+                                                                    echo "Ing. Diseño";
+                                                                } elseif ($rol == 9) {
+                                                                    echo "Ing. Controles";
+                                                                } elseif ($rol == 13) {
+                                                                    echo "Ing. Lazer";
+                                                                } else {
+                                                                    echo "Rol desconocido"; // O cualquier otro mensaje por defecto
+                                                                }
+                                                                ?>
+                                                            </span></p>
 
                                                     </div>
                                             <?php

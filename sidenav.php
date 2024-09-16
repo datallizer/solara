@@ -104,7 +104,8 @@ if (isset($_POST['save'])) {
                   LEFT JOIN plano ON proyecto.id = plano.idproyecto
                   LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
                   WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) AND estatus = 1
-                  AND (proyecto.etapadiseño <> 6 OR proyecto.etapacontrol <> 6);";
+                  AND (proyecto.etapadiseño < 6 OR proyecto.etapacontrol < 6)
+                AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados');";
 
                 $resultado = mysqli_query($con, $queryProyecto);
                 $proyectoData = mysqli_fetch_assoc($resultado);
@@ -315,25 +316,25 @@ if (isset($_POST['save'])) {
                     }
                     ?>
 
-<?php
-                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
-                        if($numProyectos >= 1){
-                    ?>
-                                <li style="width: 400px;padding:0px 15px;">
-                                    <a href="dashboard.php" style="color:#000;">
-                                        <div class="row">
-                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil"></div>
-                                            <div class="col-9">
-                                                <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos</small>
-                                                <p>Tienes etapas desactualizadas en <?php echo $numProyectos; ?> proyectos</p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
                     <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                        if ($numProyectos >= 1) {
+                    ?>
+                            <li style="width: 400px;padding:0px 15px;">
+                                <a href="dashboard.php" style="color:#000;">
+                                    <div class="row">
+                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil"></div>
+                                        <div class="col-9">
+                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos</small>
+                                            <p>Tienes etapas desactualizadas en <?php echo $numProyectos; ?> proyectos que ya iniciaron manufactura</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                        }
                     }
-                }
                     ?>
                 </ul>
 
