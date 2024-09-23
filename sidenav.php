@@ -104,7 +104,7 @@ if (isset($_POST['save'])) {
                   LEFT JOIN plano ON proyecto.id = plano.idproyecto
                   LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
                   WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) AND estatus = 1
-                  AND (proyecto.etapadiseño < 6 OR proyecto.etapacontrol < 6)
+                  AND proyecto.etapa < 13
                 AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados');";
 
                 $resultado = mysqli_query($con, $queryProyecto);
@@ -326,7 +326,7 @@ if (isset($_POST['save'])) {
                                         <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil"></div>
                                         <div class="col-9">
                                             <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos</small>
-                                            <p>Tienes etapas desactualizadas en <?php echo $numProyectos; ?> proyectos que ya iniciaron manufactura</p>
+                                            <p>Tienes etapas desactualizadas en <?php echo $numProyectos; ?> proyectos</p>
                                         </div>
                                     </div>
                                 </a>
