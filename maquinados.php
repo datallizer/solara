@@ -192,7 +192,7 @@ if (mysqli_num_rows($result) > 0) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8, 13])) {
                                             $query = "SELECT proyecto.id, proyecto.prioridad, proyecto.nombre, plano.*
                                             FROM plano 
                                             JOIN proyecto ON plano.idproyecto = proyecto.id 
@@ -217,32 +217,32 @@ if (mysqli_num_rows($result) > 0) {
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
-                                                            // Verifica si 'medio' está vacío o no
-                                                            if (empty($registro['medio'])) {
+                                                        // Verifica si 'medio' está vacío o no
+                                                        if (empty($registro['medio'])) {
                                                         ?>
-                                                                <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?> </p>
-                                                            <?php
-                                                            } else {
-                                                            ?>
-                                                                <button style="min-width: 200px;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Plano <?= $registro['nombreplano']; ?></button>
-                                                                <div style="max-height: 95vh;" class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-                                                                    <div class="modal-dialog modal-lg">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
-                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                            </div>
-                                                                            <div class="modal-body">
-                                                                                <iframe src="<?= $registro['medio']; ?>" width="100%" height="400px"></iframe>
-                                                                            </div>
-                                                                            <div class="modal-footer">
-                                                                                <a href="imprimirplano.php?id=<?= $registro['id']; ?>" class="btn btn-primary"><i class="bi bi-file-pdf"></i> Imprmir</a>
-                                                                            </div>
+                                                            <p><b><?= $registro['nombreplano']; ?>:</b> <?= $registro['actividad']; ?> </p>
+                                                        <?php
+                                                        } else {
+                                                        ?>
+                                                            <button style="min-width: 200px;" type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><i class="bi bi-file-pdf"></i> Plano <?= $registro['nombreplano']; ?></button>
+                                                            <div style="max-height: 95vh;" class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="pdfModalLabel"><?= $registro['nombreplano']; ?></h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <iframe src="<?= $registro['medio']; ?>" width="100%" height="400px"></iframe>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <a href="imprimirplano.php?id=<?= $registro['id']; ?>" class="btn btn-primary"><i class="bi bi-file-pdf"></i> Imprmir</a>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            <?php
-                                                            }
+                                                            </div>
+                                                        <?php
+                                                        }
                                                         ?>
                                                     </td>
                                                     <?php
@@ -275,7 +275,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                             <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
                                                                         <?php
                                                                         }
-                                                                    } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
+                                                                    } else if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8, 13])) {
                                                                         ?>
                                                                         <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
                                                             <?php
@@ -336,7 +336,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         while ($row = mysqli_fetch_assoc($motivosResult)) {
                                                             $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
                                                         }
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8,13])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8, 13])) {
                                                             $countQuery = "SELECT COUNT(*) as count
         FROM plano
         JOIN asignacionplano ON asignacionplano.idplano = plano.id
@@ -415,7 +415,7 @@ if (mysqli_num_rows($result) > 0) {
     </div>
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="tituloPlano">NUEVO PLANO</h1>
@@ -424,88 +424,95 @@ if (mysqli_num_rows($result) > 0) {
                 </div>
                 <div class="modal-body">
                     <form action="codemaquinados.php" method="POST" class="row" enctype="multipart/form-data">
-                        <div class="form-floating col-8 mb-3">
-                            <select class="form-select" name="idproyecto" id="idproyecto">
-                                <option disabled selected>Seleccione un proyecto</option>
+                        <div class="col-7 mb-3">
+                            <div class="row">
+                                <div class="form-floating col-8 mb-3">
+                                    <select class="form-select" name="idproyecto" id="idproyecto">
+                                        <option disabled selected>Seleccione un proyecto</option>
+                                        <?php
+                                        // Consulta a la base de datos para obtener los proyectos
+                                        $query = "SELECT * FROM proyecto WHERE estatus = 1";
+                                        $result = mysqli_query($con, $query);
+
+                                        // Verificar si hay resultados
+                                        if (mysqli_num_rows($result) > 0) {
+                                            while ($proyecto = mysqli_fetch_assoc($result)) {
+                                                // Construir el texto de la opción con nombre del proyecto
+                                                $opcion = $proyecto['nombre'];
+                                                // Obtener el ID del usuario
+                                                $idProyecto = $proyecto['id'];
+                                                // Mostrar la opción con el valor igual al ID del proyecto
+                                                echo "<option value='$idProyecto' " . ($registro['id'] == $idProyecto ? 'selected' : '') . ">$opcion</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                    <label for="idproyecto">Proyecto asociado</label>
+                                </div>
+
+                                <div class="col-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onchange="toggleElements()">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault" id="labelPlano">Plano</label>
+                                        <label class="form-check-label" for="flexSwitchCheckDefault" id="labelActividad" style="display: none;">Actividad</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-floating mt-1">
+                                    <input type="text" class="form-control" name="nombreplano" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
+                                    <label for="nombreplano" id="nombrePlano">Nombre del plano</label>
+                                    <label for="nombreplano" id="nombreActividad" style="display: none;">Nombre de la actividad</label>
+                                </div>
+
+                                <div class="mt-3" id="planoElements">
+                                    <label for="medio" class="form-label">Plano PDF</label>
+                                    <input class="form-control" type="file" id="medio" name="medio" max="100000">
+                                </div>
+
+                                <div class="form-floating mt-3" id="actividadElements" style="display: none;">
+                                    <input type="text" class="form-control" name="actividad" id="actividad" placeholder="Actividad" autocomplete="off">
+                                    <label for="actividad">Detalles de la actividad</label>
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    <input type="text" class="form-control" name="piezas" id="piezas" placeholder="Piezas" autocomplete="off" required>
+                                    <label for="piezas">Número de piezas</label>
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    <select class="form-select" name="nivel" id="nivel" autocomplete="off" required>
+                                        <option selected disabled>Seleccione el nivel</option>
+                                        <option value="1">Nivel 1</option>
+                                        <option value="2">Nivel 2</option>
+                                        <option value="3">Nivel 3</option>
+                                        <option value="4">Nivel 4</option>
+                                    </select>
+                                    <label for="nivel">Nivel de pieza</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-5">
+                            <div class="form-check mt-3 m-3">
                                 <?php
-                                // Consulta a la base de datos para obtener los proyectos
-                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
+                                // Consulta a la base de datos para obtener los usuarios con rol igual a 8
+                                $query = "SELECT * FROM usuarios WHERE (rol = 8 OR rol = 13) AND estatus = 1";
                                 $result = mysqli_query($con, $query);
 
                                 // Verificar si hay resultados
                                 if (mysqli_num_rows($result) > 0) {
-                                    while ($proyecto = mysqli_fetch_assoc($result)) {
-                                        // Construir el texto de la opción con nombre del proyecto
-                                        $opcion = $proyecto['nombre'];
-                                        // Obtener el ID del usuario
-                                        $idProyecto = $proyecto['id'];
-                                        // Mostrar la opción con el valor igual al ID del proyecto
-                                        echo "<option value='$idProyecto' " . ($registro['id'] == $idProyecto ? 'selected' : '') . ">$opcion</option>";
+                                    while ($usuario = mysqli_fetch_assoc($result)) {
+                                        $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
+                                        $idUsuario = $usuario['codigo'];
+                                        $idMedio = $usuario['medio'];
+
+                                        // Cambio en el nombre del campo para que se envíen como un array
+                                        echo "<input class='form-check-input mb-2' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
+                                        echo "<label class='form-check-label mb-2' for='codigooperador_$idUsuario'><img style='width:40px;' src='$idMedio' alt=''> $nombreCompleto</label><br>";
                                     }
                                 }
                                 ?>
-                            </select>
-                            <label for="idproyecto">Proyecto asociado</label>
-                        </div>
-
-                        <div class="col-4 mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onchange="toggleElements()">
-                                <label class="form-check-label" for="flexSwitchCheckDefault" id="labelPlano">Plano</label>
-                                <label class="form-check-label" for="flexSwitchCheckDefault" id="labelActividad" style="display: none;">Actividad</label>
                             </div>
-                        </div>
-
-                        <div class="form-floating col-12 mt-1">
-                            <input type="text" class="form-control" name="nombreplano" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
-                            <label for="nombreplano" id="nombrePlano">Nombre del plano</label>
-                            <label for="nombreplano" id="nombreActividad" style="display: none;">Nombre de la actividad</label>
-                        </div>
-
-                        <div class="mt-3" id="planoElements">
-                            <label for="medio" class="form-label">Plano PDF</label>
-                            <input class="form-control" type="file" id="medio" name="medio" max="100000">
-                        </div>
-
-                        <div class="form-floating col-12 mt-3" id="actividadElements" style="display: none;">
-                            <input type="text" class="form-control" name="actividad" id="actividad" placeholder="Actividad" autocomplete="off">
-                            <label for="actividad">Detalles de la actividad</label>
-                        </div>
-
-                        <div class="form-floating col-12 col-md-5 mt-3">
-                            <input type="text" class="form-control" name="piezas" id="piezas" placeholder="Piezas" autocomplete="off" required>
-                            <label for="piezas">Número de piezas</label>
-                        </div>
-
-                        <div class="form-floating col-12 col-md-7 mt-3">
-                            <select class="form-select" name="nivel" id="nivel" autocomplete="off" required>
-                                <option selected disabled>Seleccione el nivel</option>
-                                <option value="1">Nivel 1</option>
-                                <option value="2">Nivel 2</option>
-                                <option value="3">Nivel 3</option>
-                                <option value="4">Nivel 4</option>
-                            </select>
-                            <label for="nivel">Nivel de pieza</label>
-                        </div>
-
-                        <div class="form-check col-12 mt-3 m-3">
-                            <?php
-                            // Consulta a la base de datos para obtener los usuarios con rol igual a 8
-                            $query = "SELECT * FROM usuarios WHERE rol = 8 OR rol = 13 AND estatus = 1";
-                            $result = mysqli_query($con, $query);
-
-                            // Verificar si hay resultados
-                            if (mysqli_num_rows($result) > 0) {
-                                while ($usuario = mysqli_fetch_assoc($result)) {
-                                    $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
-                                    $idUsuario = $usuario['codigo'];
-
-                                    // Cambio en el nombre del campo para que se envíen como un array
-                                    echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                    echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
-                                }
-                            }
-                            ?>
                         </div>
 
                         <div class="modal-footer">
