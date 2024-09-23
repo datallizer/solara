@@ -340,8 +340,8 @@ if (isset($_POST['save'])) {
 
             </li>
             <li class="m-1">
-                <button type="button" style="color:#fff;padding:6px 7px;border-radius:5px;" class="btn nav-link btn-primary" name="save" data-bs-toggle="modal" data-bs-target="#exampleModalMensaje">
-                    <i class="bi bi-chat-left-dots-fill"></i>
+                <button type="button" style="color:#fff;padding:6px 7px;border-radius:5px;max-height:30px;" class="btn nav-link btn-primary" name="save" data-bs-toggle="modal" data-bs-target="#exampleModalMensaje">
+                    <i style="max-height:30px;" class="bi bi-chat-left-dots-fill"></i>
                 </button>
             </li>
             <li class="m-1">

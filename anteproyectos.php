@@ -97,20 +97,10 @@ if (isset($_SESSION['codigo'])) {
                                             <th>#</th>
                                             <th>Proyecto</th>
                                             <th>Cliente</th>
+                                            <th>Etapa</th>
                                             <?php
                                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                echo '<th>Presupuesto</th>';
-                                            }
-                                            ?>
-                                            <th>Fecha inicio</th>
-                                            <th>Fecha fin</th>
-                                            <th>Prioridad</th>
-                                            <th>Etapa diseño</th>
-                                            <th>Etapa control</th>
-                                            <th>Detalles</th>
-                                            <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                echo '<th>Encargado(s) de proyecto</th>';
+                                                echo '<th>Encargado de anteproyecto</th>';
                                             }
                                             ?>
                                             <th>Accion</th>
@@ -127,7 +117,7 @@ if (isset($_SESSION['codigo'])) {
                                         //         AND proyecto.estatus = 1
                                         //         ORDER BY proyecto.prioridad ASC";
                                         // } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                        $query = "SELECT * FROM proyecto WHERE estatus = 3 ORDER BY prioridad ASC";
+                                        $query = "SELECT * FROM proyecto WHERE estatus = 2 ORDER BY prioridad ASC";
                                         //}
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
@@ -143,133 +133,22 @@ if (isset($_SESSION['codigo'])) {
                                                     <td>
                                                         <p class="text-center"><?= $registro['cliente']; ?></p>
                                                     </td>
-                                                    <?php
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                        echo '<td><p>$' . $registro['presupuesto'] . '</p></td>';
-                                                    }
-                                                    ?>
-                                                    <td>
-                                                        <p><?= $registro['fechainicio']; ?></p>
-                                                    </td>
-                                                    <td>
-                                                        <p><?= $registro['fechafin']; ?></p>
-                                                    </td>
-                                                    <?php
-                                                    if ($registro['prioridad'] == 1) {
-                                                        echo "<td style='background-color: #ff0000;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
-                                                    } elseif ($registro['prioridad'] == 2) {
-                                                        echo "<td style='background-color: #ff1a1a;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 3) {
-                                                        echo "<td style='background-color: #ff3333;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
-                                                    } elseif ($registro['prioridad'] == 4) {
-                                                        echo "<td style='background-color: #ff4d4d;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 5) {
-                                                        echo "<td style='background-color: #ff6666;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 6) {
-                                                        echo "<td style='background-color: #ff8080;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 7) {
-                                                        echo "<td style='background-color: #ff9999;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 8) {
-                                                        echo "<td style='background-color: #ffb2b2;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 9) {
-                                                        echo "<td style='background-color: #ffcccc;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 10) {
-                                                        echo "<td style='background-color: #ffe5e5;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                    } elseif ($registro['prioridad'] == 11) {
-                                                        echo "<td style='background-color: #ffffb3;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 12) {
-                                                        echo "<td style='background-color: #ffff99;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 13) {
-                                                        echo "<td style='background-color: #ffff80;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 14) {
-                                                        echo "<td style='background-color: #ffff66;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 15) {
-                                                        echo "<td style='background-color: #ffff4d;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 16) {
-                                                        echo "<td style='background-color: #ffff33;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 17) {
-                                                        echo "<td style='background-color: #ffff1a;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 18) {
-                                                        echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 19) {
-                                                        echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 20) {
-                                                        echo "<td style='background-color: #e5e500;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                    } elseif ($registro['prioridad'] == 21) {
-                                                        echo "<td style='background-color: #c6e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 22) {
-                                                        echo "<td style='background-color: #a8e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 23) {
-                                                        echo "<td style='background-color: #89e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 24) {
-                                                        echo "<td style='background-color: #67e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 25) {
-                                                        echo "<td style='background-color: #58e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 26) {
-                                                        echo "<td style='background-color: #39e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 27) {
-                                                        echo "<td style='background-color: #26e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 28) {
-                                                        echo "<td style='background-color: #00e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 29) {
-                                                        echo "<td style='background-color: #00e51b;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } elseif ($registro['prioridad'] == 30) {
-                                                        echo "<td style='background-color: #00e539;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                    } else {
-                                                        echo "<td>" . $registro['prioridad'] . "</td>"; // Valor fuera del rango
-                                                    }
-                                                    ?>
-
-                                                    <td>
-                                                        <p><?php
-                                                            if ($registro['etapadiseño'] === '1') {
-                                                                echo "Diseño";
-                                                            } else if ($registro['etapadiseño'] === '2') {
-                                                                echo "Revisión interna";
-                                                            } else if ($registro['etapadiseño'] === '3') {
-                                                                echo "Revisión con cliente";
-                                                            } else if ($registro['etapadiseño'] === '4') {
-                                                                echo "Planos";
-                                                            } else if ($registro['etapadiseño'] === '5') {
-                                                                echo "Bom";
-                                                            } else if ($registro['etapadiseño'] === '6') {
-                                                                echo "Manufactura";
-                                                            } else if ($registro['etapadiseño'] === '7') {
-                                                                echo "Remediación";
-                                                            } else if ($registro['etapadiseño'] === '8') {
-                                                                echo "Documentación";
-                                                            } else {
-                                                                echo "Error, contacte a soporte";
-                                                            }
-                                                            ?></p>
-                                                    </td>
                                                     <td style="cursor: all-scroll;">
                                                         <p><?php
-                                                            if ($registro['etapacontrol'] === '1') {
-                                                                echo "Diseño";
-                                                            } else if ($registro['etapacontrol'] === '2') {
-                                                                echo "Revisión interna";
-                                                            } else if ($registro['etapacontrol'] === '3') {
-                                                                echo "Revisión con cliente";
-                                                            } else if ($registro['etapacontrol'] === '4') {
-                                                                echo "Diagramas";
-                                                            } else if ($registro['etapacontrol'] === '5') {
-                                                                echo "Bom";
-                                                            } else if ($registro['etapacontrol'] === '6') {
-                                                                echo "Manufactura";
-                                                            } else if ($registro['etapacontrol'] === '7') {
-                                                                echo "Programación";
-                                                            } else if ($registro['etapacontrol'] === '8') {
-                                                                echo "Debugging";
-                                                            } else if ($registro['etapacontrol'] === '9') {
-                                                                echo "Documentación";
+                                                            if ($registro['etapa'] === '1') {
+                                                                echo "Recepción de RFQ";
+                                                            } else if ($registro['etapa'] === '2') {
+                                                                echo "Visita levantamiento con cliente";
+                                                            } else if ($registro['etapa'] === '3') {
+                                                                echo "Generacion de diseño/diagrama a bloques";
+                                                            } else if ($registro['etapa'] === '4') {
+                                                                echo "Generación de BOM's";
+                                                            } else if ($registro['etapa'] === '5') {
+                                                                echo "Cotización";
                                                             } else {
-                                                                echo "Error, contacte a soporte";
+                                                                echo "Asigne una etapa manualmente";
                                                             }
                                                             ?></p>
-                                                    </td>
-                                                    <td>
-                                                        <p><?= $registro['detalles']; ?></p>
                                                     </td>
 
                                                     <?php
@@ -305,11 +184,12 @@ if (isset($_SESSION['codigo'])) {
                                                     }
                                                     ?>
                                                     <td>
-                                                        <a href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                        <a style="color:#fff;" href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                             echo '<form action="codeproyecto.php" method="POST" class="d-inline">
-                                                                        <button type="submit" name="archivar" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-check-lg"></i></button>
+                                                                        <button type="submit" name="aprobar" value="' . $registro['id'] . '" class="btn btn-success btn-sm m-1"><i class="bi bi-check2-circle"></i></button>
+                                                                        <button type="submit" name="archivaranteproyecto" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-x-circle"></i></button>
                                                                     </form>';
                                                         }
                                                         ?>
@@ -318,7 +198,7 @@ if (isset($_SESSION['codigo'])) {
                                         <?php
                                             }
                                         } else {
-                                            echo "<td colspan='12'><p>No se encontro ningun registro</p></td>";
+                                            echo "<td colspan='6'><p>No se encontro ningun registro</p></td>";
                                         }
                                         ?>
                                     </tbody>
@@ -353,120 +233,18 @@ if (isset($_SESSION['codigo'])) {
                                 <label style="margin-left: 0px !important;" for="cliente">Cliente</label>
                             </div>
 
-                            <div class="form-floating mt-3">
-                                <input type="text" class="form-control" name="presupuesto" id="presupuesto" placeholder="Presupuesto" autocomplete="off" required>
-                                <label style="margin-left: 0px !important;" for="presupuesto">Presupuesto</label>
-                            </div>
-
-                            <div class="form-floating mt-3">
-                                <select class="form-select" name="prioridad" id="prioridad" autocomplete="off" required>
-                                    <option value="1" selected>Seleccione un nivel de prioridad</option>
-                                    <option value="1">Prioridad 1</option>
-                                    <option value="2">Prioridad 2</option>
-                                    <option value="3">Prioridad 3</option>
-                                    <option value="4">Prioridad 4</option>
-                                    <option value="5">Prioridad 5</option>
-                                    <option value="6">Prioridad 6</option>
-                                    <option value="7">Prioridad 7</option>
-                                    <option value="8">Prioridad 8</option>
-                                    <option value="9">Prioridad 9</option>
-                                    <option value="10">Prioridad 10</option>
-                                    <option value="11">Prioridad 11</option>
-                                    <option value="12">Prioridad 12</option>
-                                    <option value="13">Prioridad 13</option>
-                                    <option value="14">Prioridad 14</option>
-                                    <option value="15">Prioridad 15</option>
-                                    <option value="16">Prioridad 16</option>
-                                    <option value="17">Prioridad 17</option>
-                                    <option value="18">Prioridad 18</option>
-                                    <option value="19">Prioridad 19</option>
-                                    <option value="20">Prioridad 20</option>
-                                    <option value="21">Prioridad 21</option>
-                                    <option value="22">Prioridad 22</option>
-                                    <option value="23">Prioridad 23</option>
-                                    <option value="24">Prioridad 24</option>
-                                    <option value="25">Prioridad 25</option>
-                                    <option value="26">Prioridad 26</option>
-                                    <option value="27">Prioridad 27</option>
-                                    <option value="28">Prioridad 28</option>
-                                    <option value="29">Prioridad 29</option>
-                                    <option value="30">Prioridad 30</option>
-                                </select>
-                                <label style="margin-left: 0px !important;" for="prioridad">Prioridad del proyecto</label>
-                            </div>
-
-                            <div class="form-floating mt-3 mt-3" hidden>
-                                <select class="form-select" name="etapadiseño" id="etapadiseño" autocomplete="off" required>
+                            <div class="form-floating mt-3 mt-3">
+                                <select class="form-select" name="etapa" id="etapa" autocomplete="off" required>
                                     <option disabled>Seleccione una etapa</option>
-                                    <option selected value="1">Diseño</option>
-                                    <option value="2">Revisión interna</option>
-                                    <option value="3">Revisión con cliente</option>
-                                    <option value="4">Planos</option>
-                                    <option value="5">Bom</option>
-                                    <option value="6">Manufactura</option>
-                                    <option value="7">Remediación</option>
-                                    <option value="8">Documentación</option>
+                                    <option selected value="1">Recepción de RFQ</option>
+                                    <option value="2">Visita/levantamiento con cliente</option>
+                                    <option value="3">Generación de diseño/diagrama a bloques</option>
+                                    <option value="4">Generación de BOM's</option>
+                                    <option value="5">Cotización</option>
                                 </select>
-                                <label style="margin-left: 0px !important;" for="etapadiseño">Etapa de diseño:</label>
+                                <label style="margin-left: 0px !important;" for="etapa">Etapa de pretrabajo:</label>
                             </div>
 
-                            <div class="form-floating mt-3 mt-3" hidden>
-                                <select class="form-select" name="etapacontrol" id="etapacontrol" autocomplete="off" required>
-                                    <option disabled>Seleccione una etapa</option>
-                                    <option selected value="1">Diseño</option>
-                                    <option value="2">Revisión interna</option>
-                                    <option value="3">Revisión con cliente</option>
-                                    <option value="4">Diagramas</option>
-                                    <option value="5">Bom</option>
-                                    <option value="6">Manufactura</option>
-                                    <option value="7">Programación</option>
-                                    <option value="8">Debugging</option>
-                                    <option value="9">Documentación</option>
-                                </select>
-                                <label style="margin-left: 0px !important;" for="etapacontrol">Etapa de control:</label>
-                            </div>
-
-                            <div class="form-floating mt-3 mt-3" hidden>
-                                <select class="form-select" name="etapatcontrol" id="etapatcontrol" autocomplete="off" required hidden>
-                                    <option disabled>Seleccione una etapa</option>
-                                    <option selected value="1">Revisión BOM controles</option>
-                                    <option value="2">Armado de tableros de control</option>
-                                    <option value="3">Pruebas electricas y de comunicación</option>
-                                    <option value="4">Remediación</option>
-                                    <option value="5">Ensamble en maquinaria</option>
-                                    <option value="6">Ruteo final</option>
-                                    <option value="7">Etiquetado</option>
-                                </select>
-                                <label style="margin-left: 0px !important;" for="etapatcontrol">Etapa ensamble técnico control:</label>
-                            </div>
-
-                            <div class="form-floating mt-3 mt-3" hidden>
-                                <select class="form-select" name="etapamecanica" id="etapamecanica" autocomplete="off" required>
-                                    <option disabled>Seleccione una etapa</option>
-                                    <option selected value="1">Revisión BOM mecánico</option>
-                                    <option value="2">Armado de componentes mecánicos</option>
-                                    <option value="3">Pruebas de ensamble</option>
-                                    <option value="4">Remediación</option>
-                                    <option value="5">Desensamble para acabados</option>
-                                    <option value="6">Armado final</option>
-                                </select>
-                                <label style="margin-left: 0px !important;" for="etapamecanica">Etapa ensamble mecánica/neumatica:</label>
-                            </div>
-
-                            <div class="form-floating mt-3">
-                                <input type="date" class="form-control" name="fechainicio" id="fechainicio" placeholder="Fecha de inicio" autocomplete="off" required>
-                                <label style="margin-left: 0px !important;" for="fechainicio">Fecha de inicio</label>
-                            </div>
-
-                            <div class="form-floating mt-3">
-                                <input type="date" class="form-control" name="fechafin" id="fechafin" placeholder="Fecha de finalizacion" autocomplete="off" required>
-                                <label style="margin-left: 0px !important;" for="fechafin">Fecha de finalizacion</label>
-                            </div>
-
-                            <div class="form-floating mt-3">
-                                <textarea class="form-control" placeholder="Detalles" id="detalles" name="detalles" style="height: 150px" required></textarea>
-                                <label style="margin-left: 0px !important;" for="detalles">Detalles del proyecto:</label>
-                            </div>
                         </div>
 
                         <div class="col-5">
@@ -494,7 +272,7 @@ if (isset($_SESSION['codigo'])) {
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="save">Guardar</button>
+                            <button type="submit" class="btn btn-primary" name="anteproyecto">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -517,7 +295,7 @@ if (isset($_SESSION['codigo'])) {
                                 <option disabled selected>Seleccione un proyecto</option>
                                 <?php
                                 // Consulta a la base de datos para obtener los proyectos
-                                $query = "SELECT * FROM proyecto WHERE estatus = 1";
+                                $query = "SELECT * FROM proyecto WHERE estatus = 2";
                                 $result = mysqli_query($con, $query);
 
                                 // Verificar si hay resultados
@@ -572,7 +350,34 @@ if (isset($_SESSION['codigo'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
-        $(document).ready(function() {
+         $(document).ready(function() {
+            // Cambiar a usar clase en lugar de ID
+            $('.deleteButton').on('click', function(event) {
+                event.preventDefault(); // Previene el envío del formulario por defecto
+                const form = $(this).closest('form'); // Encuentra el formulario más cercano al botón
+                const deleteValue = $(this).data('id'); // Obtiene el valor del data-id del botón
+                Swal.fire({
+                    title: 'ADVERTENCIA',
+                    text: '¿Estás seguro que deseas eliminar la asignación del proyecto al usuario actual? Deberás asignar un usuario nuevo.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Añadir un campo oculto con el valor del botón al formulario
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'deleteproyecto',
+                            value: deleteValue
+                        }).appendTo(form);
+                        // Si el usuario confirma, se envía el formulario
+                        form.submit();
+                    }
+                });
+            });
             $('#miTabla').DataTable({
                 "order": [
                     [6, "asc"]

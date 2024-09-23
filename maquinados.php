@@ -423,7 +423,7 @@ if (mysqli_num_rows($result) > 0) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="codemaquinados.php" method="POST" class="row" enctype="multipart/form-data">
+                    <form action="codemaquinados.php" method="POST" class="row mb-0" enctype="multipart/form-data">
                         <div class="col-7 mb-3">
                             <div class="row">
                                 <div class="form-floating col-8 mb-3">

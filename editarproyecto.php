@@ -65,7 +65,7 @@ if (isset($_SESSION['codigo'])) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container mt-5">
@@ -84,17 +84,29 @@ if (isset($_SESSION['codigo'])) {
                             if (mysqli_num_rows($query_run) > 0) {
                                 $registro = mysqli_fetch_array($query_run);
                                 $prioridad_actual = $registro['prioridad'];
-                                $diseño_actual = $registro['etapadiseño'];
-                                $control_actual = $registro['etapacontrol'];
-                                $tcontrol_actual = $registro['etapatcontrol'];
-                                $mecanica_actual = $registro['etapamecanica'];
+                                // $diseño_actual = $registro['etapadiseño'];
+                                // $control_actual = $registro['etapacontrol'];
+                                // $tcontrol_actual = $registro['etapatcontrol'];
+                                // $mecanica_actual = $registro['etapamecanica'];
                                 $estatus_actual = $registro['estatus'];
+                                $etapa_actual = $registro['etapa'];
 
                         ?>
                                 <div class="card">
                                     <div class="card-header">
                                         <h4 style="text-transform: uppercase;">EDITAR PROYECTO <?= $registro['nombre']; ?>
-                                            <a href="proyectos.php" class="btn btn-danger btn-sm float-end">Regresar</a>
+                                            <?php
+                                            if ($registro['estatus'] == 1) {
+                                            ?>
+                                                <a href="proyectos.php" class="btn btn-danger btn-sm float-end">Regresar</a>
+                                            <?php
+                                            } elseif ($registro['estatus'] == 2) {
+                                            ?>
+                                                <a href="anteproyectos.php" class="btn btn-danger btn-sm float-end">Regresar</a>
+                                            <?php
+                                            }
+                                            ?>
+
                                         </h4>
                                     </div>
                                     <div class="card-body">
@@ -113,13 +125,14 @@ if (isset($_SESSION['codigo'])) {
 
 
                                                 <div class="form-floating col-12 col-md-6 mt-3">
-                                                    <input type="text" class="form-control" name="cliente" id="cliente" value="<?= $registro['cliente']; ?>" readonly>
+                                                    <input type="text" class="form-control" name="cliente" id="cliente" value="<?= $registro['cliente']; ?>">
                                                     <label for="cliente">Cliente</label>
                                                 </div>
 
                                                 <?php
-                                                if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                    echo '<div class="form-floating col-12 col-md-6 mt-3">
+                                                if ($registro['estatus'] == 1) {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                        echo '<div class="form-floating col-12 col-md-6 mt-3">
                                                         <input type="text" class="form-control" name="presupuesto" id="presupuesto" value="' . $registro['presupuesto'] . '">
                                                         <label for="presupuesto">Presupuesto</label>
                                                     </div>
@@ -138,6 +151,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <option disabled>Seleccione un estatus</option>
                                                         <option value="0" ' . ($estatus_actual == 0 ? 'selected' : '') . '>Inactivo</option>
                                                         <option value="1" ' . ($estatus_actual == 1 ? 'selected' : '') . '>Activo</option>
+                                                        <option value="2" ' . ($estatus_actual == 2 ? 'selected' : '') . '>Anteproyecto</option>
                                                         </select>
                                                         <label for="estatus">Estatus</label>
                                                     </div>
@@ -145,79 +159,84 @@ if (isset($_SESSION['codigo'])) {
                                                     <div class="form-floating col-3 mt-3">
                                                         <select class="form-select" name="prioridad" id="prioridad">
                                                         <option disabled>Seleccione la prioridad</option>';
-                                                    for ($i = 1; $i <= 30; $i++) {
-                                                        echo '<option value="' . $i . '" ' . ($prioridad_actual == $i ? 'selected' : '') . '>Nivel ' . $i . '</option>';
-                                                    }
-                                                    echo '</select>
+                                                        for ($i = 1; $i <= 30; $i++) {
+                                                            echo '<option value="' . $i . '" ' . ($prioridad_actual == $i ? 'selected' : '') . '>Nivel ' . $i . '</option>';
+                                                        }
+                                                        echo '</select>
                                                     <label for="prioridad">Prioridad</label>
+                                                    </div>';
+                                                    }
+                                                } elseif ($registro['estatus'] == 2) {
+                                                    echo '
+                                                    <div class="form-floating col-6 mt-3">
+                                                        <select class="form-select" name="estatus" id="estatus">
+                                                        <option disabled>Seleccione un estatus</option>
+                                                        <option value="2" ' . ($estatus_actual == 2 ? 'selected' : '') . '>Anteproyecto</option>
+                                                        <option value="3" ' . ($estatus_actual == 3 ? 'selected' : '') . '>Rechazado</option>
+                                                        </select>
+                                                        <label for="estatus">Estatus</label>
                                                     </div>';
                                                 }
                                                 ?>
 
-
-
-                                                <div class="form-floating col-3 mt-3">
-                                                    <select class="form-select" name="etapadiseño" id="etapadiseño">
-                                                        <option disabled>Seleccione la etapa</option>
-                                                        <option value="1" <?= ($diseño_actual == 1) ? 'selected' : ''; ?>>Diseño</option>
-                                                        <option value="2" <?= ($diseño_actual == 2) ? 'selected' : ''; ?>>Revisión interna</option>
-                                                        <option value="3" <?= ($diseño_actual == 3) ? 'selected' : ''; ?>>Revisión con cliente</option>
-                                                        <option value="4" <?= ($diseño_actual == 4) ? 'selected' : ''; ?>>Planos</option>
-                                                        <option value="5" <?= ($diseño_actual == 5) ? 'selected' : ''; ?>>Bom</option>
-                                                        <option value="6" <?= ($diseño_actual == 6) ? 'selected' : ''; ?>>Manufactura</option>
-                                                        <option value="7" <?= ($diseño_actual == 7) ? 'selected' : ''; ?>>Remediación</option>
-                                                        <option value="8" <?= ($diseño_actual == 8) ? 'selected' : ''; ?>>Documentación</option>
-                                                    </select>
-                                                    <label for="etapadiseño">Etapa de diseño</label>
-                                                </div>
-
-                                                <div class="form-floating col-3 mt-3">
-                                                    <select class="form-select" name="etapacontrol" id="etapacontrol">
-                                                        <option disabled>Seleccione la etapa</option>
-                                                        <option value="1" <?= ($control_actual == 1) ? 'selected' : ''; ?>>Diseño</option>
-                                                        <option value="2" <?= ($control_actual == 2) ? 'selected' : ''; ?>>Revisión interna</option>
-                                                        <option value="3" <?= ($control_actual == 3) ? 'selected' : ''; ?>>Revisión con cliente</option>
-                                                        <option value="4" <?= ($control_actual == 4) ? 'selected' : ''; ?>>Diagramas</option>
-                                                        <option value="5" <?= ($control_actual == 5) ? 'selected' : ''; ?>>Bom</option>
-                                                        <option value="6" <?= ($control_actual == 6) ? 'selected' : ''; ?>>Manufactura</option>
-                                                        <option value="7" <?= ($control_actual == 7) ? 'selected' : ''; ?>>Programación</option>
-                                                        <option value="8" <?= ($control_actual == 8) ? 'selected' : ''; ?>>Debugging</option>
-                                                        <option value="9" <?= ($control_actual == 9) ? 'selected' : ''; ?>>Documentación</option>
-                                                    </select>
-                                                    <label for="etapacontrol">Etapa de control</label>
-                                                </div>
-
+                                                <?php
+                                                if ($registro['estatus'] == 1) {
+                                                ?>
                                                 <div class="form-floating col-6 mt-3">
-                                                    <select class="form-select" name="etapamecanica" id="etapamecanica">
-                                                        <option disabled>Seleccione la etapa</option>
-                                                        <option value="1" <?= ($mecanica_actual == 1) ? 'selected' : ''; ?>>Revisión BOM mecánico</option>
-                                                        <option value="2" <?= ($mecanica_actual == 2) ? 'selected' : ''; ?>>Armado de componentes mecánicos</option>
-                                                        <option value="3" <?= ($mecanica_actual == 3) ? 'selected' : ''; ?>>Pruebas de ensamble</option>
-                                                        <option value="4" <?= ($mecanica_actual == 4) ? 'selected' : ''; ?>>Remediación</option>
-                                                        <option value="5" <?= ($mecanica_actual == 5) ? 'selected' : ''; ?>>Desensamble para acabados</option>
-                                                        <option value="6" <?= ($mecanica_actual == 6) ? 'selected' : ''; ?>>Armado final</option>
+                                                    <select class="form-select" name="etapa" id="etapa">
+                                                        <option disabled>Seleccione una etapa</option>
+                                                        <option disabled>------- Ejecución -------</option>
+                                                        <option value="6" <?= ($etapa_actual == 6) ? 'selected' : ''; ?>>Recepción de PO</option>
+                                                        <option value="7" <?= ($etapa_actual == 7) ? 'selected' : ''; ?>>Kick off meeting</option>
+                                                        <option value="8" <?= ($etapa_actual == 8) ? 'selected' : ''; ?>>Visita formal de levantamiento</option>
+                                                        <option value="9" <?= ($etapa_actual == 9) ? 'selected' : ''; ?>>Prediseño (mecánico y eléctrico)</option>
+                                                        <option value="10" <?= ($etapa_actual == 10) ? 'selected' : ''; ?>>Revisión de diseño/aprobación de cliente</option>
+                                                        <option value="11" <?= ($etapa_actual == 11) ? 'selected' : ''; ?>>Actualización de BOM</option>
+                                                        <option value="12" <?= ($etapa_actual == 12) ? 'selected' : ''; ?>>Colocación de PO's</option>
+                                                        <option value="13" <?= ($etapa_actual == 13) ? 'selected' : ''; ?>>Construcción del equipo</option>
+                                                        <option value="14" <?= ($etapa_actual == 14) ? 'selected' : ''; ?>>Pruebas internas iniciales</option>
+                                                        <option value="15" <?= ($etapa_actual == 15) ? 'selected' : ''; ?>>Debugging interno y pruebas secundarias</option>
+                                                        <option value="16" <?= ($etapa_actual == 16) ? 'selected' : ''; ?>>Buf off interno</option>
+                                                        <option value="17" <?= ($etapa_actual == 17) ? 'selected' : ''; ?>>Buy off con cliente</option>
+                                                        <option value="18" <?= ($etapa_actual == 18) ? 'selected' : ''; ?>>Empaque y envío a instalaciones de cliente</option>
+                                                        <option disabled>------- Validación -------</option>
+                                                        <option value="19" <?= ($etapa_actual == 19) ? 'selected' : ''; ?>>Instalación con cliente</option>
+                                                        <option value="20" <?= ($etapa_actual == 20) ? 'selected' : ''; ?>>Arranque y validación de equipo (buy off)</option>
+                                                        <option value="21" <?= ($etapa_actual == 21) ? 'selected' : ''; ?>>Entrenamiento</option>
                                                     </select>
-                                                    <label for="etapamecanica">Etapa de ensamble mecánica/neumatica</label>
+                                                    <label for="etapa">Etapa de proyecto</label>
                                                 </div>
-
+                                                <?php
+                                                } elseif ($registro['estatus'] == 2) {
+                                                ?>
                                                 <div class="form-floating col-6 mt-3">
-                                                    <select class="form-select" name="etapatcontrol" id="etapatcontrol">
-                                                        <option disabled>Seleccione la etapa</option>
-                                                        <option value="1" <?= ($tcontrol_actual == 1) ? 'selected' : ''; ?>>Revisión BOM controles</option>
-                                                        <option value="2" <?= ($tcontrol_actual == 2) ? 'selected' : ''; ?>>Armado de tableros de control</option>
-                                                        <option value="3" <?= ($tcontrol_actual == 3) ? 'selected' : ''; ?>>Pruebas electrícas y de comunicación</option>
-                                                        <option value="4" <?= ($tcontrol_actual == 4) ? 'selected' : ''; ?>>Remediación</option>
-                                                        <option value="5" <?= ($tcontrol_actual == 5) ? 'selected' : ''; ?>>Ensamble en maquinaria</option>
-                                                        <option value="6" <?= ($tcontrol_actual == 6) ? 'selected' : ''; ?>>Ruteo final</option>
-                                                        <option value="7" <?= ($tcontrol_actual == 7) ? 'selected' : ''; ?>>Etiquetado</option>
+                                                    <select class="form-select" name="etapa" id="etapa">
+                                                        <option disabled>Seleccione una etapa</option>
+                                                        <option disabled>------- Pretrabajo -------</option>
+                                                        <option value="1" <?= ($etapa_actual == 1) ? 'selected' : ''; ?>>Recepción de RFQ</option>
+                                                        <option value="2" <?= ($etapa_actual == 2) ? 'selected' : ''; ?>>Visita/levantamiento con cliente</option>
+                                                        <option value="3" <?= ($etapa_actual == 3) ? 'selected' : ''; ?>>Generación de diseño/diagrama a bloques</option>
+                                                        <option value="4" <?= ($etapa_actual == 4) ? 'selected' : ''; ?>>Generación de BOM's</option>
+                                                        <option value="5" <?= ($etapa_actual == 5) ? 'selected' : ''; ?>>Cotización</option>
                                                     </select>
-                                                    <label for="etapatcontrol">Etapa ensamble T.Control</label>
+                                                    <label for="etapa">Etapa de proyecto</label>
                                                 </div>
+                                                <?php
+                                                }
+                                                ?>
+                                                
 
-                                                <div class="form-floating col-12 mt-3">
-                                                    <textarea type="text" class="form-control" name="detalles" id="detalles" style="min-height:150px;"><?= $registro['detalles']; ?></textarea>
-                                                    <label for="detalles">Detalles</label>
-                                                </div>
+                                                <?php
+                                                if ($registro['estatus'] == 1) {
+                                                ?>
+                                                    <div class="form-floating col-12 mt-3">
+                                                        <textarea type="text" class="form-control" name="detalles" id="detalles" style="min-height:150px;"><?= $registro['detalles']; ?></textarea>
+                                                        <label for="detalles">Detalles</label>
+                                                    </div>
+                                                <?php
+                                                }
+                                                ?>
+
 
                                                 <div class="col-12 text-center mt-3">
                                                     <button type="submit" name="update" class="btn btn-primary">

@@ -87,3 +87,12 @@ a{
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
     padding: 10px 10px;
 }
+
+.modal-footer{
+    padding-bottom: 0px !important;
+}
+
+.btn-warning{
+    background-color: #fc9d03 !important;
+    color: #fff !important;
+}

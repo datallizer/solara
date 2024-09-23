@@ -105,8 +105,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Fecha inicio</th>
                                             <th>Fecha fin</th>
                                             <th>Prioridad</th>
-                                            <th>Etapa diseño</th>
-                                            <th>Etapa control</th>
+                                            <th>Etapa</th>
                                             <th>Detalles</th>
                                             <?php
                                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
@@ -220,51 +219,42 @@ if (isset($_SESSION['codigo'])) {
                                                     }
                                                     ?>
 
-                                                    <td>
-                                                        <p><?php
-                                                            if ($registro['etapadiseño'] === '1') {
-                                                                echo "Diseño";
-                                                            } else if ($registro['etapadiseño'] === '2') {
-                                                                echo "Revisión interna";
-                                                            } else if ($registro['etapadiseño'] === '3') {
-                                                                echo "Revisión con cliente";
-                                                            } else if ($registro['etapadiseño'] === '4') {
-                                                                echo "Planos";
-                                                            } else if ($registro['etapadiseño'] === '5') {
-                                                                echo "Bom";
-                                                            } else if ($registro['etapadiseño'] === '6') {
-                                                                echo "Manufactura";
-                                                            } else if ($registro['etapadiseño'] === '7') {
-                                                                echo "Remediación";
-                                                            } else if ($registro['etapadiseño'] === '8') {
-                                                                echo "Documentación";
-                                                            } else {
-                                                                echo "Error, contacte a soporte";
-                                                            }
-                                                            ?></p>
-                                                    </td>
                                                     <td style="cursor: all-scroll;">
                                                         <p><?php
-                                                            if ($registro['etapacontrol'] === '1') {
-                                                                echo "Diseño";
-                                                            } else if ($registro['etapacontrol'] === '2') {
-                                                                echo "Revisión interna";
-                                                            } else if ($registro['etapacontrol'] === '3') {
-                                                                echo "Revisión con cliente";
-                                                            } else if ($registro['etapacontrol'] === '4') {
-                                                                echo "Diagramas";
-                                                            } else if ($registro['etapacontrol'] === '5') {
-                                                                echo "Bom";
-                                                            } else if ($registro['etapacontrol'] === '6') {
-                                                                echo "Manufactura";
-                                                            } else if ($registro['etapacontrol'] === '7') {
-                                                                echo "Programación";
-                                                            } else if ($registro['etapacontrol'] === '8') {
-                                                                echo "Debugging";
-                                                            } else if ($registro['etapacontrol'] === '9') {
-                                                                echo "Documentación";
+                                                            if ($registro['etapa'] === '6') {
+                                                                echo "Recepción de PO";
+                                                            } else if ($registro['etapa'] === '7') {
+                                                                echo "Kick off meeting";
+                                                            } else if ($registro['etapa'] === '8') {
+                                                                echo "Visita formal de levantamiento";
+                                                            } else if ($registro['etapa'] === '9') {
+                                                                echo "Prediseño (mecánico y eléctrico)";
+                                                            } else if ($registro['etapa'] === '10') {
+                                                                echo "Revisión de diseño/aprobación de cliente";
+                                                            } else if ($registro['etapa'] === '11') {
+                                                                echo "Actualización de BOM";
+                                                            } else if ($registro['etapa'] === '12') {
+                                                                echo "Colocación de PO's";
+                                                            } else if ($registro['etapa'] === '13') {
+                                                                echo "Construcción del equipo";
+                                                            } else if ($registro['etapa'] === '14') {
+                                                                echo "Pruebas internas iniciales";
+                                                            } else if ($registro['etapa'] === '15') {
+                                                                echo "Debugging interno y pruebas secundarias";
+                                                            } else if ($registro['etapa'] === '16') {
+                                                                echo "Buf off interno";
+                                                            } else if ($registro['etapa'] === '17') {
+                                                                echo "Buy off con cliente";
+                                                            } else if ($registro['etapa'] === '18') {
+                                                                echo "Empaque y envío a instalaciones de cliente";
+                                                            } else if ($registro['etapa'] === '19') {
+                                                                echo "Instalación con cliente";
+                                                            } else if ($registro['etapa'] === '20') {
+                                                                echo "Arranque y validación de equipo (buy off)";
+                                                            } else if ($registro['etapa'] === '21') {
+                                                                echo "Entrenamiento";
                                                             } else {
-                                                                echo "Error, contacte a soporte";
+                                                                echo "Asigne una etapa manualmente";
                                                             }
                                                             ?></p>
                                                     </td>
@@ -309,7 +299,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                             echo '<form action="codeproyecto.php" method="POST" class="d-inline">
-                                                                        <button type="submit" name="archivar" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-check-lg"></i></button>
+                                                                        <button type="submit" name="archivar" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-x-circle"></i></button>
                                                                     </form>';
                                                         }
                                                         ?>
@@ -395,7 +385,7 @@ if (isset($_SESSION['codigo'])) {
                                 <label style="margin-left: 0px !important;" for="prioridad">Prioridad del proyecto</label>
                             </div>
 
-                            <div class="form-floating mt-3 mt-3" hidden>
+                            <!-- <div class="form-floating mt-3 mt-3" hidden>
                                 <select class="form-select" name="etapadiseño" id="etapadiseño" autocomplete="off" required>
                                     <option disabled>Seleccione una etapa</option>
                                     <option selected value="1">Diseño</option>
@@ -451,6 +441,31 @@ if (isset($_SESSION['codigo'])) {
                                     <option value="6">Armado final</option>
                                 </select>
                                 <label style="margin-left: 0px !important;" for="etapamecanica">Etapa ensamble mecánica/neumatica:</label>
+                            </div> -->
+
+                            <div class="form-floating mt-3 mt-3">
+                                <select class="form-select" name="etapamecanica" id="etapamecanica" autocomplete="off" required>
+                                    <option disabled>Seleccione una etapa</option>
+                                    <option disabled>------- Ejecución -------</option>
+                                    <option selected value="6">Recepción de PO</option>
+                                    <option value="7">Kick off meeting</option>
+                                    <option value="8">Visita formal de levantamiento</option>
+                                    <option value="9">Prediseño (mecánico y eléctrico)</option>
+                                    <option value="10">Revisión de diseño/aprobación con cliente</option>
+                                    <option value="11">Actualización de BOM</option>
+                                    <option value="12">Colocación de PO's</option>
+                                    <option value="13">Construcción del equipo</option>
+                                    <option value="14">Pruebas internas iniciales</option>
+                                    <option value="15">Debugging interno y pruebas secundarias</option>
+                                    <option value="16">Buf off interno</option>
+                                    <option value="17">Buy off con cliente</option>
+                                    <option value="18">Empaque y envío a instalaciones de cliente</option>
+                                    <option disabled>------- Validación -------</option>
+                                    <option value="19">Instalación con cliente</option>
+                                    <option value="20">Arranque y validación de equipo (buy off)</option>
+                                    <option value="21">Entrenamiento</option>
+                                </select>
+                                <label style="margin-left: 0px !important;" for="etapamecanica">Etapa de proyecto:</label>
                             </div>
 
                             <div class="form-floating mt-3">
@@ -572,7 +587,34 @@ if (isset($_SESSION['codigo'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
-        $(document).ready(function() {
+         $(document).ready(function() {
+            // Cambiar a usar clase en lugar de ID
+            $('.deleteButton').on('click', function(event) {
+                event.preventDefault(); // Previene el envío del formulario por defecto
+                const form = $(this).closest('form'); // Encuentra el formulario más cercano al botón
+                const deleteValue = $(this).data('id'); // Obtiene el valor del data-id del botón
+                Swal.fire({
+                    title: 'ADVERTENCIA',
+                    text: '¿Estás seguro que deseas eliminar la asignación del proyecto al usuario actual? Deberás asignar un usuario nuevo.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Añadir un campo oculto con el valor del botón al formulario
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'deleteproyecto',
+                            value: deleteValue
+                        }).appendTo(form);
+                        // Si el usuario confirma, se envía el formulario
+                        form.submit();
+                    }
+                });
+            });
             $('#miTabla').DataTable({
                 "order": [
                     [6, "asc"]

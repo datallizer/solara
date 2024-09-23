@@ -237,10 +237,7 @@ if (mysqli_num_rows($result) > 0) {
                             $fechainicio = $registro['fechainicio'];
                             $fechafin = $registro['fechafin'];
                             $fechaActual = date('Y-m-d');
-                            $diseño_actual = $registro['etapadiseño'];
-                            $control_actual = $registro['etapacontrol'];
-                            $tcontrol_actual = $registro['etapatcontrol'];
-                            $mecanica_actual = $registro['etapamecanica'];
+                            $etapa = $registro['etapa'];
 
                             // Convertir a objetos DateTime
                             $inicio = new DateTime($fechainicio);
@@ -272,160 +269,78 @@ if (mysqli_num_rows($result) > 0) {
                             $progresoFormateado = number_format($progreso, 1);
 
                             // Calcular la etapa del diseño siempre
-                            $etapaDiseno = $registro['etapadiseño']; // Obtener la etapa actual de diseño
-                            $etapaControl = $registro['etapacontrol']; // Obtener la etapa actual de control
-                            $etapaTControl = $registro['etapatcontrol'];
-                            $etapaMecanica = $registro['etapamecanica'];
+                            $etapa = $registro['etapa']; // Obtener la etapa actual de diseño
+
 
                             // Definir el nombre de la etapa y el porcentaje de progreso basado en la etapa de diseño
-                            switch ($etapaDiseno) {
-                                case '1':
-                                    $nombreEtapaDiseno = "Diseño";
-                                    $progresoetapadiseño = 12.5; // 1/8 del progreso
-                                    break;
-                                case '2':
-                                    $nombreEtapaDiseno = "Revisión interna";
-                                    $progresoetapadiseño = 25; // 2/8 del progreso
-                                    break;
-                                case '3':
-                                    $nombreEtapaDiseno = "Revisión con cliente";
-                                    $progresoetapadiseño = 37.5; // 3/8 del progreso
-                                    break;
-                                case '4':
-                                    $nombreEtapaDiseno = "Planos";
-                                    $progresoetapadiseño = 50; // 4/8 del progreso
-                                    break;
-                                case '5':
-                                    $nombreEtapaDiseno = "Bom";
-                                    $progresoetapadiseño = 62.5; // 5/8 del progreso
-                                    break;
+                            switch ($etapa) {
                                 case '6':
-                                    $nombreEtapaDiseno = "Manufactura";
-                                    $progresoetapadiseño = 75; // 6/8 del progreso
+                                    $nombreEtapa = "Recepción de PO";
+                                    $progresoEtapa = 6.25; 
                                     break;
                                 case '7':
-                                    $nombreEtapaDiseno = "Remediación";
-                                    $progresoetapadiseño = 87.5; // 7/8 del progreso
+                                    $nombreEtapa = "Kick off meeting";
+                                    $progresoEtapa = 12.5; 
                                     break;
                                 case '8':
-                                    $nombreEtapaDiseno = "Documentación";
-                                    $progresoetapadiseño = 100; // 8/8 del progreso, 100% completo
-                                    break;
-                                default:
-                                    $nombreEtapaDiseno = "Error, contacte a soporte";
-                                    $progresoetapadiseño = 0; // Progreso en 0 en caso de error
-                                    break;
-                            }
-
-                            // Calcular el nombre y el progreso de la etapa de control
-                            switch ($etapaControl) {
-                                case '1':
-                                    $nombreEtapaControl = "Diseño";
-                                    $progresoetapacontrol = 11.11; // 1/9 del progreso
-                                    break;
-                                case '2':
-                                    $nombreEtapaControl = "Revisión interna";
-                                    $progresoetapacontrol = 22.22; // 2/9 del progreso
-                                    break;
-                                case '3':
-                                    $nombreEtapaControl = "Revisión con cliente";
-                                    $progresoetapacontrol = 33.33; // 3/9 del progreso
-                                    break;
-                                case '4':
-                                    $nombreEtapaControl = "Diagramas";
-                                    $progresoetapacontrol = 44.44; // 4/9 del progreso
-                                    break;
-                                case '5':
-                                    $nombreEtapaControl = "Bom";
-                                    $progresoetapacontrol = 55.55; // 5/9 del progreso
-                                    break;
-                                case '6':
-                                    $nombreEtapaControl = "Manufactura";
-                                    $progresoetapacontrol = 66.66; // 6/9 del progreso
-                                    break;
-                                case '7':
-                                    $nombreEtapaControl = "Programación";
-                                    $progresoetapacontrol = 77.77; // 7/9 del progreso
-                                    break;
-                                case '8':
-                                    $nombreEtapaControl = "Debugging";
-                                    $progresoetapacontrol = 88.88; // 8/9 del progreso
+                                    $nombreEtapa = "Visita formal de levantamiento";
+                                    $progresoEtapa = 18.75;
                                     break;
                                 case '9':
-                                    $nombreEtapaControl = "Documentación";
-                                    $progresoetapacontrol = 100; // 9/9 del progreso, 100% completo
+                                    $nombreEtapa = "Prediseño (mecánico y eléctrico)";
+                                    $progresoEtapa = 25; 
+                                    break;
+                                case '10':
+                                    $nombreEtapa = "Revisión de diseño/aprobación de cliente";
+                                    $progresoEtapa = 31.25; 
+                                    break;
+                                case '11':
+                                    $nombreEtapa = "Actualizació de BOM";
+                                    $progresoEtapa = 37.5; 
+                                    break;
+                                case '12':
+                                    $nombreEtapa = "Colocación de PO's";
+                                    $progresoEtapa = 43.75; 
+                                    break;
+                                case '13':
+                                    $nombreEtapa = "Construcción del equipo";
+                                    $progresoEtapa = 50;
+                                    break;
+                                case '14':
+                                    $nombreEtapa = "Pruebas internas iniciales";
+                                    $progresoEtapa = 56.25; 
+                                    break;
+                                case '15':
+                                    $nombreEtapa = "Debugging interno y pruebas secundarias";
+                                    $progresoEtapa = 62.5; 
+                                    break;
+                                case '16':
+                                    $nombreEtapa = "Buf off interno";
+                                    $progresoEtapa = 68.75; 
+                                    break;
+                                case '17':
+                                    $nombreEtapa = "Buy off con cliente";
+                                    $progresoEtapa = 75;
+                                    break;
+                                case '18':
+                                    $nombreEtapa = "Empaque y envío a instalaciones de cliente";
+                                    $progresoEtapa = 81.25; 
+                                    break;
+                                case '19':
+                                    $nombreEtapa = "Instalción con cliente";
+                                    $progresoEtapa = 87.5;
+                                    break;
+                                case '20':
+                                    $nombreEtapa = "Arranque y validación de equipo (buy off)";
+                                    $progresoEtapa = 93.75;
+                                    break;
+                                case '21':
+                                    $nombreEtapa = "Entrenamiento";
+                                    $progresoEtapa = 100; 
                                     break;
                                 default:
-                                    $nombreEtapaControl = "Error, contacte a soporte";
-                                    $progresoetapacontrol = 0; // Progreso en 0 en caso de error
-                                    break;
-                            }
-
-                            // Calcular el nombre y el progreso de la etapa de control
-                            switch ($etapaTControl) {
-                                case '1':
-                                    $nombreEtapaTControl = "Revisión BOM controles";
-                                    $progresoetapatcontrol = 14.28; // 1/9 del progreso
-                                    break;
-                                case '2':
-                                    $nombreEtapaTControl = "Armado de tableros de control";
-                                    $progresoetapatcontrol = 28.57; // 2/9 del progreso
-                                    break;
-                                case '3':
-                                    $nombreEtapaTControl = "Pruebas eléctricas y de comunicación";
-                                    $progresoetapatcontrol = 42.85; // 3/9 del progreso
-                                    break;
-                                case '4':
-                                    $nombreEtapaTControl = "Remediación";
-                                    $progresoetapatcontrol = 57.14; // 4/9 del progreso
-                                    break;
-                                case '5':
-                                    $nombreEtapaTControl = "Ensamble en maquinaria";
-                                    $progresoetapatcontrol = 71.42; // 5/9 del progreso
-                                    break;
-                                case '6':
-                                    $nombreEtapaTControl = "Ruteo final";
-                                    $progresoetapatcontrol = 85.71; // 6/9 del progreso
-                                    break;
-                                case '7':
-                                    $nombreEtapaTControl = "Etiquetado";
-                                    $progresoetapatcontrol = 100; // 7/9 del progreso
-                                    break;
-                                default:
-                                    $nombreEtapaTControl = "Error, contacte a soporte";
-                                    $progresoetapatcontrol = 0; // Progreso en 0 en caso de error
-                                    break;
-                            }
-
-                            // Calcular el nombre y el progreso de la etapa de control
-                            switch ($etapaMecanica) {
-                                case '1':
-                                    $nombreEtapaMecanica = "Revisión BOM mecánico";
-                                    $progresoetapamecanica = 16.66; // 1/9 del progreso
-                                    break;
-                                case '2':
-                                    $nombreEtapaMecanica = "Armado de componentes mecánicos";
-                                    $progresoetapamecanica = 33.33; // 2/9 del progreso
-                                    break;
-                                case '3':
-                                    $nombreEtapaMecanica = "Pruebas de ensamble";
-                                    $progresoetapamecanica = 50; // 3/9 del progreso
-                                    break;
-                                case '4':
-                                    $nombreEtapaMecanica = "Remediación";
-                                    $progresoetapamecanica = 66.66; // 4/9 del progreso
-                                    break;
-                                case '5':
-                                    $nombreEtapaMecanica = "Desensamble para acabados";
-                                    $progresoetapamecanica = 83.33; // 5/9 del progreso
-                                    break;
-                                case '6':
-                                    $nombreEtapaMecanica = "Armado final";
-                                    $progresoetapamecanica = 100; // 6/9 del progreso
-                                    break;
-                                default:
-                                    $nombreEtapaMecanica = "Error, contacte a soporte";
-                                    $progresoetapamecanica = 0; // Progreso en 0 en caso de error
+                                    $nombreEtapa = "Error, contacte a soporte";
+                                    $progresoEtapa = 0;
                                     break;
                             }
                     ?>
@@ -445,62 +360,30 @@ if (mysqli_num_rows($result) > 0) {
                                                             <div class="modal-body">
                                                                 <input type="hidden" name="id" value="<?= $registro['id']; ?>">
                                                                 <div class="form-floating col-12 mt-3">
-                                                                    <select class="form-select" name="etapadiseño" id="etapadiseño">
-                                                                        <option disabled>Seleccione la etapa</option>
-                                                                        <option value="1" <?= ($diseño_actual == 1) ? 'selected' : ''; ?>>Diseño</option>
-                                                                        <option value="2" <?= ($diseño_actual == 2) ? 'selected' : ''; ?>>Revisión interna</option>
-                                                                        <option value="3" <?= ($diseño_actual == 3) ? 'selected' : ''; ?>>Revisión con cliente</option>
-                                                                        <option value="4" <?= ($diseño_actual == 4) ? 'selected' : ''; ?>>Planos</option>
-                                                                        <option value="5" <?= ($diseño_actual == 5) ? 'selected' : ''; ?>>Bom</option>
-                                                                        <option value="6" <?= ($diseño_actual == 6) ? 'selected' : ''; ?>>Manufactura</option>
-                                                                        <option value="7" <?= ($diseño_actual == 7) ? 'selected' : ''; ?>>Remediación</option>
-                                                                        <option value="8" <?= ($diseño_actual == 8) ? 'selected' : ''; ?>>Documentación</option>
+                                                                    <select class="form-select" name="etapa" id="etapa">
+                                                                        <option disabled>Seleccione una etapa</option>
+                                                                        <option disabled>------- Ejecución -------</option>
+                                                                        <option value="6" <?= ($etapa == 6) ? 'selected' : ''; ?>>Recepción de PO</option>
+                                                                        <option value="7" <?= ($etapa == 7) ? 'selected' : ''; ?>>Kick off meeting</option>
+                                                                        <option value="8" <?= ($etapa == 8) ? 'selected' : ''; ?>>Visita formal de levantamiento</option>
+                                                                        <option value="9" <?= ($etapa == 9) ? 'selected' : ''; ?>>Prediseño (mecánico y eléctrico)</option>
+                                                                        <option value="10" <?= ($etapa == 10) ? 'selected' : ''; ?>>Revisión de diseño/aprobación de cliente</option>
+                                                                        <option value="11" <?= ($etapa == 11) ? 'selected' : ''; ?>>Actualización de BOM</option>
+                                                                        <option value="12" <?= ($etapa == 12) ? 'selected' : ''; ?>>Colocación de PO's</option>
+                                                                        <option value="13" <?= ($etapa == 13) ? 'selected' : ''; ?>>Construcción del equipo</option>
+                                                                        <option value="14" <?= ($etapa == 14) ? 'selected' : ''; ?>>Pruebas internas iniciales</option>
+                                                                        <option value="15" <?= ($etapa == 15) ? 'selected' : ''; ?>>Debugging interno y pruebas secundarias</option>
+                                                                        <option value="16" <?= ($etapa == 16) ? 'selected' : ''; ?>>Buf off interno</option>
+                                                                        <option value="17" <?= ($etapa == 17) ? 'selected' : ''; ?>>Buy off con cliente</option>
+                                                                        <option value="18" <?= ($etapa == 18) ? 'selected' : ''; ?>>Empaque y envío a instalaciones de cliente</option>
+                                                                        <option disabled>------- Validación -------</option>
+                                                                        <option value="19" <?= ($etapa == 19) ? 'selected' : ''; ?>>Instalación con cliente</option>
+                                                                        <option value="20" <?= ($etapa == 20) ? 'selected' : ''; ?>>Arranque y validación de equipo (buy off)</option>
+                                                                        <option value="21" <?= ($etapa == 21) ? 'selected' : ''; ?>>Entrenamiento</option>
                                                                     </select>
-                                                                    <label style="font-size: 15px;text-transform:none;margin-left:0px;" for="etapadiseño">Etapa de diseño</label>
+                                                                    <label style="font-size: 15px;text-transform:none;padding-left:0px;" for="etapa">Etapa de proyecto:</label>
                                                                 </div>
 
-                                                                <div class="form-floating col-12 mt-3">
-                                                                    <select class="form-select" name="etapacontrol" id="etapacontrol">
-                                                                        <option disabled>Seleccione la etapa</option>
-                                                                        <option value="1" <?= ($control_actual == 1) ? 'selected' : ''; ?>>Diseño</option>
-                                                                        <option value="2" <?= ($control_actual == 2) ? 'selected' : ''; ?>>Revisión interna</option>
-                                                                        <option value="3" <?= ($control_actual == 3) ? 'selected' : ''; ?>>Revisión con cliente</option>
-                                                                        <option value="4" <?= ($control_actual == 4) ? 'selected' : ''; ?>>Diagramas</option>
-                                                                        <option value="5" <?= ($control_actual == 5) ? 'selected' : ''; ?>>Bom</option>
-                                                                        <option value="6" <?= ($control_actual == 6) ? 'selected' : ''; ?>>Manufactura</option>
-                                                                        <option value="7" <?= ($control_actual == 7) ? 'selected' : ''; ?>>Programación</option>
-                                                                        <option value="8" <?= ($control_actual == 8) ? 'selected' : ''; ?>>Debugging</option>
-                                                                        <option value="9" <?= ($control_actual == 9) ? 'selected' : ''; ?>>Documentación</option>
-                                                                    </select>
-                                                                    <label style="font-size: 15px;text-transform:none;margin-left:0px;" for="etapacontrol">Etapa de control</label>
-                                                                </div>
-
-                                                                <div class="form-floating col-12 mt-3">
-                                                                    <select class="form-select" name="etapatcontrol" id="etapatcontrol">
-                                                                        <option disabled>Seleccione la etapa</option>
-                                                                        <option value="1" <?= ($tcontrol_actual == 1) ? 'selected' : ''; ?>>Revisión BOM controles</option>
-                                                                        <option value="2" <?= ($tcontrol_actual == 2) ? 'selected' : ''; ?>>Armado de tableros de control</option>
-                                                                        <option value="3" <?= ($tcontrol_actual == 3) ? 'selected' : ''; ?>>Pruebas electrícas y de comunicación</option>
-                                                                        <option value="4" <?= ($tcontrol_actual == 4) ? 'selected' : ''; ?>>Remediación</option>
-                                                                        <option value="5" <?= ($tcontrol_actual == 5) ? 'selected' : ''; ?>>Ensamble en maquinaria</option>
-                                                                        <option value="6" <?= ($tcontrol_actual == 6) ? 'selected' : ''; ?>>Ruteo final</option>
-                                                                        <option value="7" <?= ($tcontrol_actual == 7) ? 'selected' : ''; ?>>Etiquetado</option>
-                                                                    </select>
-                                                                    <label style="font-size: 15px;text-transform:none;margin-left:0px;" for="etapatcontrol">Etapa ensamble</label>
-                                                                </div>
-
-                                                                <div class="form-floating col-12 mt-3">
-                                                                    <select class="form-select" name="etapamecanica" id="etapamecanica">
-                                                                        <option disabled>Seleccione la etapa</option>
-                                                                        <option value="1" <?= ($mecanica_actual == 1) ? 'selected' : ''; ?>>Revisión BOM mecánico</option>
-                                                                        <option value="2" <?= ($mecanica_actual == 2) ? 'selected' : ''; ?>>Armado de componentes mecánicos</option>
-                                                                        <option value="3" <?= ($mecanica_actual == 3) ? 'selected' : ''; ?>>Pruebas de ensamble</option>
-                                                                        <option value="4" <?= ($mecanica_actual == 4) ? 'selected' : ''; ?>>Remediación</option>
-                                                                        <option value="5" <?= ($mecanica_actual == 5) ? 'selected' : ''; ?>>Desensamble para acabados</option>
-                                                                        <option value="6" <?= ($mecanica_actual == 6) ? 'selected' : ''; ?>>Armado final</option>
-                                                                    </select>
-                                                                    <label style="font-size: 15px;text-transform:none;margin-left:0px;" for="etapamecanica">Etapa de ensamble mecánica/neumatica</label>
-                                                                </div>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="submit" name="etapas" class="btn btn-warning">Actualizar</button>
@@ -521,48 +404,16 @@ if (mysqli_num_rows($result) > 0) {
                                         </div>
 
                                         <div>
-                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;">Etapa diseño:</span> <?= $nombreEtapaDiseno; ?></p>
+                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;">Etapa:</span> <?= $nombreEtapa; ?></p>
                                         </div>
 
                                         <!-- Barra de progreso de etapa diseño -->
                                         <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
-                                            <div class="progress-bar-etapa-diseno" style="width: <?= $progresoetapadiseño; ?>%; background-color: #4d94eb; padding: 5px;">
-                                                <?= number_format($progresoetapadiseño, 1); ?>%
+                                            <div class="progress-bar-etapa-diseno" style="width: <?= $progresoEtapa; ?>%; background-color: #4d94eb; padding: 5px;">
+                                                <?= number_format($progresoEtapa, 1); ?>%
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;">Etapa control:</span> <?= $nombreEtapaControl; ?></p>
-                                        </div>
-
-                                        <!-- Barra de progreso de etapa control -->
-                                        <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
-                                            <div class="progress-bar-etapa-control" style="width: <?= $progresoetapacontrol; ?>%; background-color: #4d94eb; padding: 5px;">
-                                                <?= number_format($progresoetapacontrol, 1); ?>%
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;">Etapa ensamble:</span> <?= $nombreEtapaTControl; ?></p>
-                                        </div>
-
-                                        <!-- Barra de progreso de etapa control -->
-                                        <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
-                                            <div class="progress-bar-etapa-control" style="width: <?= $progresoetapatcontrol; ?>%; background-color: #4d94eb; padding: 5px;">
-                                                <?= number_format($progresoetapatcontrol, 1); ?>%
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;">Etapa mecánica:</span> <?= $nombreEtapaMecanica; ?></p>
-                                        </div>
-
-                                        <!-- Barra de progreso de etapa control -->
-                                        <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
-                                            <div class="progress-bar-etapa-control" style="width: <?= $progresoetapamecanica; ?>%; background-color: #4d94eb; padding: 5px;">
-                                                <?= number_format($progresoetapamecanica, 1); ?>%
-                                            </div>
-                                        </div>
 
                                     </div>
                                     <div class="col-3 text-end">
