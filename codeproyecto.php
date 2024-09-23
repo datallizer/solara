@@ -48,6 +48,24 @@ if (isset($_POST['update'])) {
     }
 }
 
+if (isset($_POST['archivar'])) {
+    $id = mysqli_real_escape_string($con, $_POST['archivar']);
+    $estatus = 0;
+
+    $query = "UPDATE `proyecto` SET `estatus` = '$estatus' WHERE `proyecto`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Proyecto editado exitosamente";
+        header("Location: proyectos.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar el proyecto, contácte a soporte";
+        header("Location: proyectos.php");
+        exit(0);
+    }
+}
+
 if (isset($_POST['etapas'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
     $etapamecanica = mysqli_real_escape_string($con, $_POST['etapamecanica']);

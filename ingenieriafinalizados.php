@@ -132,21 +132,10 @@ if (mysqli_num_rows($result) > 0) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>INGENIERÍA ACTIVIDADES ASIGNADAS
-                                    <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                        echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    Nueva actividad
-                                </button> 
-                                <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalAsignar">
-                                    Asignar ingeniero
-                                </button>
-                                <a href="ingenieriafinalizados.php" class="btn btn-primary btn-sm" id="floatingButton">
+                                <h4>INGENIERÍA ACTIVIDADES FINALIZADAS</h4>
+                                <a href="ingenieria.php" class="btn btn-primary btn-sm" id="floatingButton">
                                 Ingeniería<br>finalizados
-                            </a>';
-                                    }
-                                    ?>
-                                </h4>
+                            </a>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
                                 <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
@@ -249,22 +238,7 @@ if (mysqli_num_rows($result) > 0) {
                                                     }
                                                     ?>
                                                     <td>
-                                                        <?php
-                                                        if ($_SESSION['rol'] === '1' || $_SESSION['rol'] === '2') {
-                                                        ?>
-                                                            <a href="editaringenieria.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-                                                            <form action="codeingenieria.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                            </form>
-                                                        <?php
-                                                        } else {
-                                                        ?>
-                                                            <form action="codeingenieria.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="finalizar" value="<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-check2"></i> Finalizar</button>
-                                                            </form>
-                                                        <?php
-                                                        }
-                                                        ?>
+                                                        <a href="editaringenieria.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                     </td>
 
                                                 </tr>
@@ -284,162 +258,11 @@ if (mysqli_num_rows($result) > 0) {
             </div>
         </div>
     </div>
-    <!-- Modal ingenieros-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="tituloPlano">NUEVA ACTIVIDAD</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="myForm" action="codeingenieria.php" method="POST" class="row mb-0" enctype="multipart/form-data">
-                        <div class="col-7">
-                            <div class="form-floating  mb-3">
-                                <select class="form-select" name="idproyecto" id="idproyecto" required>
-                                    <option disabled selected>Seleccione un proyecto</option>
-                                    <?php
-                                    $query = "SELECT * FROM proyecto WHERE estatus = 1";
-                                    $result = mysqli_query($con, $query);
-
-                                    if (mysqli_num_rows($result) > 0) {
-                                        while ($proyecto = mysqli_fetch_assoc($result)) {
-                                            $opcion = $proyecto['nombre'];
-                                            $idProyecto = $proyecto['id'];
-                                            echo "<option value='$idProyecto' " . ($registro['id'] == $idProyecto ? 'selected' : '') . ">$opcion</option>";
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                                <label style="margin: 0px;" for="idproyecto">Proyecto asociado</label>
-                            </div>
-
-                            <div class="form-floating  mt-1">
-                                <input type="text" class="form-control" name="nombreplano" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
-                                <label style="margin: 0px;" for="nombreplano">Nombre de la actividad</label>
-                            </div>
-
-
-                            <div class="form-floating mt-3" id="actividadElements">
-                                <textarea type="text" class="form-control" name="actividad" id="actividad" placeholder="Actividad" autocomplete="off" style="min-height: 150px;" required></textarea>
-                                <label style="margin: 0px;" for="actividad">Detalles de la actividad</label>
-                            </div>
-
-                            <div class="form-floating mt-3">
-                                <select class="form-select" name="prioridad" id="prioridad" autocomplete="off" required>
-                                    <option selected disabled>Seleccione una opción</option>
-                                    <option value="1">Muy alta</option>
-                                    <option value="2">Alta</option>
-                                    <option value="3">Normal</option>
-                                    <option value="4">Baja</option>
-                                </select>
-                                <label style="margin: 0px;" for="nivel">Prioridad</label>
-                            </div>
-                        </div>
-
-                        <div class="col-5">
-                            <div class="form-check mt-3 m-3">
-                                <?php
-                                $query = "SELECT * FROM usuarios WHERE rol = 5 OR rol = 9 OR rol = 13 AND estatus = 1";
-                                $result = mysqli_query($con, $query);
-
-                                if (mysqli_num_rows($result) > 0) {
-                                    while ($usuario = mysqli_fetch_assoc($result)) {
-                                        $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
-                                        $idUsuario = $usuario['codigo'];
-                                        $idMedio = $usuario['medio'];
-                                        echo "<input class='form-check-input mb-2' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                        echo "<label class='form-check-label mb-2' for='codigooperador_$idUsuario'><img style='width:40px;' src='$idMedio' alt=''> $nombreCompleto</label><br>";
-                                    }
-                                }
-                                ?>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="save">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Operadores -->
-    <div class="modal fade" id="exampleModalAsignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">ASIGNAR INGENIERO</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="miFormulario" action="codetecnicos.php" method="POST" class="row mb-0">
-                        <div class="form-floating col-12 mb-3">
-                            <select class="form-select" name="idplano" id="idplano">
-                                <option disabled selected>Seleccione una actividad</option>
-                                <?php
-                                $query = "SELECT * FROM ingenieria WHERE estatusplano = 1";
-                                $result = mysqli_query($con, $query);
-
-                                if (mysqli_num_rows($result) > 0) {
-                                    while ($plano = mysqli_fetch_assoc($result)) {
-                                        $opcion = $plano['nombreplano'];
-                                        $idPlano = $plano['id'];
-
-                                        $queryAsignacion = "SELECT COUNT(*) as count FROM asignacioningenieria WHERE idplano = ?";
-                                        $stmt = $con->prepare($queryAsignacion);
-                                        $stmt->bind_param("i", $idPlano);
-                                        $stmt->execute();
-                                        $resultAsignacion = $stmt->get_result();
-                                        $row = $resultAsignacion->fetch_assoc();
-
-                                        if ($row['count'] > 0) {
-                                            echo "<option value='$idPlano'>" . htmlspecialchars($opcion) . " - Asignado</option>";
-                                        } else {
-                                            echo "<option value='$idPlano'>" . htmlspecialchars($opcion) . " - No asignado</option>";
-                                        }
-                                    }
-                                }
-                                ?>
-                            </select>
-                            <label for="idplano">Actividad a asociar</label>
-                        </div>
-
-                        <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
-                            <?php
-                            $query = "SELECT * FROM usuarios WHERE rol = 5 OR rol = 9 OR rol = 13 AND estatus = 1";
-                            $result = mysqli_query($con, $query);
-
-                            if (mysqli_num_rows($result) > 0) {
-                                while ($usuario = mysqli_fetch_assoc($result)) {
-                                    $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
-                                    $idUsuario = $usuario['codigo'];
-                                    $idMedio = $usuario['medio'];
-
-                                    echo "<input class='form-check-input mb-2' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                    echo "<label class='form-check-label mb-2' for='codigooperador_$idUsuario'><img style='width:40px;' src='$idMedio' alt=''> $nombreCompleto</label><br>";
-                                }
-                            }
-                            ?>
-
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="ingeniero">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         $(document).ready(function() {
             $('#miTabla').DataTable({
@@ -447,37 +270,6 @@ if (mysqli_num_rows($result) > 0) {
                     [0, "desc"]
                 ],
                 "pageLength": 25
-            });
-
-            // Cambiar a usar clase en lugar de ID
-            $('.deleteButton').on('click', function(event) {
-                event.preventDefault(); // Previene el envío del formulario por defecto
-
-                const form = $(this).closest('form'); // Encuentra el formulario más cercano al botón
-                const deleteValue = $(this).data('id'); // Obtiene el valor del data-id del botón
-
-                Swal.fire({
-                    title: 'ADVERTENCIA',
-                    text: '¿Estás seguro que deseas eliminar la asignación de la actividad al usuario actual? Deberás asignar un usuario nuevo.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Añadir un campo oculto con el valor del botón al formulario
-                        $('<input>').attr({
-                            type: 'hidden',
-                            name: 'deleteingeniero',
-                            value: deleteValue
-                        }).appendTo(form);
-
-                        // Si el usuario confirma, se envía el formulario
-                        form.submit();
-                    }
-                });
             });
         });
     </script>

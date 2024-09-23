@@ -421,7 +421,8 @@ if (isset($_POST['save'])) {
                                 // Verificar si existe la sesión 'rol' y si el valor es 1, 2, 3 o 7
                                 if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                     // Mostrar el enlace HTML solo si la condición se cumple
-                                    echo '<a class="nav-link" href="proyectos.php">Proyectos</a>
+                                    echo '<a class="nav-link" href="anteproyectos.php">Anteproyectos</a>
+                                    <a class="nav-link" href="proyectos.php">Proyectos</a>
                                     <a class="nav-link" href="ingenieria.php">Ingeniería</a>';
                                 }
                                 ?>

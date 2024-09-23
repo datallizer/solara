@@ -60,7 +60,7 @@ if (isset($_SESSION['codigo'])) {
                         <h2>SOPORTE</h2>
                         <p>Los siguientes medios son enlaces directos para ponerte en contácto con el equipo de desarrollo de <b>datallizer</b>, recuerda hacer buen uso de ellos, unicamente podrás reportar fallas relacionadas al funcionamiento de la aplicación web cómo: Alta, baja o actualizacion de usuarios, planos, proyectos, notificaciones, clientes, motivos de paro, error al mostrar datos, mal funcionamiento o comportamientos no esperados en el diseño de algún componente, etc.</p>
                     </div>
-                    <div class="col-12 col-md-3 mb-3">
+                    <div class="col-12 col-md-4 mb-3">
                         <a class="card text-center p-5" style="text-decoration: none;" href="mailto:soporte@datallizer.com">
                             <i class="bi bi-envelope-fill" style="font-size: 45px;color:#3273a8"></i>
                             <p style="color: #000000;">soporte@datallizer.com</p>
@@ -72,7 +72,7 @@ if (isset($_SESSION['codigo'])) {
                             <p style="color: #000000;">449 385 4039</p>
                         </a>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-4">
                         <a class="card text-center p-5" style="text-decoration: none;" href="tel:4494175357">
                             <i class="bi bi-telephone-fill" style="font-size: 45px;color:#9c3530;"></i>
                             <p style="color: #000000;">449 417 5357</p>

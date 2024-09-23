@@ -26,19 +26,11 @@ if (isset($_POST['delete'])) {
 if (isset($_POST['update'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
     $nombreplano = mysqli_real_escape_string($con, $_POST['nombreplano']);
-    $nivel = mysqli_real_escape_string($con, $_POST['nivel']);
-    $piezas = mysqli_real_escape_string($con, $_POST['piezas']);
+    $prioridad = mysqli_real_escape_string($con, $_POST['prioridad']);
     $estatusplano = mysqli_real_escape_string($con, $_POST['estatusplano']);
     $actividad = mysqli_real_escape_string($con, $_POST['actividad']);
 
-    $query = "UPDATE `plano` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano', `actividad` = '$actividad'";
-
-    if (isset($_FILES['medio']) && $_FILES['medio']['error'] == UPLOAD_ERR_OK) {
-        $medio = file_get_contents($_FILES['medio']['tmp_name']);
-        $query .= ", `medio` = '" . mysqli_real_escape_string($con, $medio) . "'";
-    }
-
-    $query .= " WHERE `plano`.`id` = '$id'";
+    $query = "UPDATE `ingenieria` SET `nombreplano` = '$nombreplano', `prioridad` = '$prioridad', `estatusplano` = '$estatusplano', `actividad` = '$actividad' WHERE `ingenieria`.`id` = '$id'";
 
     $query_run = mysqli_query($con, $query);
 
@@ -47,7 +39,7 @@ if (isset($_POST['update'])) {
     } else {
         $_SESSION['message'] = "Error al editar el ensamble $nombreplano, contácte a soporte: " . mysqli_error($con);
     }
-    header("Location: maquinados.php");
+    header("Location: ingenieria.php");
     exit(0);
 }
 

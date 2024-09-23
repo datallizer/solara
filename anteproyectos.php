@@ -56,7 +56,7 @@ if (isset($_SESSION['codigo'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Proyectos | Solara</title>
+    <title>Anteproyectos | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
@@ -74,11 +74,11 @@ if (isset($_SESSION['codigo'])) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>PROYECTOS ACTIVOS
+                                <h4>ANTEPROYECTOS ACTIVOS
                                     <?php
                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                        Nuevo proyecto
+                                        Nuevo anteproyecto
                                         </button>
                                         <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
                                         Asignar encargado
@@ -87,7 +87,7 @@ if (isset($_SESSION['codigo'])) {
                                     ?>
                                 </h4>
                                 <a href="proyectosfinalizados.php" class="btn btn-primary btn-sm" id="floatingButton">
-                                    Proyectos<br>finalizados
+                                    Anteproyectos<br>finalizados
                                 </a>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
@@ -127,7 +127,7 @@ if (isset($_SESSION['codigo'])) {
                                         //         AND proyecto.estatus = 1
                                         //         ORDER BY proyecto.prioridad ASC";
                                         // } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                        $query = "SELECT * FROM proyecto WHERE estatus = 1 ORDER BY prioridad ASC";
+                                        $query = "SELECT * FROM proyecto WHERE estatus = 3 ORDER BY prioridad ASC";
                                         //}
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
@@ -337,7 +337,7 @@ if (isset($_SESSION['codigo'])) {
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO PROYECTO</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO ANTEPROYECTO</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

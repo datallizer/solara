@@ -1,0 +1,228 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require 'dbcon.php';
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
+
+if (!empty($message)) {
+    // HTML y JavaScript para mostrar la alerta...
+    echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const message = " . json_encode($message) . ";
+                Swal.fire({
+                    title: 'NOTIFICACIÓN',
+                    text: message,
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Hacer algo si se confirma la alerta
+                    }
+                });
+            });
+        </script>";
+    unset($_SESSION['message']); // Limpiar el mensaje de la sesión
+}
+
+// Verificar si existe una sesión activa y los valores de usuario y contraseña están establecidos
+if (isset($_SESSION['codigo'])) {
+    $codigo = $_SESSION['codigo'];
+
+    // Consultar la base de datos para verificar si los valores coinciden con algún registro en la tabla de usuarios
+    $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
+    $result = mysqli_query($con, $query);
+
+    // Si se encuentra un registro coincidente, el usuario está autorizado
+    if (mysqli_num_rows($result) > 0) {
+        $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Editando registro de ingeniería' WHERE `usuarios`.`codigo` = '$codigo'";
+        $queryubicacion_run = mysqli_query($con, $queryubicacion);
+    } else {
+        // Redirigir al usuario a una página de inicio de sesión
+        header('Location: login.php');
+        exit(); // Finalizar el script después de la redirección
+    }
+} else {
+    // Redirigir al usuario a una página de inicio de sesión si no hay una sesión activa
+    header('Location: login.php');
+    exit(); // Finalizar el script después de la redirección
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Editar ingeniería | Solara</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="sb-nav-fixed">
+    <?php include 'sidenav.php'; ?>
+    <?php include 'mensajes.php'; ?>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_content">
+            <div class="container mt-5">
+
+                <div class="row justify-content-center">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>EDITAR ASIGNACIÓN INGENIERÍA
+                                    <a href="ingenieria.php" class="btn btn-danger btn-sm float-end">
+                                        Regresar
+                                    </a>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+
+                                <?php
+
+                                if (isset($_GET['id'])) {
+                                    $registro_id = mysqli_real_escape_string($con, $_GET['id']);
+                                    $query = "SELECT * FROM ingenieria WHERE ingenieria.id='$registro_id' ";
+                                    $query_run = mysqli_query($con, $query);
+
+                                    if (mysqli_num_rows($query_run) > 0) {
+                                        $registro = mysqli_fetch_array($query_run);
+                                        $prioridad_actual = $registro['prioridad'];
+                                        $estatus_actual = $registro['estatusplano'];
+
+                                ?>
+
+                                        <form action="codeingenieria.php" method="POST" enctype="multipart/form-data">
+                                            <input type="hidden" name="id" value="<?= $registro['id']; ?>">
+
+                                            <div class="row mt-1">
+
+                                                <div class="form-floating col-12 mt-3">
+                                                    <input type="text" class="form-control" id="nombreplano" name="nombreplano" value="<?= $registro['nombreplano']; ?>">
+                                                    <label for="nombreplano">Nombre de la actividad</label>
+                                                </div>
+
+                                                <div class="col-12 col-md-6 mt-3 form-floating">
+                                                    <select class="form-select" name="prioridad" id="prioridad">
+                                                        <option disabled>Seleccione una prioridad</option>
+                                                        <option value="1" <?= ($prioridad_actual == 1) ? 'selected' : ''; ?>>Muy alta</option>
+                                                        <option value="2" <?= ($prioridad_actual == 2) ? 'selected' : ''; ?>>Alta</option>
+                                                        <option value="3" <?= ($prioridad_actual == 3) ? 'selected' : ''; ?>>Normal</option>
+                                                        <option value="4" <?= ($prioridad_actual == 4) ? 'selected' : ''; ?>>Baja</option>
+                                                    </select>
+                                                    <label style="margin-left: 10px;" for="prioridad">Prioridad</label>
+                                                </div>
+
+                                                <div class="col-12 col-md-6 mt-3 form-floating">
+                                                    <select class="form-select" name="estatusplano" id="estatusplano">
+                                                        <option disabled>Seleccione un estatus</option>
+                                                        <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Terminado</option>
+                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Asignado</option>
+                                                    </select>
+                                                    <label style="margin-left: 10px;" for="estatusplano">Estatus de la actividad</label>
+                                                </div>
+
+                                                <?php
+                                                // Verifica si 'medio' está vacío o no
+                                                if (empty($registro['medio'])) {
+                                                ?>
+                                                    <div class="form-floating col-12 mt-3">
+                                                        <textarea class="form-control" name="actividad" placeholder="actividad" id="actividad" style="min-height: 150px;"><?= $registro['actividad']; ?></textarea>
+                                                        <label for="actividad">Actividad</label>
+                                                    </div>
+                                                <?php
+                                                } else {
+                                                ?>
+                                                    <div class="mt-3">
+                                                        <label for="medio" class="form-label">Diagrama PDF</label>
+                                                        <input class="form-control" type="file" id="medio" name="medio" max="100000">
+                                                    </div>
+                                                    <input type="hidden" class="form-control" id="actividad" name="actividad" value="">
+                                                <?php
+                                                }
+                                                ?>
+
+                                                <div class="col-12 text-center mt-3 d-flex align-items-center justify-content-center">
+                                                    <button type="submit" name="update" class="btn btn-warning">
+                                                        Actualizar plano
+                                                    </button>
+                                                </div>
+                                            </div>
+                            </div>
+                            </form>
+                    <?php
+                                    } else {
+                                        echo "<h4>No se encontro ningun registro con este ID</h4>";
+                                    }
+                                }
+                    ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO USUARIO</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="codeusuarios.php" method="POST">
+                        <div class="row">
+                            <div class="col-12 mtop">
+                                <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" autocomplete="off" required>
+                            </div>
+
+                            <div class="col-6 mtop">
+                                <input type="text" class="form-control" name="apellidop" id="apellidop" placeholder="Apellido paterno" autocomplete="off" required>
+                            </div>
+
+                            <div class="col-6 mtop">
+                                <input type="text" class="form-control" name="apellidom" id="apellidom" placeholder="Apellido materno" autocomplete="off" required>
+                            </div>
+
+                            <div class="col-5 mtop">
+                                <input type="text" class="form-control" name="username" id="username" placeholder="Nombre de usuario" autocomplete="off" required>
+                            </div>
+
+                            <div class="col-7 mtop">
+                                <input type="password" class="form-control" name="password" id="password" placeholder="Password" autocomplete="off" required>
+                            </div>
+
+                            <div class="col-12 mtop">
+                                <select class="form-select" name="rol" id="rol" autocomplete="off" required>
+                                    <option disabled>Categoría</option>
+                                    <option value="1">Bachillerato</option>
+                                    <option value="2">Licenciatura escolarizada</option>
+                                    <option value="3">Licenciatura ejecutiva</option>
+                                    <option value="4">Administrador</option>
+                                    <option value="5">Control escolar</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" name="save">Guardar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+</body>
+
+</html>
