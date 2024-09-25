@@ -155,9 +155,53 @@ if (isset($_POST['save'])) {
             exit(0);
         }
     } else {
-        $_SESSION['message'] = "Error al cargar el archivo.";
-        header("Location: ensamble.php");
-        exit(0);
+         // Aquí, en lugar de almacenar el archivo, primero insertamos el registro para obtener el ID
+         $query = "INSERT INTO diagrama (idproyecto, nombreplano, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, '1')";
+         $stmt = mysqli_prepare($con, $query);
+ 
+ 
+         if ($stmt) {
+             mysqli_stmt_bind_param($stmt, 'sssis', $idproyecto, $nombreplano, $nivel, $piezas, $actividad);
+             mysqli_stmt_execute($stmt);
+ 
+             // Obtener el ID del registro recién creado
+             $idplano = mysqli_insert_id($con);
+ 
+             // Procesar otros valores (por ejemplo, asignar a operadores)
+             if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
+                 foreach ($_POST['codigooperador'] as $codigoOperador) {
+                     $queryplano = "INSERT INTO asignaciondiagrama (idplano, codigooperador) VALUES (?, ?)";
+                     $stmtPlano = mysqli_prepare($con, $queryplano);
+ 
+                     if ($stmtPlano) {
+                         mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
+                         mysqli_stmt_execute($stmtPlano);
+ 
+                         // Código para notificaciones, etc.
+                         $idcodigo = $_SESSION['codigo'];
+                         $fecha_actual = date("Y-m-d");
+                         $hora_actual = date("H:i");
+ 
+                         $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo diagrama: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+                         mysqli_query($con, $querydos);
+ 
+                         $mensaje = 'Tienes un nuevo diagrama, Nombre: ' . $nombreplano . ' Actividad: ' . $actividad  . ' Prioridad: ' . $nivel;
+                         $emisor = $_SESSION['codigo'];
+                         $estatus = '1';
+ 
+                         $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$codigoOperador', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
+                         mysqli_query($con, $querymensajes);
+                     }
+                 }
+             }
+             $_SESSION['message'] = "Diagrama creado exitosamente";
+             header("Location: ensamble.php");
+             exit(0);
+         } else {
+             $_SESSION['message'] = "Error al crear el diagrama.";
+             header("Location: ensamble.php");
+             exit(0);
+         }
     }
 }
 
