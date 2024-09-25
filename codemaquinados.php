@@ -34,7 +34,7 @@ if (isset($_POST['update'])) {
     $piezas = mysqli_real_escape_string($con, $_POST['piezas']);
     $estatusplano = mysqli_real_escape_string($con, $_POST['estatusplano']);
     $actividad = mysqli_real_escape_string($con, $_POST['actividad']);
-    
+
     $query = "UPDATE `plano` SET `nombreplano` = '$nombreplano', `nivel` = '$nivel', `piezas` = '$piezas', `estatusplano` = '$estatusplano', `actividad` = '$actividad'";
 
     // Verifica si se ha subido un archivo
@@ -160,8 +160,52 @@ if (isset($_POST['save'])) {
             exit(0);
         }
     } else {
-        $_SESSION['message'] = "Error al cargar el archivo.";
-        header("Location: maquinados.php");
-        exit(0);
+        // Aquí, en lugar de almacenar el archivo, primero insertamos el registro para obtener el ID
+        $query = "INSERT INTO plano (idproyecto, nombreplano, nivel, piezas, actividad, estatusplano) VALUES (?, ?, ?, ?, ?, '1')";
+        $stmt = mysqli_prepare($con, $query);
+
+
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, 'sssis', $idproyecto, $nombreplano, $nivel, $piezas, $actividad);
+            mysqli_stmt_execute($stmt);
+
+            // Obtener el ID del registro recién creado
+            $idplano = mysqli_insert_id($con);
+
+            // Procesar otros valores (por ejemplo, asignar a operadores)
+            if (!empty($_POST['codigooperador']) && is_array($_POST['codigooperador'])) {
+                foreach ($_POST['codigooperador'] as $codigoOperador) {
+                    $queryplano = "INSERT INTO asignacionplano (idplano, codigooperador) VALUES (?, ?)";
+                    $stmtPlano = mysqli_prepare($con, $queryplano);
+
+                    if ($stmtPlano) {
+                        mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
+                        mysqli_stmt_execute($stmtPlano);
+
+                        // Código para notificaciones, etc.
+                        $idcodigo = $_SESSION['codigo'];
+                        $fecha_actual = date("Y-m-d");
+                        $hora_actual = date("H:i");
+
+                        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Subio un nuevo maquinado: $nombreplano', hora='$hora_actual', fecha='$fecha_actual'";
+                        mysqli_query($con, $querydos);
+
+                        $mensaje = 'Tienes un nuevo maquinado, Nombre: ' . $nombreplano . ' Actividad: ' . $actividad  . ' Prioridad: ' . $nivel;
+                        $emisor = $_SESSION['codigo'];
+                        $estatus = '1';
+
+                        $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$codigoOperador', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
+                        mysqli_query($con, $querymensajes);
+                    }
+                }
+            }
+            $_SESSION['message'] = "Maquinado creado exitosamente";
+            header("Location: maquinados.php");
+            exit(0);
+        } else {
+            $_SESSION['message'] = "Error al crear el maquinado.";
+            header("Location: maquinados.php");
+            exit(0);
+        }
     }
 }
