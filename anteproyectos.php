@@ -67,6 +67,7 @@ if (isset($_SESSION['codigo'])) {
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <?php include 'mensajes.php'; ?>
+    <?php include 'modales.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -108,17 +109,7 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9])) {
-                                        //     $query = "SELECT proyecto.*
-                                        //         FROM proyecto 
-                                        //         JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
-                                        //         JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo
-                                        //         WHERE encargadoproyecto.codigooperador = $codigo 
-                                        //         AND proyecto.estatus = 1
-                                        //         ORDER BY proyecto.prioridad ASC";
-                                        // } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                         $query = "SELECT * FROM proyecto WHERE estatus = 2 ORDER BY prioridad ASC";
-                                        //}
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
@@ -133,22 +124,108 @@ if (isset($_SESSION['codigo'])) {
                                                     <td>
                                                         <p class="text-center"><?= $registro['cliente']; ?></p>
                                                     </td>
-                                                    <td style="cursor: all-scroll;">
-                                                        <p><?php
-                                                            if ($registro['etapa'] === '1') {
-                                                                echo "Recepción de RFQ";
-                                                            } else if ($registro['etapa'] === '2') {
-                                                                echo "Visita levantamiento con cliente";
-                                                            } else if ($registro['etapa'] === '3') {
-                                                                echo "Generacion de diseño/diagrama a bloques";
-                                                            } else if ($registro['etapa'] === '4') {
-                                                                echo "Generación de BOM's";
-                                                            } else if ($registro['etapa'] === '5') {
-                                                                echo "Cotización";
-                                                            } else {
-                                                                echo "Asigne una etapa manualmente";
+
+                                                    <td>
+                                                        <?php
+                                                        if ($registro['etapa'] === '2') {
+                                                        ?>
+                                                            <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 2 de 5</p>
+                                                            <p>Visita levantamiento con cliente</p>
+                                                            <?php
+                                                            if (in_array($_SESSION['rol'], [1, 2, 5])) {
+                                                                $query = "SELECT * FROM agendaproyectos WHERE estatus = 1 AND idproyecto = '" . $registro['id'] . "'";
+                                                                $query_run = mysqli_query($con, $query);
+                                                                if (mysqli_num_rows($query_run) > 0) {
+                                                                    foreach ($query_run as $registro) {
+                                                            ?>
+                                                                        <p><i class="bi bi-calendar-check"></i> <?= $registro['dia']; ?> <i class="bi bi-clock"></i> <?= $registro['hora']; ?></p>
+                                                            <?php
+                                                                    }
+                                                                }
                                                             }
-                                                            ?></p>
+                                                            ?>
+                                                        <?php
+                                                        } else if ($registro['etapa'] === '3') {
+                                                        ?>
+                                                            <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 3 de 5</p>
+                                                            <p>Generacion de diseño / diagrama a bloques</p>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <?php
+                                                                    $query = "SELECT * FROM proyectomedios WHERE (estatus = 1 OR estatus = 2 OR estatus = 3)  AND idproyecto = '" . $registro['id'] . "'";
+                                                                    $query_run = mysqli_query($con, $query);
+                                                                    if (mysqli_num_rows($query_run) > 0) {
+                                                                        foreach ($query_run as $registro) {
+                                                                            $idmodal = $registro['id'];
+                                                                    ?>
+                                                                            <?php
+                                                                            if ($registro['estatus'] == 1) {
+                                                                            ?>
+                                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><?= $registro['tipo']; ?> a bloques</button>
+                                                                            <?php
+                                                                            } elseif ($registro['estatus'] == 2) {
+                                                                            ?>
+                                                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><?= $registro['tipo']; ?> a bloques rechazado</button>
+                                                                            <?php
+                                                                            } elseif ($registro['estatus'] == 3) {
+                                                                            ?>
+                                                                                <button class="btn btn-success btn-sm" disabled><?= $registro['tipo']; ?> aprobado</button>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
+
+                                                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                                <div class="modal-dialog modal-lg">
+                                                                                    <div class="modal-content">
+                                                                                        <div class="modal-header">
+                                                                                            <h5 style="text-transform: uppercase;" class="modal-title" id="pdfModalLabel"><?= $registro['tipo']; ?> a bloques pdfModal<?= $registro['id']; ?></h5>
+                                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                            <iframe src="<?= $registro['medio']; ?>" width="100%" height="400px"></iframe>
+                                                                                        </div>
+                                                                                        <?php
+                                                                                        if (in_array($_SESSION['rol'], [1, 2])) {
+                                                                                            if ($registro['estatus'] == 1) {
+                                                                                        ?>
+                                                                                                <div class="modal-footer mb-3">
+                                                                                                    <form action="codeproyecto.php" method="post" id="formularioBloque">
+                                                                                                        <input type="hidden" name="id" value="<?= $registro['id']; ?>">
+                                                                                                        <input type="hidden" name="idproyecto" value="<?= $registro['idproyecto']; ?>">
+                                                                                                        <!-- Se rechaza con estatus 2 -->
+                                                                                                        <button type="button" class="btn btn-danger" id="rechazarbloque">Rechazar</button>
+                                                                                                        <!-- Se aprueba con estatus 3 -->
+                                                                                                        <button type="submit" class="btn btn-success" name="aprobarbloque">Aprobar <?= $registro['tipo']; ?></button>
+                                                                                                    </form>
+                                                                                                </div>
+                                                                                        <?php
+                                                                                            }
+                                                                                        }
+                                                                                        ?>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                    <?php
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </div>
+                                                            </div>
+                                                        <?php
+                                                        } else if ($registro['etapa'] === '4') {
+                                                        ?>
+                                                            <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 4 de 5</p>
+                                                            <p>Generación de BOM's</p>
+                                                        <?php
+                                                        } else if ($registro['etapa'] === '5') {
+                                                        ?>
+                                                            <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 5 de 5</p>
+                                                            <p>Cotización</p>
+                                                        <?php
+                                                        } else {
+                                                            echo "Error, asigne una etapa manualmente o contacte a soporte";
+                                                        }
+                                                        ?>
                                                     </td>
 
                                                     <?php
@@ -187,8 +264,12 @@ if (isset($_SESSION['codigo'])) {
                                                         <a style="color:#fff;" href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                            echo '<form action="codeproyecto.php" method="POST" class="d-inline">
+                                                            if ($registro['id'] == 5) {
+                                                                echo '<form action="codeproyecto.php" method="POST" class="d-inline">
                                                                         <button type="submit" name="aprobar" value="' . $registro['id'] . '" class="btn btn-success btn-sm m-1"><i class="bi bi-check2-circle"></i></button>
+                                                                    </form>';
+                                                            }
+                                                            echo '<form action="codeproyecto.php" method="POST" class="d-inline">
                                                                         <button type="submit" name="archivaranteproyecto" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-x-circle"></i></button>
                                                                     </form>';
                                                         }
@@ -214,7 +295,7 @@ if (isset($_SESSION['codigo'])) {
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO ANTEPROYECTO</h1>
@@ -236,7 +317,7 @@ if (isset($_SESSION['codigo'])) {
                             <div class="form-floating mt-3 mt-3">
                                 <select class="form-select" name="etapa" id="etapa" autocomplete="off" required>
                                     <option disabled>Seleccione una etapa</option>
-                                    <option selected value="1">Recepción de RFQ</option>
+                                    <option selected value="2">Recepción de RFQ</option>
                                     <option value="2">Visita/levantamiento con cliente</option>
                                     <option value="3">Generación de diseño/diagrama a bloques</option>
                                     <option value="4">Generación de BOM's</option>
@@ -258,12 +339,19 @@ if (isset($_SESSION['codigo'])) {
                                 if (mysqli_num_rows($result) > 0) {
                                     while ($usuario = mysqli_fetch_assoc($result)) {
                                         $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
+                                        if ($usuario['rol'] == 5) {
+                                            $idRol = 'Ing. Diseño';
+                                        } elseif ($usuario['rol'] == 9) {
+                                            $idRol = 'Ing. Control';
+                                        } elseif ($usuario['rol'] == 13) {
+                                            $idRol = 'Ing. Laser';
+                                        }
                                         $idUsuario = $usuario['codigo'];
                                         $idMedio = $usuario['medio'];
 
                                         // Cambio en el nombre del campo para que se envíen como un array
                                         echo "<input class='form-check-input mb-2' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                        echo "<label class='form-check-label mb-2' for='codigooperador_$idUsuario'><img style='width:40px;' src='$idMedio' alt=''> $nombreCompleto</label><br>";
+                                        echo "<label class='form-check-label mb-2' for='codigooperador_$idUsuario'><img style='width:40px;' src='$idMedio' alt=''> $nombreCompleto - $idRol</label><br>";
                                     }
                                 }
                                 ?>
@@ -326,10 +414,16 @@ if (isset($_SESSION['codigo'])) {
                                     $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
                                     $idUsuario = $usuario['codigo'];
                                     $idMedio = $usuario['medio'];
-
+                                    if ($usuario['rol'] == 5) {
+                                        $idRol = 'Ing. Diseño';
+                                    } elseif ($usuario['rol'] == 9) {
+                                        $idRol = 'Ing. Control';
+                                    } elseif ($usuario['rol'] == 13) {
+                                        $idRol = 'Ing. Laser';
+                                    }
                                     // Cambio en el nombre del campo para que se envíen como un array
                                     echo "<input  style='margin-right: 10px;' class='form-check-inputmb-2' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                    echo "<label class='form-check-label mb-2' for='codigooperador_$idUsuario'><img style='width:40px;' src='$idMedio' alt=''> $nombreCompleto</label><br>";
+                                    echo "<label class='form-check-label mb-2' for='codigooperador_$idUsuario'><img style='width:40px;' src='$idMedio' alt=''> $nombreCompleto - $idRol</label><br>";
                                 }
                             }
                             ?>
@@ -348,9 +442,9 @@ if (isset($_SESSION['codigo'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
     <script>
-         $(document).ready(function() {
+        $(document).ready(function() {
             // Cambiar a usar clase en lugar de ID
             $('.deleteButton').on('click', function(event) {
                 event.preventDefault(); // Previene el envío del formulario por defecto
@@ -402,6 +496,54 @@ if (isset($_SESSION['codigo'])) {
                 alert('Por favor, seleccione al menos un usuario encargado.');
                 event.preventDefault(); // Evita que el formulario se envíe
             }
+        });
+
+        document.getElementById('rechazarbloque').addEventListener('click', function() {
+            // Cierra el modal específico antes de abrir SweetAlert
+            var modalId = 'pdfModal<?= $idmodal; ?>'; // Usa el ID correcto aquí
+            var modalElement = document.getElementById(modalId); // Obtiene el elemento del modal
+            // Cierra el modal 
+            var modalInstance = bootstrap.Modal.getInstance(modalElement); // Obtiene la instancia del modal
+            if (modalInstance) {
+                modalInstance.hide(); // Cerrar el modal
+            }
+
+
+
+            Swal.fire({
+                title: 'Detalles de corrección',
+                input: 'textarea',
+                inputPlaceholder: 'Escribe los detalles para la corrección...',
+                showCancelButton: true,
+                confirmButtonText: 'Enviar',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '¡Por favor ingresa los detalles!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('formularioBloque');
+
+                    // Agregar input oculto para rechazarbloque
+                    const rechazarInput = document.createElement('input');
+                    rechazarInput.type = 'hidden';
+                    rechazarInput.name = 'rechazarbloque'; // Nombre del botón
+                    rechazarInput.value = '1'; // Puede ser cualquier valor; simplemente lo usamos para identificar el rechazo
+                    form.appendChild(rechazarInput);
+
+                    // Agregar input oculto para detalles
+                    const detallesInput = document.createElement('input');
+                    detallesInput.type = 'hidden';
+                    detallesInput.name = 'detalles';
+                    detallesInput.value = result.value; // Obtener el valor del textarea
+                    form.appendChild(detallesInput);
+
+                    form.submit(); // Enviar el formulario
+                }
+            });
+
         });
     </script>
 </body>

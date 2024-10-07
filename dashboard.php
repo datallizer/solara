@@ -38,6 +38,48 @@ if (isset($_SESSION['codigo'])) {
     if (mysqli_num_rows($result) > 0) {
         $queryubicacion = "UPDATE `usuarios` SET `ubicacion` = 'Dashboard' WHERE `usuarios`.`codigo` = '$codigo'";
         $queryubicacion_run = mysqli_query($con, $queryubicacion);
+        $queryemail = "SELECT * FROM usuarios WHERE codigo = '$codigo' AND rol IN (5, 9, 13,1,2) AND estatus = 1";
+        $result = $con->query($queryemail);
+
+        // Verifica si hay resultados
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+
+            // Verifica si el email está vacío
+            if (empty($row['email'])) {
+                echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Registra tu correo institucional',
+                        icon: 'warning',
+                        html: `<form class='row text-center' id='emailForm' method='POST' action='codeusuarios.php'>
+                                    <div class='form-floating col-12'>
+                                        <input id='email' class='form-control' style='width:100%;min-height:60px;' type='email' name='email' placeholder='Ingresa tu email' required>
+                                        <label for='email'>Correo</label>
+                                    </div>
+                                    <div class='col-12 mt-3'>
+                                    <input type='hidden' name='emailsave'>
+                                        <button style='min-height:60px;' class='btn btn-primary w-100' type='submit'>Guardar</button>
+                                    </div>
+                            </form>`,
+                        showCloseButton: false,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            document.getElementById('emailForm').addEventListener('submit', function(event) {
+                                event.preventDefault(); // Evita el envío normal
+                                // Aquí puedes hacer cualquier validación adicional si es necesario
+                                this.submit(); // Envía el formulario
+                            });
+                        }
+                    });
+                });
+              </script>";
+            }
+        } else {
+            echo "No se encontró el usuario.";
+        }
     } else {
         // Redirigir al usuario a una página de inicio de sesión
         header('Location: login.php');
@@ -137,74 +179,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
     }
 }
 
-$sql = "SELECT * FROM asistencia WHERE estatus = 1 AND idcodigo = '$codigo' LIMIT 1";
-$result = mysqli_query($con, $sql);
-
-// If a matching record is found, set variables for modal content
-if (mysqli_num_rows($result) > 0) {
-    $registro = mysqli_fetch_assoc($result);
-    $entrada = $registro['entrada'];
-    $salida = $registro['salida'];
-    $fecha = $registro['fecha'];
-
-    // Convertir la hora de entrada y salida a objetos DateTime
-    $entrada_dt = new DateTime($entrada);
-    $salida_dt = new DateTime($salida);
-
-    // Calcular la diferencia entre la hora de entrada y salida
-    $duracion_jornada = $entrada_dt->diff($salida_dt)->format('%H:%I'); // Formato horas:minutos
 ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#revision').modal('show');
-        });
-    </script>
-<?php
-}
-?>
-
-<!-- Modal solicitud salida -->
-<div class="modal fade" id="revision" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel"><b>COMPLETAR HORA DE SALIDA</b></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="codeasistencia.php" method="POST" class="row">
-                    <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
-                    <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
-                    <div class="col-12">
-                        <p class="small">Recibiste una solicitud de revisión sobre tu <b>hora de salida</b>, verifica que los datos sean correctos y si estas de acuerdo aprueba la solicitud.</p>
-                    </div>
-                    <div class="form-floating col-12 mb-3">
-                        <input type="text" class="form-control" id="fecha" value="<?= $fecha; ?>" placeholder="Fecha" disabled>
-                        <label for="fecha">Fecha <span class="small">(YYYY/MM/DD)</span></label>
-                    </div>
-                    <div class="form-floating col-6 mb-3">
-                        <input type="text" class="form-control" id="entrada" value="<?= $entrada; ?>" placeholder="Entrada" disabled>
-                        <label for="entrada">Hora de entrada</label>
-                    </div>
-                    <div class="form-floating col-6 mb-3">
-                        <input style="background-color:#ffdca1;" type="text" class="form-control" id="salida" value="<?= $salida; ?>" placeholder="Salida" disabled>
-                        <label for="salida">Hora de salida</label>
-                    </div>
-                    <div class="col-12">
-                        <p>Tu jornada fue de: <b><?= $duracion_jornada; ?></b> <span class="small">hrs</span></p>
-                    </div>
-                    <div class="modal-footer">
-                        <p class="small">Tu jornada total de trabajo se calcula con el número de entradas y salidas que registres en un día, si deseas conocer el total de horas trabajadas para este día puedes consultarlo en <a href="asistenciapersonal.php?id=<?= $registro['idcodigo']; ?>">asistencia</a>.</p>
-                        <button type="submit" class="btn btn-danger" name="rechazar">Rechazar</button>
-                        <button type="submit" class="btn btn-success" name="aprobar">Aprobar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -224,6 +199,7 @@ if (mysqli_num_rows($result) > 0) {
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <?php include 'mensajes.php'; ?>
+    <?php include 'modales.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -233,54 +209,38 @@ if (mysqli_num_rows($result) > 0) {
                     $query_run = mysqli_query($con, $query);
                     if (mysqli_num_rows($query_run) > 0) {
                         foreach ($query_run as $registro) {
-                            // Formato de fechas asumido 'YYYY-MM-DD'
                             $fechainicio = $registro['fechainicio'];
                             $fechafin = $registro['fechafin'];
                             $fechaActual = date('Y-m-d');
                             $etapa = $registro['etapa'];
-
-                            // Convertir a objetos DateTime
                             $inicio = new DateTime($fechainicio);
                             $fin = new DateTime($fechafin);
                             $hoy = new DateTime($fechaActual);
-
-                            // Calcular la diferencia de días totales
                             $diasTotales = $inicio->diff($fin)->days;
-
-                            // Evitar división por cero
                             if ($diasTotales == 0) {
-                                // Si las fechas de inicio y fin son iguales, asignar el progreso a 100%
                                 $progreso = 100;
-                                $diasRestantes = 0; // No hay días restantes si son iguales
+                                $diasRestantes = 0; 
                             } else {
-                                // Calcular los días restantes
                                 $diasRestantes = $hoy->diff($fin)->days;
                                 if ($hoy > $fin) {
-                                    $diasRestantes = 0; // Si ya ha pasado la fecha final, no hay días restantes.
+                                    $diasRestantes = 0; 
                                 }
 
-                                // Calcular el porcentaje de progreso
                                 $progreso = 100 - ($diasRestantes / $diasTotales) * 100;
-                                if ($progreso < 0) $progreso = 0; // No permitir un valor negativo en el progreso
-                                if ($progreso > 100) $progreso = 100; // No permitir más de 100%
+                                if ($progreso < 0) $progreso = 0; 
+                                if ($progreso > 100) $progreso = 100; 
                             }
-
-                            // Formatear el progreso para que solo tenga un decimal
                             $progresoFormateado = number_format($progreso, 1);
+                            $etapa = $registro['etapa']; 
 
-                            // Calcular la etapa del diseño siempre
-                            $etapa = $registro['etapa']; // Obtener la etapa actual de diseño
-
-
-                            // Definir el nombre de la etapa y el porcentaje de progreso basado en la etapa de diseño
                             switch ($etapa) {
                                 case '6':
                                     $nombreEtapa = "Recepción de PO";
-                                    $progresoEtapa = 6.25; 
+                                    $progresoEtapa = 6.25;
                                     break;
                                 case '7':
                                     $nombreEtapa = "Kick off meeting";
-                                    $progresoEtapa = 12.5; 
+                                    $progresoEtapa = 12.5;
                                     break;
                                 case '8':
                                     $nombreEtapa = "Visita formal de levantamiento";
@@ -288,19 +248,19 @@ if (mysqli_num_rows($result) > 0) {
                                     break;
                                 case '9':
                                     $nombreEtapa = "Prediseño (mecánico y eléctrico)";
-                                    $progresoEtapa = 25; 
+                                    $progresoEtapa = 25;
                                     break;
                                 case '10':
                                     $nombreEtapa = "Revisión de diseño/aprobación de cliente";
-                                    $progresoEtapa = 31.25; 
+                                    $progresoEtapa = 31.25;
                                     break;
                                 case '11':
                                     $nombreEtapa = "Actualizació de BOM";
-                                    $progresoEtapa = 37.5; 
+                                    $progresoEtapa = 37.5;
                                     break;
                                 case '12':
                                     $nombreEtapa = "Colocación de PO's";
-                                    $progresoEtapa = 43.75; 
+                                    $progresoEtapa = 43.75;
                                     break;
                                 case '13':
                                     $nombreEtapa = "Construcción del equipo";
@@ -308,15 +268,15 @@ if (mysqli_num_rows($result) > 0) {
                                     break;
                                 case '14':
                                     $nombreEtapa = "Pruebas internas iniciales";
-                                    $progresoEtapa = 56.25; 
+                                    $progresoEtapa = 56.25;
                                     break;
                                 case '15':
                                     $nombreEtapa = "Debugging interno y pruebas secundarias";
-                                    $progresoEtapa = 62.5; 
+                                    $progresoEtapa = 62.5;
                                     break;
                                 case '16':
                                     $nombreEtapa = "Buf off interno";
-                                    $progresoEtapa = 68.75; 
+                                    $progresoEtapa = 68.75;
                                     break;
                                 case '17':
                                     $nombreEtapa = "Buy off con cliente";
@@ -324,7 +284,7 @@ if (mysqli_num_rows($result) > 0) {
                                     break;
                                 case '18':
                                     $nombreEtapa = "Empaque y envío a instalaciones de cliente";
-                                    $progresoEtapa = 81.25; 
+                                    $progresoEtapa = 81.25;
                                     break;
                                 case '19':
                                     $nombreEtapa = "Instalción con cliente";
@@ -336,7 +296,7 @@ if (mysqli_num_rows($result) > 0) {
                                     break;
                                 case '21':
                                     $nombreEtapa = "Entrenamiento";
-                                    $progresoEtapa = 100; 
+                                    $progresoEtapa = 100;
                                     break;
                                 default:
                                     $nombreEtapa = "Error, contacte a soporte";
@@ -374,7 +334,7 @@ if (mysqli_num_rows($result) > 0) {
                                                                         <option value="14" <?= ($etapa == 14) ? 'selected' : ''; ?>>Pruebas internas iniciales</option>
                                                                         <option value="15" <?= ($etapa == 15) ? 'selected' : ''; ?>>Debugging interno y pruebas secundarias</option>
                                                                         <option value="16" <?= ($etapa == 16) ? 'selected' : ''; ?>>Buf off interno</option>
-                                                                        <option value="17" <?= ($etapa == 17) ? 'selected' : ''; ?>>Buy off con cliente</option>
+                                                                        <option value="17" <?= ($etapa == 17) ? 'selected' : ''; ?>>Buf off con cliente</option>
                                                                         <option value="18" <?= ($etapa == 18) ? 'selected' : ''; ?>>Empaque y envío a instalaciones de cliente</option>
                                                                         <option disabled>------- Validación -------</option>
                                                                         <option value="19" <?= ($etapa == 19) ? 'selected' : ''; ?>>Instalación con cliente</option>
@@ -404,7 +364,7 @@ if (mysqli_num_rows($result) > 0) {
                                         </div>
 
                                         <div>
-                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;">Etapa:</span> <?= $nombreEtapa; ?></p>
+                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;"><i class='bi bi-check-circle-fill'></i>  Etapa:</span> <?= $nombreEtapa; ?></p>
                                         </div>
 
                                         <!-- Barra de progreso de etapa diseño -->
@@ -472,7 +432,7 @@ if (mysqli_num_rows($result) > 0) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
     <script>
         $(document).ready(function() {
             $('#miTabla').DataTable({

@@ -185,4 +185,23 @@ if (isset($_POST['save'])) {
     }
 }
 
+if (isset($_POST['emailsave'])) {
+    $email = mysqli_real_escape_string($con, $_POST['email']);
+    $idcodigo = $_SESSION['codigo']; // Recuperar el código guardado en la sesión
+
+    // Actualizar el email del usuario en la base de datos
+    $query = "UPDATE usuarios SET email='$email' WHERE codigo='$idcodigo'";
+    $result = mysqli_query($con, $query);
+
+    if ($result) {
+        $_SESSION['email'] = $email;
+        $_SESSION['message'] = "Email guardado correctamente.";
+        header("Location: dashboard.php"); // Redirigir después de guardar el email
+        exit();
+    } else {
+        $_SESSION['message'] = "Email no guardado, contacte a soporte.";
+        header("Location: logout.php"); // Redirigir después de guardar el email
+        exit();
+    }
+}
 ?>

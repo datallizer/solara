@@ -213,7 +213,6 @@ if (isset($_SESSION['codigo'])) {
                                                     <select class="form-select" name="etapa" id="etapa">
                                                         <option disabled>Seleccione una etapa</option>
                                                         <option disabled>------- Pretrabajo -------</option>
-                                                        <option value="1" <?= ($etapa_actual == 1) ? 'selected' : ''; ?>>Recepción de RFQ</option>
                                                         <option value="2" <?= ($etapa_actual == 2) ? 'selected' : ''; ?>>Visita/levantamiento con cliente</option>
                                                         <option value="3" <?= ($etapa_actual == 3) ? 'selected' : ''; ?>>Generación de diseño/diagrama a bloques</option>
                                                         <option value="4" <?= ($etapa_actual == 4) ? 'selected' : ''; ?>>Generación de BOM's</option>

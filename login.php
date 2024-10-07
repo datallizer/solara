@@ -38,6 +38,7 @@ if (isset($_POST['codigo'])) {
         $_SESSION['apellidop'] = $apellidop;
         $_SESSION['apellidom'] = $apellidom;
         $_SESSION['codigo'] = $row['codigo'];
+        $_SESSION['email'] = $row['email'];
         $_SESSION['rol'] = $row['rol'];
         if ($_SESSION['rol'] == 8) {
             $idcodigo = $_SESSION['codigo'];

@@ -39,74 +39,7 @@ if (isset($_SESSION['codigo'])) {
     exit();
 }
 
-$sql = "SELECT estatus, idcodigo, entrada, salida, fecha FROM asistencia WHERE estatus = 1 AND idcodigo = '$codigo' LIMIT 1";
-$result = mysqli_query($con, $sql);
-
-// If a matching record is found, set variables for modal content
-if (mysqli_num_rows($result) > 0) {
-    $registro = mysqli_fetch_assoc($result);
-    $entrada = $registro['entrada'];
-    $salida = $registro['salida'];
-    $fecha = $registro['fecha'];
-
-    // Convertir la hora de entrada y salida a objetos DateTime
-    $entrada_dt = new DateTime($entrada);
-    $salida_dt = new DateTime($salida);
-
-    // Calcular la diferencia entre la hora de entrada y salida
-    $duracion_jornada = $entrada_dt->diff($salida_dt)->format('%H:%I'); // Formato horas:minutos
 ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#revision').modal('show');
-        });
-    </script>
-<?php
-}
-?>
-
-<!-- Modal solicitud salida -->
-<div class="modal fade" id="revision" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel"><b>COMPLETAR HORA DE SALIDA</b></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="codeasistencia.php" method="POST" class="row">
-                    <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
-                    <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
-                    <div class="col-12">
-                        <p class="small">Recibiste una solicitud de revisión sobre tu <b>hora de salida</b>, verifica que los datos sean correctos y si estas de acuerdo aprueba la solicitud.</p>
-                    </div>
-                    <div class="form-floating col-12 mb-3">
-                        <input type="text" class="form-control" id="fecha" value="<?= $fecha; ?>" placeholder="Fecha" disabled>
-                        <label for="fecha">Fecha <span class="small">(YYYY/MM/DD)</span></label>
-                    </div>
-                    <div class="form-floating col-6 mb-3">
-                        <input type="text" class="form-control" id="entrada" value="<?= $entrada; ?>" placeholder="Entrada" disabled>
-                        <label for="entrada">Hora de entrada</label>
-                    </div>
-                    <div class="form-floating col-6 mb-3">
-                        <input style="background-color:#ffdca1;" type="text" class="form-control" id="salida" value="<?= $salida; ?>" placeholder="Salida" disabled>
-                        <label for="salida">Hora de salida</label>
-                    </div>
-                    <div class="col-12">
-                        <p>Tu jornada fue de: <b><?= $duracion_jornada; ?></b> <span class="small">hrs</span></p>
-                    </div>
-                    <div class="modal-footer">
-                        <p class="small">Tu jornada total de trabajo se calcula con el número de entradas y salidas que registres en un día, si deseas conocer el total de horas trabajadas para este día puedes consultarlo en <a href="asistenciapersonal.php?id=<?= $registro['idcodigo']; ?>">asistencia</a>.</p>
-                        <button type="submit" class="btn btn-danger" name="rechazar">Rechazar</button>
-                        <button type="submit" class="btn btn-success" name="aprobar">Aprobar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -149,6 +82,7 @@ if (mysqli_num_rows($result) > 0) {
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <?php include 'mensajes.php'; ?>
+    <?php include 'modales.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -518,31 +452,6 @@ if (mysqli_num_rows($result) > 0) {
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary" name="save">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="revision" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">HORA DE SALIDA</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="codeasistencia.php" method="POST" class="row">
-                        <input type="hidden" id="id" name="id" value="<?= $registro['id']; ?>">
-                        <input type="hidden" id="codigo" name="codigo" value="<?= $registro['idcodigo']; ?>">
-                        <div class="form-floating col-12 mb-3">
-                            <input type="time" class="form-control" name="salida" id="salida" placeholder="Salida" autocomplete="off" required>
-                            <label for="salida">Hora de salida</label>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" name="solicitar">Guardar</button>
                         </div>
                     </form>
                 </div>
