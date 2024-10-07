@@ -3,8 +3,6 @@ require 'dbcon.php';
 
 if (isset($_POST['save'])) {
     $mensaje = mysqli_real_escape_string($con, $_POST['mensaje']);
-
-    // Verificar si 'codigooperador' está definido y es un array
     $codigosOperadores = isset($_POST['codigooperador']) ? $_POST['codigooperador'] : [];
 
     $emisor = $_SESSION['codigo'];
@@ -12,23 +10,15 @@ if (isset($_POST['save'])) {
     $hora = date("H:i");
     $estatus = '1';
 
-    // Preparar la consulta para evitar inyecciones SQL
     $query = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($con, $query);
 
     if ($stmt) {
-        // Iterar sobre cada código de operador y realizar la inserción
         foreach ($codigosOperadores as $idcodigo) {
-            // Enlazar parámetros
             mysqli_stmt_bind_param($stmt, "ssssss", $mensaje, $idcodigo, $emisor, $fecha, $hora, $estatus);
-
-            // Ejecutar la consulta
             mysqli_stmt_execute($stmt);
         }
-
-        // Cerrar el statement
         mysqli_stmt_close($stmt);
-
         $_SESSION['message'] = "Mensajes enviados exitosamente";
     } else {
         $_SESSION['message'] = "Error al enviar los mensajes, contacte a soporte";
@@ -42,14 +32,12 @@ if (isset($_POST['save'])) {
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" style="min-height: 80px;">
-        <!-- Navbar Brand-->
         <a class="navbar-brand" href="dashboard.php"><img style="width: 200px;margin-left:15px;" src="images/logolateral.png" alt=""></a>
-        <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-        <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-12 me-3 me-lg-12">
             <li class="nav-item dropdown m-1">
                 <?php
+                // Numero de planos asignados
                 $queryUsuarios = "SELECT COUNT(*) as numUsuarios
                                     FROM (
                                         SELECT usuarios.codigo, COUNT(plano.id) as cuenta
@@ -65,6 +53,7 @@ if (isset($_POST['save'])) {
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numUsuarios = $usuarioData['numUsuarios'];
 
+                //Numero de ensambles asignados
                 $queryControl = "SELECT COUNT(*) as numEnsambles
                                 FROM (
                                     SELECT usuarios.codigo, COUNT(diagrama.id) as cuenta
@@ -81,6 +70,7 @@ if (isset($_POST['save'])) {
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numEnsambles = $usuarioData['numEnsambles'];
 
+                // Cotizaciones nuevas
                 $queryAprobar = "SELECT COUNT(*) as numQuotes
                                     FROM (
                                     SELECT estatusq FROM quotes WHERE estatusq = 1
@@ -90,6 +80,7 @@ if (isset($_POST['save'])) {
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numQuotes = $usuarioData['numQuotes'];
 
+                // Compras nuevas
                 $queryBuy = "SELECT COUNT(*) as numBuy
                                 FROM (
                                 SELECT estatusq FROM quotes WHERE estatusq = 0
@@ -99,26 +90,37 @@ if (isset($_POST['save'])) {
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numBuy = $usuarioData['numBuy'];
 
-                $queryProyecto = "SELECT COUNT(DISTINCT proyecto.id) AS numProyectos
-                  FROM proyecto
-                  LEFT JOIN plano ON proyecto.id = plano.idproyecto
-                  LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
-                  WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) AND estatus = 1
-                  AND proyecto.etapa < 13
+                // Proyectos desactualizados
+                $queryProyectoContador = "SELECT COUNT(DISTINCT proyecto.id) AS numProyectos
+                FROM proyecto
+                LEFT JOIN plano ON proyecto.id = plano.idproyecto
+                LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
+                WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) 
+                AND estatus = 1
+                AND proyecto.etapa < 13
                 AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados');";
 
-                $resultado = mysqli_query($con, $queryProyecto);
-                $proyectoData = mysqli_fetch_assoc($resultado);
+                $resultadoContador = mysqli_query($con, $queryProyectoContador);
+                $proyectoData = mysqli_fetch_assoc($resultadoContador);
                 $numProyectos = $proyectoData['numProyectos'];
 
+                // Consulta para obtener los nombres de los proyectos desactualizados
+                $queryProyectoNombres = "SELECT DISTINCT proyecto.nombre, proyecto.id
+                       FROM proyecto
+                       LEFT JOIN plano ON proyecto.id = plano.idproyecto
+                       LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
+                       WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) 
+                       AND estatus = 1
+                       AND proyecto.etapa < 13
+                       AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados');";
 
+                $resultadoNombres = mysqli_query($con, $queryProyectoNombres);
+                $proyectosDesactualizados = mysqli_fetch_all($resultadoNombres, MYSQLI_ASSOC);
                 ?>
 
                 <?php
-                // Variables de control para mostrar el enlace
                 $mostrarEnlace = false;
 
-                // Comprobar condiciones y asignar la variable de control
                 if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) ||
                     ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9])) || ($numQuotes > 0 && in_array($_SESSION['rol'], [1, 2])) || ($numBuy > 0 && in_array($_SESSION['rol'], [1, 2, 6, 7]))
                 ) {
@@ -148,6 +150,7 @@ if (isset($_POST['save'])) {
 
 
                 <?php
+                // Planos asignados
                 $queryUsuarios = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, 
                     COUNT(plano.id) AS cuenta,
                     DATEDIFF(CURDATE(), COALESCE((
@@ -164,8 +167,6 @@ if (isset($_POST['save'])) {
                 ORDER BY cuenta ASC
             ";
 
-
-
                 $resultado = mysqli_query($con, $queryUsuarios);
                 function numeroATexto($numero, $diasSinAsignacion)
                 {
@@ -175,9 +176,10 @@ if (isset($_POST['save'])) {
                         2 => 'tiene dos maquinados asignados',
                         3 => 'tiene tres maquinados asignados'
                     ];
-                    return $textos[$numero] ?? $numero; // Devuelve el texto o el número si no está en el array
+                    return $textos[$numero] ?? $numero;
                 }
 
+                // Ensambles asignados
                 $queryEnsambles = "SELECT usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.medio, COUNT(diagrama.id) as cuenta,
                 DATEDIFF(CURDATE(), COALESCE((
                         SELECT MAX(fechareinicio)
@@ -191,8 +193,6 @@ if (isset($_POST['save'])) {
                                 GROUP BY usuarios.codigo
                                 HAVING cuenta <= 3 ORDER BY cuenta ASC";
 
-
-
                 $resultados = mysqli_query($con, $queryEnsambles);
                 function numeroATextos($numeros, $diasEnsambleSinAsignacion)
                 {
@@ -202,7 +202,7 @@ if (isset($_POST['save'])) {
                         2 => 'tiene dos ensambles asignados',
                         3 => 'tiene tres ensambles asignados'
                     ];
-                    return $texto[$numeros] ?? $numeros; // Devuelve el texto o el número si no está en el array
+                    return $texto[$numeros] ?? $numeros;
                 }
 
                 ?>
@@ -211,7 +211,6 @@ if (isset($_POST['save'])) {
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
                     ?>
                         <?php
-                        // Asegúrate de que la función numeroATexto esté incluida o definida en este archivo.
                         while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
                             <li style="width: 400px; padding: 0px 15px;">
                                 <a href="maquinados.php" style="color: #000;">
@@ -317,16 +316,20 @@ if (isset($_POST['save'])) {
                     ?>
 
                     <?php
-                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
-                        if ($numProyectos >= 1) {
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13]) && count($proyectosDesactualizados) > 0) {
+                        foreach ($proyectosDesactualizados as $proyecto) {
                     ?>
                             <li style="width: 400px;padding:0px 15px;">
-                                <a href="dashboard.php" style="color:#000;">
+                                <a href="dashboard.php?proyecto_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
                                     <div class="row">
-                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil"></div>
+                                        <div class="col-3">
+                                            <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                                        </div>
                                         <div class="col-9">
-                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos</small>
-                                            <p>Tienes etapas desactualizadas en <?php echo $numProyectos; ?> proyectos</p>
+                                            <small style="text-transform:uppercase;font-size:11px;">
+                                                <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                                            </small>
+                                            <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Construcción del equipo."</p>
                                         </div>
                                     </div>
                                 </a>

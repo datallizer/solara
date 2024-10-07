@@ -4,6 +4,36 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require 'dbcon.php';
+// Modal actualizar proyecto al presionar link de notificacioes
+if (isset($_GET['proyecto_id'])) {
+    $proyecto_id = htmlspecialchars($_GET['proyecto_id']);
+?>
+    <script>
+        // Espera a que el DOM esté completamente cargado
+        document.addEventListener("DOMContentLoaded", function() {
+            // Abre el modal correspondiente al proyecto usando el ID
+            var modal = new bootstrap.Modal(document.getElementById('pdfModal<?php echo $proyecto_id; ?>'));
+            modal.show();
+
+            // Selecciona automáticamente la opción con value=13 en el select con id="etapa"
+            var selectEtapa = document.getElementById("etapa<?php echo $proyecto_id; ?>");
+            if (selectEtapa) {
+                selectEtapa.value = "13";
+
+                // Obtener la opción con value="13" y aplicarle el fondo amarillo
+                var optionToHighlight = selectEtapa.querySelector('option[value="13"]');
+                if (optionToHighlight) {
+                    optionToHighlight.style.backgroundColor = 'yellow';
+                }
+            }
+
+        });
+    </script>
+
+<?php
+    $_SESSION['message'] = 'Actualiza la etapa a "Construcción del equipo"';
+}
+
 $message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
 
 if (!empty($message)) {
@@ -219,83 +249,83 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                             $diasTotales = $inicio->diff($fin)->days;
                             if ($diasTotales == 0) {
                                 $progreso = 100;
-                                $diasRestantes = 0; 
+                                $diasRestantes = 0;
                             } else {
                                 $diasRestantes = $hoy->diff($fin)->days;
                                 if ($hoy > $fin) {
-                                    $diasRestantes = 0; 
+                                    $diasRestantes = 0;
                                 }
 
                                 $progreso = 100 - ($diasRestantes / $diasTotales) * 100;
-                                if ($progreso < 0) $progreso = 0; 
-                                if ($progreso > 100) $progreso = 100; 
+                                if ($progreso < 0) $progreso = 0;
+                                if ($progreso > 100) $progreso = 100;
                             }
                             $progresoFormateado = number_format($progreso, 1);
-                            $etapa = $registro['etapa']; 
+                            $etapa = $registro['etapa'];
 
                             switch ($etapa) {
                                 case '6':
-                                    $nombreEtapa = "Recepción de PO";
+                                    $nombreEtapa = "<b>Recepción de PO</b> <span class='small'>(Etapa 1 de 16)</span>";
                                     $progresoEtapa = 6.25;
                                     break;
                                 case '7':
-                                    $nombreEtapa = "Kick off meeting";
+                                    $nombreEtapa = "<b>Kick off meeting</b> <span class='small'>(Etapa 2 de 16)</span>";
                                     $progresoEtapa = 12.5;
                                     break;
                                 case '8':
-                                    $nombreEtapa = "Visita formal de levantamiento";
+                                    $nombreEtapa = "<b>Visita formal de levantamiento</b> <span class='small'>(Etapa 3 de 16)</span>";
                                     $progresoEtapa = 18.75;
                                     break;
                                 case '9':
-                                    $nombreEtapa = "Prediseño (mecánico y eléctrico)";
+                                    $nombreEtapa = "<b>Prediseño (mecánico y eléctrico)</b> <span class='small'>(Etapa 4 de 16)</span>";
                                     $progresoEtapa = 25;
                                     break;
                                 case '10':
-                                    $nombreEtapa = "Revisión de diseño/aprobación de cliente";
+                                    $nombreEtapa = "<b>Revisión de diseño/aprobación de cliente</b> <span class='small'>(Etapa 5 de 16)</span>";
                                     $progresoEtapa = 31.25;
                                     break;
                                 case '11':
-                                    $nombreEtapa = "Actualizació de BOM";
+                                    $nombreEtapa = "<b>Actualizació de BOM</b> <span class='small'>(Etapa 6 de 16)</span>";
                                     $progresoEtapa = 37.5;
                                     break;
                                 case '12':
-                                    $nombreEtapa = "Colocación de PO's";
+                                    $nombreEtapa = "<b>Colocación de PO's</b> <span class='small'>(Etapa 7 de 16)</span>";
                                     $progresoEtapa = 43.75;
                                     break;
                                 case '13':
-                                    $nombreEtapa = "Construcción del equipo";
+                                    $nombreEtapa = "<b>Construcción del equipo</b> <span class='small'>(Etapa 8 de 16)</span>";
                                     $progresoEtapa = 50;
                                     break;
                                 case '14':
-                                    $nombreEtapa = "Pruebas internas iniciales";
+                                    $nombreEtapa = "<b>Pruebas internas iniciales</b> <span class='small'>(Etapa 9 de 16)</span>";
                                     $progresoEtapa = 56.25;
                                     break;
                                 case '15':
-                                    $nombreEtapa = "Debugging interno y pruebas secundarias";
+                                    $nombreEtapa = "<b>Debugging interno y pruebas secundarias</b> <span class='small'>(Etapa 10 de 16)</span>";
                                     $progresoEtapa = 62.5;
                                     break;
                                 case '16':
-                                    $nombreEtapa = "Buf off interno";
+                                    $nombreEtapa = "<b>Buf off interno</b> <span class='small'>(Etapa 11 de 16)</span>";
                                     $progresoEtapa = 68.75;
                                     break;
                                 case '17':
-                                    $nombreEtapa = "Buy off con cliente";
+                                    $nombreEtapa = "<b>Buy off con cliente</b> <span class='small'>(Etapa 12 de 16)</span>";
                                     $progresoEtapa = 75;
                                     break;
                                 case '18':
-                                    $nombreEtapa = "Empaque y envío a instalaciones de cliente";
+                                    $nombreEtapa = "<b>Empaque y envío a instalaciones de cliente</b> <span class='small'>(Etapa 13 de 16)</span>";
                                     $progresoEtapa = 81.25;
                                     break;
                                 case '19':
-                                    $nombreEtapa = "Instalción con cliente";
+                                    $nombreEtapa = "<b>Instalción con cliente</b> <span class='small'>(Etapa 14 de 16)</span>";
                                     $progresoEtapa = 87.5;
                                     break;
                                 case '20':
-                                    $nombreEtapa = "Arranque y validación de equipo (buy off)";
+                                    $nombreEtapa = "<b>Arranque y validación de equipo (buy off)</b> <span class='small'>(Etapa 15 de 16)</span>";
                                     $progresoEtapa = 93.75;
                                     break;
                                 case '21':
-                                    $nombreEtapa = "Entrenamiento";
+                                    $nombreEtapa = "<b>Entrenamiento</b> <span class='small'>(Etapa 16 de 16)</span>";
                                     $progresoEtapa = 100;
                                     break;
                                 default:
@@ -319,8 +349,8 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                                             </div>
                                                             <div class="modal-body">
                                                                 <input type="hidden" name="id" value="<?= $registro['id']; ?>">
-                                                                <div class="form-floating col-12 mt-3">
-                                                                    <select class="form-select" name="etapa" id="etapa">
+                                                                <div class="form-floating col-12">
+                                                                    <select class="form-select" name="etapa" id="etapa<?= $registro['id']; ?>">
                                                                         <option disabled>Seleccione una etapa</option>
                                                                         <option disabled>------- Ejecución -------</option>
                                                                         <option value="6" <?= ($etapa == 6) ? 'selected' : ''; ?>>Recepción de PO</option>
@@ -354,24 +384,20 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                             </div>
                                             <?= $registro['nombre']; ?>
                                         </h4>
-                                        <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;">Fin del proyecto en:</span> <?= $diasRestantes; ?> Días</p>
+                                        <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 700;"><i class="bi bi-calendar-week" style='color:#858585;'></i> Fin del proyecto en:</span> <?= $diasRestantes; ?> Días</p>
 
                                         <!-- Barra de progreso de días restantes -->
-                                        <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
-                                            <div class="progress-bar-dias" style="width: <?= $progreso; ?>%; background-color: #4d94eb; padding: 5px;">
-                                                <?= $progresoFormateado; ?>%
-                                            </div>
+                                        <div class="mt-1" style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
+                                            <div class="progress-bar-dias" style="width: <?= $progreso; ?>%; background-color: #4d94eb; padding: 5px;"></div>
                                         </div>
 
-                                        <div>
-                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;"><i class='bi bi-check-circle-fill'></i>  Etapa:</span> <?= $nombreEtapa; ?></p>
+                                        <div class="mb-1">
+                                            <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 600;"><i class='bi bi-check-circle' style='color:#858585;'></i> </span> <?= $nombreEtapa; ?></p>
                                         </div>
 
                                         <!-- Barra de progreso de etapa diseño -->
                                         <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
-                                            <div class="progress-bar-etapa-diseno" style="width: <?= $progresoEtapa; ?>%; background-color: #4d94eb; padding: 5px;">
-                                                <?= number_format($progresoEtapa, 1); ?>%
-                                            </div>
+                                            <div class="progress-bar-etapa-diseno" style="width: <?= $progresoEtapa; ?>%; background-color: #4d94eb; padding: 5px;"></div>
                                         </div>
 
 
@@ -397,7 +423,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                                                 if ($rol == 5) {
                                                                     echo "Ing. Diseño";
                                                                 } elseif ($rol == 9) {
-                                                                    echo "Ing. Controles";
+                                                                    echo "Ing. Control";
                                                                 } elseif ($rol == 13) {
                                                                     echo "Ing. Lazer";
                                                                 } else {
