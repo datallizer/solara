@@ -4,26 +4,50 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require 'dbcon.php';
 header('Content-Type: text/html; charset=UTF-8');
-$message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
 $codigo = $_SESSION['codigo'];
-if (!empty($message)) {
-    echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const message = " . json_encode($message) . ";
+$query_check = "SELECT 1 FROM plano 
+                INNER JOIN asignacionplano ON plano.id = asignacionplano.idplano 
+                WHERE asignacionplano.codigooperador = '$codigo' AND plano.estatusplano = 3 
+                LIMIT 1";
+
+$result_check = mysqli_query($con, $query_check);
+$messageWarning = '';
+if (mysqli_num_rows($result_check) > 0) {
+    $messageWarning = "No detuviste correctamente un maquinado en tu última sesión, SOLARA AI registrara esta llamada de atención";
+}
+
+// Genera el mensaje de sesión si aplica
+$message = isset($_SESSION['message']) ? $_SESSION['message'] : '';
+
+// Elimina el mensaje de sesión después de usarlo
+unset($_SESSION['message']);
+
+// Comienza el script de JavaScript
+echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function showAlert(title, text, icon, callback) {
                 Swal.fire({
-                    title: 'NOTIFICACIÓN',
-                    text: message,
-                    icon: 'info',
+                    title: title,
+                    text: text,
+                    icon: icon,
                     confirmButtonText: 'OK'
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Hacer algo si se confirma la alerta
+                    if (result.isConfirmed && callback) {
+                        callback();
                     }
                 });
-            });
-        </script>";
-    unset($_SESSION['message']);
-}
+            }
+
+            // Muestra la primera alerta si existe el mensaje de advertencia
+            " . (!empty($messageWarning) ? "showAlert('ADVERTENCIA', " . json_encode($messageWarning) . ", 'warning', function() {" : "") . "
+            
+            // Muestra la segunda alerta si existe el mensaje de sesión
+            " . (!empty($message) ? "showAlert('NOTIFICACIÓN', " . json_encode($message) . ", 'info');" : "") . "
+            
+            " . (!empty($messageWarning) ? "});" : "") . "
+        });
+      </script>";
+
 if (isset($_SESSION['codigo'])) {
     $query = "SELECT usuarios.codigo, usuarios.estatus FROM usuarios WHERE codigo = '$codigo' AND estatus = 1";
     $result = mysqli_query($con, $query);
