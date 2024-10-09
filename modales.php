@@ -101,7 +101,7 @@ if (mysqli_num_rows($resultminuta) > 0) {
             $('#minuta').modal('show');
         });
     </script>
-    <?php
+<?php
 }
 // ETAPA 3 Documento modal SQL
 $sqldocumento = "SELECT proyecto.id, proyecto.nombre, proyecto.etapa, proyecto.estatus
@@ -124,11 +124,9 @@ if (mysqli_num_rows($resultdocumento) > 0) {
     $etapadocumento = $registro['etapa'];
     $estatusdocumento = $registro['estatus'];
 
-    // Verificamos si ya existe un registro con estatus = 1 o estatus = 2 en proyectomedios para este proyecto
     $sqlcheck = "SELECT id, detalles FROM proyectomedios WHERE idproyecto = $idregistrodocumento AND estatus = 2 AND idcodigo = $codigo;";
     $resultcheck = mysqli_query($con, $sqlcheck);
 
-    // Si no existe un registro con estatus = 1, o si existe con estatus = 2, mostramos el modal
     if (mysqli_num_rows($resultcheck) == 0) {
         // No hay registro con estatus = 1
         $detallesdocumento = '';
@@ -138,13 +136,56 @@ if (mysqli_num_rows($resultdocumento) > 0) {
         $detallesdocumento = $detalleRegistro['detalles'];
     }
 
-    // Mostrar el modal
-    ?>
+?>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#documentos').modal('show');
+        });
+    </script>
+<?php
+}
+
+// ETAPA 4 Generacion de BOMs
+$sqldocumento = "SELECT proyecto.id, proyecto.nombre, proyecto.etapa, proyecto.estatus
+              FROM proyecto
+              JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
+              WHERE (proyecto.etapa = 4 OR proyecto.etapa = 11)
+              AND (proyecto.estatus = 1 OR proyecto.estatus = 2)
+              AND encargadoproyecto.codigooperador = $codigo
+              AND proyecto.id NOT IN (
+                  SELECT idproyecto 
+                  FROM proyectoboms 
+                  WHERE (estatus = 1 OR estatus = 3) AND idcodigo = $codigo);";
+
+$resultdocumento = mysqli_query($con, $sqldocumento);
+
+if (mysqli_num_rows($resultdocumento) > 0) {
+    $registro = mysqli_fetch_assoc($resultdocumento);
+    $idregistrodocumento = $registro['id'];
+    $nombredocumento = $registro['nombre'];
+    $etapadocumento = $registro['etapa'];
+    $estatusdocumento = $registro['estatus'];
+
+    $sqlcheck = "SELECT id, detalles FROM proyectoboms WHERE idproyecto = $idregistrodocumento AND estatus = 2 AND idcodigo = $codigo;";
+    $resultcheck = mysqli_query($con, $sqlcheck);
+
+    if (mysqli_num_rows($resultcheck) == 0) {
+        // No hay registro con estatus = 1
+        $detallesdocumento = '';
+    } else {
+        // Existe un registro con estatus = 2
+        $detalleRegistro = mysqli_fetch_assoc($resultcheck);
+        $detallesdocumento = $detalleRegistro['detalles'];
+    }
+
+?>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#boms').modal('show');
         });
     </script>
 <?php
@@ -295,6 +336,49 @@ if (mysqli_num_rows($resultdocumento) > 0) {
                     <div class="modal-footer mt-5">
                         <p class="small">Una vez envíes el documento deberá ser aprobado por un administrador para continuar a la siguiente etapa: <?= $etapadocumento == 3 ? "''Generación de BOM's''" : ($etapadocumento == 9 ? "''Revision de diseño/aprobacion de cliente''" : "ERROR AL DETERMINAR LA SIGUIENTE ETAPA"); ?>, de ser rechazado recibirás una notificación con los detalles para la corrección del archivo.</p>
                         <button type="submit" class="btn btn-success" name="documento">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ETAPA 4 Modal carga BOMs -->
+<div class="modal fade" id="boms" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel"><b><?= $etapadocumento == 4 ? "GENERACIÓN DE BOM" : ($etapadocumento == 11 ? "ACTUALIZACIÓN DE BOM´s" : "ERROR"); ?></b></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="codeproyecto.php" method="POST" class="row" enctype="multipart/form-data">
+                    <input type="hidden" name="idproyecto" value="<?= $idregistrodocumento; ?>">
+                    <input type="hidden" name="etapa" value="<?= $etapadocumento; ?>">
+                    <div class="col-12">
+                        <p class="small">Te encuentras en la etapa <?= $etapadocumento == 4 ? "4, ''Generación de BOM''" : ($etapadocumento == 11 ? "11, 'Actualización de BOM'" : "Error"); ?>
+                            para el <?= $etapadocumento == 4 ? "anteproyecto" : ($etapadocumento == 11 ? "proyecto" : "ERROR AL VALIDAR SI SE TRATA DE UN PROYECTO O ANTEPROYECTO"); ?>
+                            <b class="bg-warning"><?= $nombredocumento; ?></b>, a continuación carga el documento PDF eh ingresa el monto total del BOM en USD:
+                        </p>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <input type="file" class="form-control" name="medio" id="medio" placeholder="Documento" accept="application/pdf" required>
+                    </div>
+                    <div class="form-floating col-12 mb-3">
+                        <input type="text" class="form-control" name="monto" id="monto" placeholder="Monto">
+                        <label for="monto">Monto total (USD)</label>
+                        <span class="small">Ingresa el valor sin incluir el carácter $, esta permitido utilizar puntos y coma.</span>
+                    </div>
+                    <!-- Si existe un registro con estatus = 2, mostrar textarea -->
+                    <?php if (!empty($detallesdocumento)) { ?>
+                        <div class="col-12 mb-3">
+                            <label for="detalles" class="form-label bg-danger p-1" style="border-radius: 5px;color:#fff;margin-left: 0px !important;">Estatus: Rechazado</label>
+                            <textarea class="form-control" id="detalles" rows="7" readonly>Detalles: <?= htmlspecialchars($detallesdocumento); ?></textarea>
+                        </div>
+                    <?php } ?>
+                    <div class="modal-footer mt-5">
+                        <p class="small">Una vez envíes el documento deberá ser aprobado por un administrador para continuar a la siguiente etapa: <?= $etapadocumento == 4 ? "''Cotización''" : ($etapadocumento == 11 ? "''Colocación de PO''" : "ERROR AL DETERMINAR LA SIGUIENTE ETAPA"); ?>, de ser rechazado recibirás una notificación con los detalles para la corrección del archivo.</p>
+                        <button type="submit" class="btn btn-success" name="bom">Enviar</button>
                     </div>
                 </form>
             </div>

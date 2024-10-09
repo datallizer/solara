@@ -400,7 +400,6 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                             <div class="progress-bar-etapa-diseno" style="width: <?= $progresoEtapa; ?>%; background-color: #4d94eb; padding: 5px;"></div>
                                         </div>
 
-
                                     </div>
                                     <div class="col-3 text-end">
                                         <p style="margin-top:0px;font-weight:600;">Encargado de proyecto</p>

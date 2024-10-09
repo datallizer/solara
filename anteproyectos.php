@@ -216,16 +216,90 @@ if (isset($_SESSION['codigo'])) {
                                                         ?>
                                                             <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 4 de 5</p>
                                                             <p>Generación de BOM's</p>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <?php
+                                                                    $query = "SELECT * FROM proyectoboms WHERE (estatus = 1 OR estatus = 2 OR estatus = 3)  AND idproyecto = '" . $registro['id'] . "'";
+                                                                    $query_run = mysqli_query($con, $query);
+                                                                    if (mysqli_num_rows($query_run) > 0) {
+                                                                        foreach ($query_run as $registroBom) {
+                                                                            $idmodal = $registroBom['id'];
+                                                                    ?>
+                                                                            <?php
+                                                                            if ($registroBom['estatus'] == 1) {
+                                                                            ?>
+                                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registroBom['id']; ?>">BOM <?= $registroBom['tipo']; ?></button>
+                                                                            <?php
+                                                                            } elseif ($registroBom['estatus'] == 2) {
+                                                                            ?>
+                                                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registroBom['id']; ?>">BOM <?= $registroBom['tipo']; ?> rechazado</button>
+                                                                            <?php
+                                                                            } elseif ($registroBom['estatus'] == 3) {
+                                                                            ?>
+                                                                                <button class="btn btn-success btn-sm" disabled>BOM <?= $registroBom['tipo']; ?> aprobado</button>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
+
+                                                                            <div class="modal fade" id="pdfModal<?= $registroBom['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                                <div class="modal-dialog modal-lg">
+                                                                                    <div class="modal-content">
+                                                                                        <div class="modal-header">
+                                                                                            <h5 style="text-transform: uppercase;" class="modal-title" id="pdfModalLabel"><?= $registroBom['tipo']; ?> a bloques pdfModal<?= $registroBom['id']; ?></h5>
+                                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                            <iframe src="<?= $registroBom['medio']; ?>" width="100%" height="400px"></iframe>
+                                                                                        </div>
+                                                                                        <?php
+                                                                                        if (in_array($_SESSION['rol'], [1, 2])) {
+                                                                                            if ($registroBom['estatus'] == 1) {
+                                                                                        ?>
+                                                                                                <div class="modal-footer mb-3">
+                                                                                                    <form action="codeproyecto.php" method="post" id="formularioBloque">
+                                                                                                        <input type="hidden" name="id" value="<?= $registroBom['id']; ?>">
+                                                                                                        <input type="hidden" name="idproyecto" value="<?= $registroBom['idproyecto']; ?>">
+                                                                                                        <!-- Se rechaza con estatus 2 -->
+                                                                                                        <button type="button" class="btn btn-danger" id="rechazarBom">Rechazar</button>
+                                                                                                        <!-- Se aprueba con estatus 3 -->
+                                                                                                        <button type="submit" class="btn btn-success" name="aprobarBom">Aprobar <?= $registroBom['tipo']; ?></button>
+                                                                                                    </form>
+                                                                                                </div>
+                                                                                        <?php
+                                                                                            }
+                                                                                        }
+                                                                                        ?>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                    <?php
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </div>
+                                                            </div>
                                                         <?php
                                                         } else if ($registro['etapa'] === '5') {
                                                         ?>
                                                             <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 5 de 5</p>
                                                             <p>Cotización</p>
-                                                        <?php
-                                                        } else {
-                                                            echo "Error, asigne una etapa manualmente o contacte a soporte";
-                                                        }
-                                                        ?>
+                                                            <?php
+                                                                    $query = "SELECT * FROM proyectoboms WHERE estatus = 3 AND idproyecto = '" . $registro['id'] . "'";
+                                                                    $query_run = mysqli_query($con, $query);
+                                                                    if (mysqli_num_rows($query_run) > 0) {
+                                                                        foreach ($query_run as $registroMonto) {
+                                                                            $idmodal = $registroMonto['id'];
+                                                                    ?>
+                                                                                <p disabled><b>BOM <?= $registroMonto['tipo']; ?>:</b> $<?= $registroMonto['monto']; ?></p>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
+
+                                                                          
+                                                                    <?php
+                                                                        }
+                                                                    }
+                                                                    ?>
                                                     </td>
 
                                                     <?php
@@ -264,7 +338,7 @@ if (isset($_SESSION['codigo'])) {
                                                         <a style="color:#fff;" href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                                            if ($registro['id'] == 5) {
+                                                            if ($registro['etapa'] == 5) {
                                                                 echo '<form action="codeproyecto.php" method="POST" class="d-inline">
                                                                         <button type="submit" name="aprobar" value="' . $registro['id'] . '" class="btn btn-success btn-sm m-1"><i class="bi bi-check2-circle"></i></button>
                                                                     </form>';

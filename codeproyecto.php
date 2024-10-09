@@ -30,7 +30,7 @@ if (isset($_POST['update'])) {
     $fechafin = mysqli_real_escape_string($con, $_POST['fechafin']);
     $estatus = mysqli_real_escape_string($con, $_POST['estatus']);
     $prioridad = mysqli_real_escape_string($con, $_POST['prioridad']);
-    $etapadiseño = mysqli_real_escape_string($con, $_POST['etapadiseño']);
+    $etapa = mysqli_real_escape_string($con, $_POST['etapa']);
     $detalles = mysqli_real_escape_string($con, $_POST['detalles']);
 
     $query = "UPDATE `proyecto` SET `nombre` = '$nombre', `cliente` = '$cliente', `presupuesto` = '$presupuesto', `fechainicio` = '$fechainicio', `fechafin` = '$fechafin', `estatus` = '$estatus', `prioridad` = '$prioridad', `etapa` = '$etapa',`detalles` = '$detalles' WHERE `proyecto`.`id` = '$id'";
@@ -68,8 +68,9 @@ if (isset($_POST['archivar'])) {
 if (isset($_POST['aprobar'])) {
     $id = mysqli_real_escape_string($con, $_POST['aprobar']);
     $estatus = 1;
+    $etapa = 6;
 
-    $query = "UPDATE `proyecto` SET `estatus` = '$estatus' WHERE `proyecto`.`id` = '$id'";
+    $query = "UPDATE `proyecto` SET `estatus` = '$estatus', `etapa` = '$etapa' WHERE `proyecto`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
@@ -433,7 +434,106 @@ if (isset($_POST['rechazarbloque'])) {
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $_SESSION['message'] = "Rechazado exitosamente, se notifico al ingeniero para su corrección $id";
+        $_SESSION['message'] = "Rechazado exitosamente, se notifico al ingeniero para su corrección";
+        header("Location: anteproyectos.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al aprobar, contacte a soporte";
+        header("Location: anteproyectos.php");
+        exit(0);
+    }
+}
+
+if (isset($_POST['bom'])) {
+    $idproyecto = mysqli_real_escape_string($con, $_POST['idproyecto']);
+    $etapa = mysqli_real_escape_string($con, $_POST['etapa']);
+    $monto = mysqli_real_escape_string($con, $_POST['monto']);
+    $estatus = 1;
+    $idcodigo = $_SESSION['codigo'];
+
+    if ($_SESSION['rol'] == 5) {
+        $tipo = 'Diseño';
+    } elseif ($_SESSION['rol'] == 9) {
+        $tipo = 'Control';
+    }
+
+    $query = "INSERT INTO proyectoboms SET idproyecto='$idproyecto', etapa='$etapa', monto='$monto', estatus='$estatus', idcodigo='$idcodigo', tipo='$tipo'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $pdf_id = mysqli_insert_id($con);
+
+        if (isset($_FILES['medio']) && $_FILES['medio']['error'] === UPLOAD_ERR_OK) {
+            $file_tmp_name = $_FILES['medio']['tmp_name'];
+            $file_name = $tipo . $pdf_id . '.pdf';
+
+            if ($_SESSION['rol'] == 5) {
+                $upload_dir = './bomDiseño/';
+            } elseif ($_SESSION['rol'] == 9) {
+                $upload_dir = './bomControl/';
+            }
+
+            $file_path = $upload_dir . $file_name;
+
+            if (move_uploaded_file($file_tmp_name, $file_path)) {
+                $update_query = "UPDATE proyectoboms SET medio='$file_path' WHERE id='$pdf_id'";
+                mysqli_query($con, $update_query);
+                $_SESSION['message'] = "Archivo subido y datos enviados exitosamente";
+            } else {
+                $_SESSION['message'] = "Error al subir el archivo PDF, contacte a soporte";
+            }
+        } else {
+            $_SESSION['message'] = "No se ha subido ningún archivo PDF";
+        }
+        header("Location: anteproyectos.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al crear el quote, contacte a soporte";
+        header("Location: anteproyectos.php");
+        exit(0);
+    }
+}
+
+if (isset($_POST['aprobarBom'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $idproyecto = mysqli_real_escape_string($con, $_POST['idproyecto']);
+
+    // Actualizar estatus en proyectoboms
+    $query = "UPDATE `proyectoboms` SET `estatus` = '3' WHERE `proyectoboms`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        // Contar registros en proyectoboms con el mismo idproyecto
+        $count_query = "SELECT COUNT(*) AS total FROM `proyectoboms` WHERE `idproyecto` = '$idproyecto' AND `estatus` = '3'";
+        $count_result = mysqli_query($con, $count_query);
+        $count_data = mysqli_fetch_assoc($count_result);
+
+        // Si hay 2 o más registros, actualizar la etapa a 4 en la tabla proyecto
+        if ($count_data['total'] >= 2) {
+            $update_etapa_query = "UPDATE `proyecto` SET `etapa` = '5' WHERE `id` = '$idproyecto'";
+            mysqli_query($con, $update_etapa_query);
+        }
+
+        $_SESSION['message'] = "Aprobado exitosamente";
+        header("Location: anteproyectos.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al aprobar, contacte a soporte";
+        header("Location: anteproyectos.php");
+        exit(0);
+    }
+}
+
+
+if (isset($_POST['rechazarBom'])) {
+    $id = mysqli_real_escape_string($con, $_POST['id']);
+    $detalles = mysqli_real_escape_string($con, $_POST['detalles']);
+
+    $query = "UPDATE `proyectoboms` SET `estatus` = '2', `detalles` = '$detalles' WHERE `proyectoboms`.`id` = '$id'";
+    $query_run = mysqli_query($con, $query);
+
+    if ($query_run) {
+        $_SESSION['message'] = "Rechazado exitosamente, se notifico al ingeniero para su corrección";
         header("Location: anteproyectos.php");
         exit(0);
     } else {
