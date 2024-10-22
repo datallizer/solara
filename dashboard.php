@@ -5,33 +5,44 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require 'dbcon.php';
 // Modal actualizar proyecto al presionar link de notificacioes
+$modalId = '';
+$selectValue = '';
+$message = '';
+
 if (isset($_GET['proyecto_id'])) {
-    $proyecto_id = htmlspecialchars($_GET['proyecto_id']);
+    $modalId = htmlspecialchars($_GET['proyecto_id']);
+    $selectValue = '13'; // Valor para el select de proyecto
+    $message = 'Actualiza la etapa a "Construcción del equipo"';
+} elseif (isset($_GET['internas_id'])) {
+    $modalId = htmlspecialchars($_GET['internas_id']);
+    $selectValue = '14'; // Valor para el select de internas
+    $message = 'Actualiza la etapa a "Pruebas internas iniciales"';
+}
+
+if ($modalId) {
 ?>
     <script>
         // Espera a que el DOM esté completamente cargado
         document.addEventListener("DOMContentLoaded", function() {
             // Abre el modal correspondiente al proyecto usando el ID
-            var modal = new bootstrap.Modal(document.getElementById('pdfModal<?php echo $proyecto_id; ?>'));
+            var modal = new bootstrap.Modal(document.getElementById('pdfModal<?php echo $modalId; ?>'));
             modal.show();
 
-            // Selecciona automáticamente la opción con value=13 en el select con id="etapa"
-            var selectEtapa = document.getElementById("etapa<?php echo $proyecto_id; ?>");
+            // Selecciona automáticamente la opción en el select con id="etapa"
+            var selectEtapa = document.getElementById("etapa<?php echo $modalId; ?>");
             if (selectEtapa) {
-                selectEtapa.value = "13";
+                selectEtapa.value = "<?php echo $selectValue; ?>";
 
-                // Obtener la opción con value="13" y aplicarle el fondo amarillo
-                var optionToHighlight = selectEtapa.querySelector('option[value="13"]');
+                // Obtener la opción correspondiente y aplicarle el fondo amarillo
+                var optionToHighlight = selectEtapa.querySelector('option[value="<?php echo $selectValue; ?>"]');
                 if (optionToHighlight) {
                     optionToHighlight.style.backgroundColor = 'yellow';
                 }
             }
-
         });
     </script>
-
 <?php
-    $_SESSION['message'] = 'Actualiza la etapa a "Construcción del equipo"';
+    $_SESSION['message'] = $message; // Establece el mensaje de sesión
 }
 
 $message = isset($_SESSION['message']) ? $_SESSION['message'] : ''; // Obtener el mensaje de la sesión
@@ -261,7 +272,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                 if ($progreso > 100) $progreso = 100;
                             }
                             $progresoFormateado = number_format($progreso, 1);
-                            $etapa = $registro['etapa'];
+                            $etapaactual = $registro['etapa'];
 
                             switch ($etapa) {
                                 case '6':
@@ -295,6 +306,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                 case '13':
                                     $nombreEtapa = "<b>Construcción del equipo</b> <span class='small'>(Etapa 8 de 16)</span>";
                                     $progresoEtapa = 50;
+                                    $etapaactual = 13;
                                     break;
                                 case '14':
                                     $nombreEtapa = "<b>Pruebas internas iniciales</b> <span class='small'>(Etapa 9 de 16)</span>";
@@ -353,7 +365,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                                                     <select class="form-select" name="etapa" id="etapa<?= $registro['id']; ?>">
                                                                         <option disabled>Seleccione una etapa</option>
                                                                         <option disabled>------- Ejecución -------</option>
-                                                                        <option value="6" <?= ($etapa == 6) ? 'selected' : ''; ?>>Recepción de PO</option>
+                                                                        <option value="7" <?= ($etapa == 6) ? 'selected' : ''; ?>>Recepción de PO</option>
                                                                         <option value="7" <?= ($etapa == 7) ? 'selected' : ''; ?>>Kick off meeting</option>
                                                                         <option value="8" <?= ($etapa == 8) ? 'selected' : ''; ?>>Visita formal de levantamiento</option>
                                                                         <option value="9" <?= ($etapa == 9) ? 'selected' : ''; ?>>Prediseño (mecánico y eléctrico)</option>
@@ -399,6 +411,81 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                         <div style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
                                             <div class="progress-bar-etapa-diseno" style="width: <?= $progresoEtapa; ?>%; background-color: #4d94eb; padding: 5px;"></div>
                                         </div>
+
+                                        <?php
+                                        if ($etapaactual == 13) {
+                                            $idProyectoR = $registro['id'];
+
+                                            // Consulta para seleccionar todos los planos con el idproyecto dado y con estatusplano igual a 0
+                                            $query = "SELECT 
+                                                            COUNT(CASE WHEN estatusplano = 0 THEN 1 END) as totalPlanosEstatus0,
+                                                            SUM(CASE WHEN estatusplano = 0 THEN piezas ELSE 0 END) as sumaPiezasEstatus0,
+                                                            COUNT(CASE WHEN estatusplano IN (0, 1, 2, 3) THEN 1 END) as totalPlanosEstatus123,
+                                                            SUM(CASE WHEN estatusplano IN (0, 1, 2, 3) THEN piezas ELSE 0 END) as sumaPiezasEstatus123
+                                                        FROM plano 
+                                                        WHERE idproyecto = $idProyectoR";
+
+                                            $result = mysqli_query($con, $query);
+
+                                            if ($result) {
+                                                $data = mysqli_fetch_assoc($result);
+
+                                                $totalPlanosEstatus0 = $data['totalPlanosEstatus0'];
+                                                $sumaPiezasEstatus0 = $data['sumaPiezasEstatus0'];
+                                                $totalPlanosEstatus123 = $data['totalPlanosEstatus123'];
+                                                $sumaPiezasEstatus123 = $data['sumaPiezasEstatus123'];
+                                            } else {
+                                                echo "Error en la consulta: " . mysqli_error($con);
+                                            }
+
+                                            // Consulta para seleccionar todos los ensambles con el idproyecto dado y con estatusplano igual a 0
+                                            $queryEnsambles = "SELECT 
+                                             COUNT(CASE WHEN estatusplano = 0 THEN 1 END) as totalEnsamblesEstatus0,
+                                             SUM(CASE WHEN estatusplano = 0 THEN piezas ELSE 0 END) as sumaPiezasEstatusEnsambles0,
+                                             COUNT(CASE WHEN estatusplano IN (0, 1, 2, 3) THEN 1 END) as totalEnsamblesEstatus123,
+                                             SUM(CASE WHEN estatusplano IN (0, 1, 2, 3) THEN piezas ELSE 0 END) as sumaPiezasEstatusEnsambles123
+                                         FROM diagrama 
+                                         WHERE idproyecto = $idProyectoR";
+
+                                            // Ejecutar la consulta
+                                            $resultEnsambles = mysqli_query($con, $queryEnsambles);
+
+                                            // Verificar que la consulta no haya fallado
+                                            if ($resultEnsambles) {
+                                                $data = mysqli_fetch_assoc($resultEnsambles);
+
+                                                $totalEnsamblesEstatus0 = $data['totalEnsamblesEstatus0'];
+                                                $sumaPiezasEstatusEnsambles0 = $data['sumaPiezasEstatusEnsambles0'];
+                                                $totalEnsamblesEstatus123 = $data['totalEnsamblesEstatus123'];
+                                                $sumaPiezasEstatusEnsambles123 = $data['sumaPiezasEstatusEnsambles123'];
+                                            } else {
+                                                echo "Error en la consulta: " . mysqli_error($con);
+                                            }
+                                        ?>
+                                            <div style="margin-left: 50px;font-size:12px;" class="mt-3">
+                                                <p class="small"><b>Subtareas:</b></p>
+                                                <?php
+                                                // Comparar las variables y mostrar el contenido correspondiente
+                                                if ($totalPlanosEstatus0 == $totalPlanosEstatus123) {
+                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Planos/actividades finalizados (Total: ' . $totalPlanosEstatus0 . ' de ' . $totalPlanosEstatus123 . ')</p>';
+                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Se maquinaron todas las piezas (Total: ' . $sumaPiezasEstatus0 . ' de ' . $sumaPiezasEstatus123 . ')</p>';
+                                                } else {
+                                                    echo '<p><i class="bi bi-check-circle"></i> Planos/actividades finalizados (Total: ' . $totalPlanosEstatus0 . ' de ' . $totalPlanosEstatus123 . ')</p>';
+                                                    echo '<p><i class="bi bi-check-circle"></i> Se maquinaron todas las piezas (Total: ' . $sumaPiezasEstatus0 . ' de ' . $sumaPiezasEstatus123 . ')</p>';
+                                                }
+
+                                                if ($totalEnsamblesEstatus0 == $totalEnsamblesEstatus123) {
+                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Diagramas/actividades finalizadas (Total: ' . $totalEnsamblesEstatus0 . ' de ' . $totalEnsamblesEstatus123 . ')</p>';
+                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Se ensamblaron todas las piezas (Total: ' . $sumaPiezasEstatusEnsambles0 . ' de ' . $sumaPiezasEstatusEnsambles123 . ')</p>';
+                                                } else {
+                                                    echo '<p><i class="bi bi-check-circle"></i> Diagramas/actividades finalizadas (Total: ' . $totalEnsamblesEstatus0 . ' de ' . $totalEnsamblesEstatus123 . ')</p>';
+                                                    echo '<p><i class="bi bi-check-circle"></i> Se ensamblaron todas las piezas (Total: ' . $sumaPiezasEstatusEnsambles0 . ' de ' . $sumaPiezasEstatusEnsambles123 . ')</p>';
+                                                }
+                                                ?>
+                                            </div>
+                                        <?php
+                                        }
+                                        ?>
 
                                     </div>
                                     <div class="col-3 text-end">

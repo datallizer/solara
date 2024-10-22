@@ -116,12 +116,22 @@ if (isset($_POST['save'])) {
 
                 $resultadoNombres = mysqli_query($con, $queryProyectoNombres);
                 $proyectosDesactualizados = mysqli_fetch_all($resultadoNombres, MYSQLI_ASSOC);
+
+                $queryIniciales = "SELECT p.id, p.nombre 
+                                    FROM proyecto p 
+                                    WHERE p.etapa = 13
+                                    AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                                    AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                                    GROUP BY p.id, p.nombre";
+
+                $resultado = $con->query($queryIniciales);
+                $numIniciales = $resultado->num_rows;
                 ?>
 
                 <?php
                 $mostrarEnlace = false;
 
-                if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) ||
+                if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) || $numIniciales > 0 && in_array($_SESSION['rol'], [1, 2, 5]) ||
                     ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9])) || ($numQuotes > 0 && in_array($_SESSION['rol'], [1, 2])) || ($numBuy > 0 && in_array($_SESSION['rol'], [1, 2, 6, 7]))
                 ) {
                     $mostrarEnlace = true;
@@ -133,11 +143,11 @@ if (isset($_POST['save'])) {
                         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
                             <?php
                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                echo $numUsuarios + $numEnsambles + $numQuotes + $numBuy + $numProyectos;
+                                echo $numUsuarios + $numEnsambles + $numQuotes + $numBuy + $numProyectos + $numIniciales;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])) {
-                                echo $numUsuarios + $numProyectos;
+                                echo $numUsuarios + $numProyectos + $numIniciales;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])) {
-                                echo $numEnsambles + $numProyectos;
+                                echo $numEnsambles + $numProyectos + $numIniciales;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [6, 7])) {
                                 echo $numBuy;
                             }
@@ -339,6 +349,47 @@ if (isset($_POST['save'])) {
                         }
                     }
                     ?>
+
+                    <!-- Validar si construccion etapa ya se completo -->
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                        // Consulta para verificar que todos los registros del proyecto tienen estatusplano = 0 tanto en plano como en diagrama
+
+                        $queryIniciales = "SELECT p.id, p.nombre 
+                        FROM proyecto p 
+                        WHERE p.etapa = 13
+                        AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                        AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                        GROUP BY p.id, p.nombre";
+
+                        $resultado = $con->query($queryIniciales);
+                        // Verifica si hay resultados
+                        if ($resultado->num_rows > 0) {
+                            // Recorre los proyectos que cumplen con la condición
+                            while ($proyecto = $resultado->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="dashboard.php?internas_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                                            </div>
+                                            <div class="col-9">
+                                                <small style="text-transform:uppercase;font-size:11px;">
+                                                    <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                                                </small>
+                                                <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Pruebas internas iniciales"</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
+
                 </ul>
 
             </li>

@@ -404,16 +404,22 @@ if (isset($_POST['aprobarbloque'])) {
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        // Contar registros en proyectomedios con el mismo idproyecto
-        $count_query = "SELECT COUNT(*) AS total FROM `proyectomedios` WHERE `idproyecto` = '$idproyecto' AND `estatus` = '3'";
-        $count_result = mysqli_query($con, $count_query);
-        $count_data = mysqli_fetch_assoc($count_result);
+        // Contar registros en proyectomedios con el mismo idproyecto y estatus 3
+        $count_query_medios = "SELECT COUNT(*) AS total FROM `proyectomedios` WHERE `idproyecto` = '$idproyecto' AND `estatus` = '3'";
+        $count_result_medios = mysqli_query($con, $count_query_medios);
+        $count_data_medios = mysqli_fetch_assoc($count_result_medios);
 
-        // Si hay 2 o más registros, actualizar la etapa a 4 en la tabla proyecto
-        if ($count_data['total'] >= 2) {
+        // Contar registros en encargadoproyecto con el mismo idproyecto
+        $count_query_encargado = "SELECT COUNT(*) AS total FROM `encargadoproyecto` WHERE `idproyecto` = '$idproyecto'";
+        $count_result_encargado = mysqli_query($con, $count_query_encargado);
+        $count_data_encargado = mysqli_fetch_assoc($count_result_encargado);
+
+        // Si el número de registros es igual en ambas tablas, actualizar la etapa a 4 en la tabla proyecto
+        if ($count_data_medios['total'] == $count_data_encargado['total']) {
             $update_etapa_query = "UPDATE `proyecto` SET `etapa` = '4' WHERE `id` = '$idproyecto'";
             mysqli_query($con, $update_etapa_query);
         }
+
 
         $_SESSION['message'] = "Aprobado exitosamente";
         header("Location: anteproyectos.php");
@@ -503,15 +509,30 @@ if (isset($_POST['aprobarBom'])) {
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        // Contar registros en proyectoboms con el mismo idproyecto
-        $count_query = "SELECT COUNT(*) AS total FROM `proyectoboms` WHERE `idproyecto` = '$idproyecto' AND `estatus` = '3'";
-        $count_result = mysqli_query($con, $count_query);
-        $count_data = mysqli_fetch_assoc($count_result);
+        // Contar registros en proyectoboms con el mismo idproyecto y estatus 3
+        $count_query_boms = "SELECT COUNT(*) AS total FROM `proyectoboms` WHERE `idproyecto` = '$idproyecto' AND `estatus` = '3'";
+        $count_result_boms = mysqli_query($con, $count_query_boms);
+        $count_data_boms = mysqli_fetch_assoc($count_result_boms);
 
-        // Si hay 2 o más registros, actualizar la etapa a 4 en la tabla proyecto
-        if ($count_data['total'] >= 2) {
+        // Contar registros en encargadoproyecto con el mismo idproyecto
+        $count_query_encargado = "SELECT COUNT(*) AS total FROM `encargadoproyecto` WHERE `idproyecto` = '$idproyecto'";
+        $count_result_encargado = mysqli_query($con, $count_query_encargado);
+        $count_data_encargado = mysqli_fetch_assoc($count_result_encargado);
+
+        // Si el número de registros es igual en ambas tablas, actualizar la etapa a 4 en la tabla proyecto
+        if ($count_data_boms['total'] == $count_data_encargado['total']) {
             $update_etapa_query = "UPDATE `proyecto` SET `etapa` = '5' WHERE `id` = '$idproyecto'";
             mysqli_query($con, $update_etapa_query);
+
+            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+            $mensaje = 'Tienes un anteproyecto en la etapa "Cotización"';
+            $idcodigo = $_SESSION['codigo'];
+            $emisor = '999';
+            $estatus = '1';
+
+            $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) VALUES ('$mensaje', '$idcodigo', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
+            $querymensajes_run = mysqli_query($con, $querymensajes);
         }
 
         $_SESSION['message'] = "Aprobado exitosamente";
