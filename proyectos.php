@@ -127,7 +127,7 @@ if (isset($_SESSION['codigo'])) {
                                         //         AND proyecto.estatus = 1
                                         //         ORDER BY proyecto.prioridad ASC";
                                         // } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                        $query = "SELECT * FROM proyecto WHERE estatus = 1 ORDER BY prioridad ASC";
+                                        $query = "SELECT * FROM proyecto WHERE estatus = 1 OR estatus = 2 ORDER BY prioridad ASC";
                                         //}
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
