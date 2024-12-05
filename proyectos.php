@@ -618,7 +618,7 @@ if (isset($_SESSION['codigo'])) {
             });
             $('#miTabla').DataTable({
                 "order": [
-                    [6, "asc"]
+                    [5, "asc"]
                 ] // Ordenar la primera columna (índice 0) en orden descendente
             });
         });
