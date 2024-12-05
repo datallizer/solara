@@ -130,8 +130,8 @@ if (isset($_SESSION['codigo'])) {
                                                 </div>
 
                                                 <?php
-                                                if ($registro['estatus'] == 1  || $registro['estatus'] == 2) {
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                if ($registro['estatus'] == 1  || $registro['estatus'] == 2 || $registro['estatus'] == 0) {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2,5,9,13])) {
                                                         echo '<div class="form-floating col-12 col-md-6 mt-3">
                                                         <input type="text" class="form-control" name="presupuesto" id="presupuesto" value="' . $registro['presupuesto'] . '">
                                                         <label for="presupuesto">Presupuesto</label>
