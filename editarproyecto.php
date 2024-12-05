@@ -226,7 +226,7 @@ if (isset($_SESSION['codigo'])) {
                                                 
 
                                                 <?php
-                                                if ($registro['estatus'] == 1  || $registro['estatus'] == 2) {
+                                                if ($registro['estatus'] == 1  || $registro['estatus'] == 2  || $registro['estatus'] == 0) {
                                                 ?>
                                                     <div class="form-floating col-12 mt-3">
                                                         <textarea type="text" class="form-control" name="detalles" id="detalles" style="min-height:150px;"><?= $registro['detalles']; ?></textarea>
