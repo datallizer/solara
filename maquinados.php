@@ -134,6 +134,7 @@ if (isset($_SESSION['codigo'])) {
                                 <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
+                                            <th>#</th>
                                             <th>Proyecto</th>
                                             <th>Plano / actividad asociados</th>
                                             <?php
@@ -172,6 +173,7 @@ if (isset($_SESSION['codigo'])) {
                                             foreach ($query_run as $registro) {
                                         ?>
                                                 <tr>
+                                                    <td><?= $registro['id']; ?></td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
                                                         <?php
@@ -318,13 +320,13 @@ if (isset($_SESSION['codigo'])) {
                                                                     $nivel = $registro['nivel'];
 
                                                                     if ($habilitarBoton && ($prevPrioridad === null || ($prioridad == $prevPrioridad && $nivel == $prevNivel))) {
-                                                                        $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
+                                                                        $botonTexto = '' . $id . '<i class="bi bi-play-fill"></i> Iniciar';
                                                                         $botonClase = 'btn-success';
                                                                         $botonEstado = '';
                                                                         $prevPrioridad = $prioridad;
                                                                         $prevNivel = $nivel;
                                                                     } else {
-                                                                        $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
+                                                                        $botonTexto = '' . $id . '<i class="bi bi-play-fill"></i> Iniciar';
                                                                         $botonClase = 'btn-outline-success';
                                                                         $botonEstado = 'disabled';
                                                                     }
@@ -340,7 +342,7 @@ if (isset($_SESSION['codigo'])) {
                                                                 } else if ($registro['estatusplano'] === '2') {
                                                                     echo '<form action="codeactividad.php" method="post">
                     <input type="hidden" value="' . $id . '" name="id">
-                    <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i> Reiniciar</button>
+                    <button style="min-width:105px;" type="submit" name="restart" class="btn btn-sm btn-primary"><i class="bi bi-arrow-clockwise"></i>' . $id . ' Reiniciar</button>
                   </form>';
                                                                 }
                                                             }

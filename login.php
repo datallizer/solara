@@ -121,7 +121,7 @@ if (isset($_POST['codigo'])) {
             <div class="col-4">
                 <?php include 'message.php'; ?>
                 <h2 class="mb-1">ACCESO AL SISTEMA</h2>
-                <p><?php echo date("Y-m-d / H:i"); ?></p> <!-- Muestra la fecha y hora actual -->
+                <p id="reloj"><?php echo date("Y-m-d / H:i:s"); ?></p> <!-- Muestra la fecha y hora actual -->
                 <form action="" method="post" class="row justify-content-evenly">
                     <div class="col-11 mb-4"><input id="inputCodigo" style="width: 100%;padding:10px 10px;" type="password" name="codigo" autocomplete="off" required></div>
                     <div class="col-3 colbtnlogin"><a class="btn btn-outline-dark btnlogin" onclick="agregarValor(1)">1</a></div>
@@ -153,6 +153,21 @@ if (isset($_POST['codigo'])) {
             var valor = input.value;
             input.value = valor.substring(0, valor.length - 1);
         }
+
+        function actualizarHora() {
+            const ahora = new Date();
+            const anio = ahora.getFullYear();
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
+            const dia = String(ahora.getDate()).padStart(2, '0');
+            const hora = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const segundos = String(ahora.getSeconds()).padStart(2, '0');
+
+            const formato = `${anio}-${mes}-${dia} / ${hora}:${minutos}:${segundos}`;
+            document.getElementById('reloj').textContent = formato;
+        }
+
+        setInterval(actualizarHora, 1000); // Actualizar cada segundo
     </script>
 </body>
 

@@ -45,10 +45,10 @@ if (isset($_POST['restart'])) {
 
     if ($max_id) {
         // Actualizar solo la fila con el ID obtenido
-    $query = "UPDATE historialoperadores SET horareinicio = '$hora_actual', fechareinicio = '$fecha_actual' WHERE id = $max_id";
-    $query_run = mysqli_query($con, $query);
+        $query = "UPDATE historialoperadores SET horareinicio = '$hora_actual', fechareinicio = '$fecha_actual' WHERE id = $max_id";
+        $query_run = mysqli_query($con, $query);
     }
-    
+
 
     if ($query_run && $paro == 'Lunch') {
         $querydos = "UPDATE `plano` SET `estatusplano` = '3' WHERE `plano`.`id` = '$id'";
@@ -160,6 +160,36 @@ if (isset($_POST['finish'])) {
     $fecha_actual = date("Y-m-d");
     $hora_actual = date("H:i");
 
+    // Verificar si ya existe un registro con motivo "Inicio" para el mismo `idcodigo` y `idplano`
+    $query_check_inicio = "SELECT * FROM historialoperadores WHERE idcodigo = '$idcodigo' AND idplano = '$id' AND motivoactividad = 'Inicio'";
+    $result_check_inicio = mysqli_query($con, $query_check_inicio);
+
+    if (mysqli_num_rows($result_check_inicio) == 0) {
+        // No existe registro con motivo "Inicio", buscar la fila con el menor ID para el mismo `idplano`
+        $query_min_id = "SELECT * FROM historialoperadores WHERE idplano = '$id' ORDER BY id ASC LIMIT 1";
+        $result_min_id = mysqli_query($con, $query_min_id);
+        $fecha_nueva = $fecha_actual;
+        $hora_nueva = date("H:i", strtotime("-1 hour", strtotime($hora_actual))); // Hora actual menos 1 hora
+
+        if (mysqli_num_rows($result_min_id) > 0) {
+            // Existe una fila con el mismo `idplano`, tomar su fecha y hora
+            $row_min_id = mysqli_fetch_assoc($result_min_id);
+            $fecha_nueva = $row_min_id['fecha'];
+            $hora_nueva = $row_min_id['hora'];
+        }
+
+        // Insertar el nuevo registro con los valores calculados
+        $query_insert = "INSERT INTO historialoperadores (idcodigo, idplano, motivoactividad, fecha, hora) 
+                         VALUES ('$idcodigo', '$id', 'Inicio', '$fecha_nueva', '$hora_nueva')";
+        $result_insert = mysqli_query($con, $query_insert);
+
+        if (!$result_insert) {
+            $_SESSION['message'] = "Error al crear el registro. Por favor, contacte a soporte.";
+            header("Location: inicioactividades.php?id=$id");
+            exit(0);
+        }
+    }
+
     // Obtener el ID de la última fila que cumpla con la condición WHERE
     $subquery = "SELECT MAX(id) AS max_id FROM historialoperadores WHERE idcodigo = $idcodigo AND idplano = $id AND motivoactividad = 'Inicio'";
     $result = mysqli_query($con, $subquery);
@@ -185,6 +215,7 @@ if (isset($_POST['finish'])) {
         }
     }
 }
+
 
 if (isset($_POST['pausar'])) {
     $idcodigo = $_SESSION['codigo'];
@@ -488,5 +519,3 @@ if (isset($_POST['lunchEndEnsamble'])) {
         exit(0);
     }
 }
-
-?>
