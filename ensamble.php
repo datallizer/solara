@@ -170,7 +170,7 @@ if (mysqli_num_rows($result) > 0) {
                                             <th>Prioridad</th>
                                             <th>Nivel de pieza</th>
                                             <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7])) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
                                                 echo '<th>Estatus</th>';
                                             }
                                             ?>
@@ -231,7 +231,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         ?>
                                                     </td>
                                                     <?php
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2,5,9,13])) {
                                                     ?>
                                                         <td>
                                                             <?php
