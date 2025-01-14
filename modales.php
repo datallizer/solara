@@ -435,10 +435,7 @@ if (mysqli_num_rows($resultdocumento) > 0) {
                 name: buttonName
             }).appendTo(form);
 
-            // Retrasar el envío del formulario por 10 segundos
-            setTimeout(function() {
-                form.submit(); // Envía el formulario después de 10 segundos
-            }, 10000);
+            form.submit();
         });
     });
 </script>

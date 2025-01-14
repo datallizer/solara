@@ -111,6 +111,30 @@ if (isset($_POST['codigo'])) {
     <link rel="stylesheet" href="css/styles.css">
     <title>Acceso al sistema | Solara</title>
 </head>
+<style>
+    .spinner-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
+
+    .spinner-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .spinner {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
 
 <body>
     <div class="container-fluid">
@@ -140,9 +164,34 @@ if (isset($_POST['codigo'])) {
             </div>
         </div>
     </div>
+    <div class="spinner-overlay" style="z-index: 99999999999999999999999999999999999999999999999999999999999999999999;">
+        <div class="spinner-container">
+            <div class="spinner-grow text-primary spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
+        $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+
+                $('.spinner-overlay').show(); // Muestra el spinner
+
+                var buttonName = $(this).find('button[type=submit]:focus').attr('name');
+
+                var form = this;
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: buttonName
+                }).appendTo(form);
+
+                form.submit();
+            });
+        });
+
         function agregarValor(valor) {
             var input = document.getElementById('inputCodigo');
             input.value += valor;
