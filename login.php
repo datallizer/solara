@@ -173,25 +173,9 @@ if (isset($_POST['codigo'])) {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
     <script>
-        $(document).ready(function() {
-            $('form').on('submit', function(e) {
-                e.preventDefault();
-
-                $('.spinner-overlay').show(); // Muestra el spinner
-
-                var buttonName = $(this).find('button[type=submit]:focus').attr('name');
-
-                var form = this;
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: buttonName
-                }).appendTo(form);
-
-                form.submit();
-            });
-        });
-
         function agregarValor(valor) {
             var input = document.getElementById('inputCodigo');
             input.value += valor;
@@ -217,6 +201,25 @@ if (isset($_POST['codigo'])) {
         }
 
         setInterval(actualizarHora, 1000); // Actualizar cada segundo
+
+
+        $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+
+                $('.spinner-overlay').show(); // Muestra el spinner
+
+                var buttonName = $(this).find('button[type=submit]:focus').attr('name');
+
+                var form = this;
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: buttonName
+                }).appendTo(form);
+
+                form.submit();
+            });
+        });
     </script>
 </body>
 
