@@ -317,9 +317,11 @@ if (isset($_SESSION['codigo'])) {
 <?php
                     } else {
                         echo "<div style='min-height:95vh' class='d-flex justify-content-center align-items-center'>
-                        <div class='text-center'><h4 class='text-center'>No se encontro ningun ensamble con ID $registro_id</h4>
-<a href='ensamble.php' class='btn btn-primary mt-3'>Regresar</a></div>
-</div>";
+                        <div class='text-center'>
+                            <img style='width:300px;margin-bottom:30px;' src='images/logolateral.png' alt='Logo solara'>
+                            <h4 class='text-center'>No se encontro ningun ensamble con ID $registro_id</h4>
+                            <a href='ensamble.php' class='btn btn-primary mt-3'>Regresar</a></div>
+                        </div>";
                     }
                 }
 ?>
