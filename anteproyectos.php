@@ -63,6 +63,30 @@ if (isset($_SESSION['codigo'])) {
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
     <link rel="stylesheet" href="css/styles.css">
 </head>
+<style>
+    .spinner-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
+
+    .spinner-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .spinner {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
@@ -284,22 +308,22 @@ if (isset($_SESSION['codigo'])) {
                                                             <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 5 de 5</p>
                                                             <p>Cotización</p>
                                                             <?php
-                                                                    $query = "SELECT * FROM proyectoboms WHERE estatus = 3 AND idproyecto = '" . $registro['id'] . "'";
-                                                                    $query_run = mysqli_query($con, $query);
-                                                                    if (mysqli_num_rows($query_run) > 0) {
-                                                                        foreach ($query_run as $registroMonto) {
-                                                                            $idmodal = $registroMonto['id'];
-                                                                    ?>
-                                                                                <p disabled><b>BOM <?= $registroMonto['tipo']; ?>:</b> $<?= $registroMonto['monto']; ?></p>
-                                                                            <?php
-                                                                            }
-                                                                            ?>
+                                                            $query = "SELECT * FROM proyectoboms WHERE estatus = 3 AND idproyecto = '" . $registro['id'] . "'";
+                                                            $query_run = mysqli_query($con, $query);
+                                                            if (mysqli_num_rows($query_run) > 0) {
+                                                                foreach ($query_run as $registroMonto) {
+                                                                    $idmodal = $registroMonto['id'];
+                                                            ?>
+                                                                    <p disabled><b>BOM <?= $registroMonto['tipo']; ?>:</b> $<?= $registroMonto['monto']; ?></p>
+                                                                <?php
+                                                                }
+                                                                ?>
 
-                                                                          
-                                                                    <?php
-                                                                        }
-                                                                    }
-                                                                    ?>
+
+                                                        <?php
+                                                            }
+                                                        }
+                                                        ?>
                                                     </td>
 
                                                     <?php
@@ -513,6 +537,15 @@ if (isset($_SESSION['codigo'])) {
         </div>
     </div>
 
+    <div class="spinner-overlay" style="z-index: 99999999999999999999999;">
+        <div class="spinner-container">
+            <div class="spinner-grow text-primary spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
@@ -550,6 +583,25 @@ if (isset($_SESSION['codigo'])) {
                 "order": [
                     [6, "asc"]
                 ] // Ordenar la primera columna (índice 0) en orden descendente
+            });
+
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+
+                $('.spinner-overlay').show(); // Muestra el spinner
+
+                var buttonName = $(this).find('button[type=submit]:focus').attr('name');
+
+                var form = this;
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: buttonName
+                }).appendTo(form);
+
+                // Retrasar el envío del formulario por 10 segundos
+                setTimeout(function() {
+                    form.submit(); // Envía el formulario después de 10 segundos
+                }, 10000);
             });
         });
 

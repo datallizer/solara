@@ -191,6 +191,30 @@ if (mysqli_num_rows($resultdocumento) > 0) {
 <?php
 }
 ?>
+<style>
+    .spinner-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
+
+    .spinner-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .spinner {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
 <!-- Modal solicitud salida -->
 <div class="modal fade" id="revision" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -385,3 +409,36 @@ if (mysqli_num_rows($resultdocumento) > 0) {
         </div>
     </div>
 </div>
+
+
+
+<div class="spinner-overlay" style="z-index: 99999999999999999999999999999999999999999999999999999999999999999999;">
+    <div class="spinner-container">
+        <div class="spinner-grow text-primary spinner" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+
+            $('.spinner-overlay').show(); // Muestra el spinner
+
+            var buttonName = $(this).find('button[type=submit]:focus').attr('name');
+
+            var form = this;
+            $('<input>').attr({
+                type: 'hidden',
+                name: buttonName
+            }).appendTo(form);
+
+            // Retrasar el envío del formulario por 10 segundos
+            setTimeout(function() {
+                form.submit(); // Envía el formulario después de 10 segundos
+            }, 10000);
+        });
+    });
+</script>

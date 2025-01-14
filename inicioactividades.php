@@ -405,6 +405,7 @@ if (isset($_SESSION['codigo'])) {
                 }
             });
         });
+
         $(document).ready(function() {
             $('form').on('submit', function(e) {
                 e.preventDefault(); // Evitar el envío inmediato del formulario
