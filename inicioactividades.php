@@ -311,12 +311,16 @@ if (isset($_SESSION['codigo'])) {
                                 </div>
                             </div>
                         </div>
+
             </div>
         </div>
 
 <?php
                     } else {
-                        echo "<h4>No se encontro ningun registro, contacte a soporte</h4>";
+                        echo "<div style='min-height:95vh' class='d-flex justify-content-center align-items-center'>
+                        <div class='text-center'><h4 class='text-center'>No se encontro ningun maquinado con ID $registro_id</h4>
+<a href='maquinados.php' class='btn btn-primary mt-3'>Regresar</a></div>
+</div>";
                     }
                 }
 ?>
