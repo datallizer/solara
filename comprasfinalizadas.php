@@ -91,11 +91,11 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT quotes.*, proyecto.*, quotes.id AS id_quote
-                                            FROM quotes 
-                                            JOIN proyecto ON quotes.proyecto = proyecto.id
+                                        $query = "SELECT archivoquotes.*, proyecto.*, archivoquotes.id AS id_quote
+                                            FROM archivoquotes 
+                                            JOIN proyecto ON archivoquotes.proyecto = proyecto.id
                                             WHERE estatusq = 2
-                                            ORDER BY quotes.id ASC";
+                                            ORDER BY archivoquotes.id ASC";
 
 
                                         $query_run = mysqli_query($con, $query);
