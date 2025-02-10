@@ -140,7 +140,7 @@ if (mysqli_num_rows($result) > 0) {
                                     T. Mecánico
                                 </button> -->
                                     <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9,13])) {
                                         echo '
                                 <button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalDos">
                                     Nuevo ensamble
@@ -162,7 +162,7 @@ if (mysqli_num_rows($result) > 0) {
                                             <th>Proyecto</th>
                                             <th>Diagrama / actividad asociados</th>
                                             <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 5, 6, 7, 9])) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 5, 6, 7, 9,13])) {
                                                 echo '<th>Técnino asignado</th>';
                                             }
                                             ?>
@@ -179,7 +179,7 @@ if (mysqli_num_rows($result) > 0) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 13])) {
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id 
@@ -188,7 +188,7 @@ if (mysqli_num_rows($result) > 0) {
                                                 WHERE asignaciondiagrama.codigooperador = $codigo 
                                                 AND (diagrama.estatusplano = 1 OR diagrama.estatusplano = 2 OR diagrama.estatusplano = 3)
                                                 ORDER BY proyecto.prioridad ASC, diagrama.nivel ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9,13])) {
                                             $query = "SELECT proyecto.*, diagrama.*
                                                 FROM diagrama 
                                                 JOIN proyecto ON diagrama.idproyecto = proyecto.id
@@ -313,7 +313,7 @@ if (mysqli_num_rows($result) > 0) {
                                                         while ($row = mysqli_fetch_assoc($motivosResult)) {
                                                             $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
                                                         }
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4, 13])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [4])) {
                                                             $countQuery = "SELECT COUNT(*) as count
         FROM diagrama
         JOIN asignaciondiagrama ON asignaciondiagrama.idplano = diagrama.id
@@ -363,7 +363,7 @@ if (mysqli_num_rows($result) > 0) {
                   </form>';
                                                                 }
                                                             }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9,13])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editardiagrama.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
           <form action="codediagramas.php" method="POST" class="d-inline">

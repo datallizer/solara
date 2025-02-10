@@ -116,7 +116,7 @@ if (isset($_SESSION['codigo'])) {
                             <div class="card-header">
                                 <h4>MAQUINADOS ACTIVOS
                                     <?php
-                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Nuevo plano
                                 </button> 
@@ -138,7 +138,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Proyecto</th>
                                             <th>Plano / actividad asociados</th>
                                             <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
                                                 echo '<th>Operadores asignados</th>';
                                             }
                                             ?>
@@ -151,7 +151,7 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8, 13])) {
+                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                                             $query = "SELECT proyecto.id, proyecto.prioridad, proyecto.nombre, plano.*
                                             FROM plano 
                                             JOIN proyecto ON plano.idproyecto = proyecto.id 
@@ -159,7 +159,7 @@ if (isset($_SESSION['codigo'])) {
                                             JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                             WHERE asignacionplano.codigooperador = $codigo 
                                             AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3) ORDER BY proyecto.prioridad ASC, plano.nivel ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
                                             $query = "SELECT proyecto.id, proyecto.prioridad, proyecto.nombre, plano.id, plano.idproyecto, plano.nivel, plano.piezas, plano.estatusplano, plano.actividad, plano.nombreplano, plano.medio
                                             FROM plano 
                                             JOIN proyecto ON plano.idproyecto = proyecto.id
@@ -206,7 +206,7 @@ if (isset($_SESSION['codigo'])) {
                                                         ?>
                                                     </td>
                                                     <?php
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
                                                     ?>
                                                         <td>
                                                             <?php
@@ -217,7 +217,7 @@ if (isset($_SESSION['codigo'])) {
                                                             $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                             if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                                 foreach ($query_run_asignacion as $asignacion) {
-                                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9])) {
+                                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9,13])) {
 
                                                                         if ($registro['estatusplano'] === '1') {
                                                             ?>
@@ -296,7 +296,7 @@ if (isset($_SESSION['codigo'])) {
                                                         while ($row = mysqli_fetch_assoc($motivosResult)) {
                                                             $motivosOptions .= '<option value="' . $row['motivo'] . '">' . $row['motivo'] . '</option>';
                                                         }
-                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8, 13])) {
+                                                        if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [8])) {
                                                             $countQuery = "SELECT COUNT(*) as count
         FROM plano
         JOIN asignacionplano ON asignacionplano.idplano = plano.id
@@ -346,7 +346,7 @@ if (isset($_SESSION['codigo'])) {
                   </form>';
                                                                 }
                                                             }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
           <form action="codemaquinados.php" method="POST" class="d-inline">
