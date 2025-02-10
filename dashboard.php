@@ -350,7 +350,32 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                 <div class="row">
                                     <div class="col-9">
                                         <h4 style="text-transform: uppercase;font-weight:600;">
-                                            <button type="button" class="btn btn-dark btn-sm float-end" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Etapas</button>
+                                        <?php
+// Suponiendo que el usuario autenticado tiene su código en $_SESSION['codigo']
+$codigoUsuario = $_SESSION['codigo'];
+
+// Consulta para obtener todos los codigooperador del proyecto
+$queryAsignacion = "SELECT usuarios.codigo AS codigooperador 
+                    FROM encargadoproyecto
+                    JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo 
+                    WHERE encargadoproyecto.idproyecto = " . $registro['id'];
+
+$resultAsignacion = mysqli_query($con, $queryAsignacion);
+
+// Crear un array para almacenar los códigos de operadores del proyecto
+$codigoOperadores = [];
+
+while ($asignacion = mysqli_fetch_assoc($resultAsignacion)) {
+    $codigoOperadores[] = $asignacion['codigooperador'];
+}
+
+// Verificar si el usuario autenticado está en la lista de operadores
+if (in_array($codigoUsuario, $codigoOperadores)) :
+?>
+    <button type="button" class="btn btn-dark btn-sm float-end" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Etapas</button>
+<?php endif; ?>
+
+
                                             <div style="max-height: 95vh;" class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">

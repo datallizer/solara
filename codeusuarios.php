@@ -36,6 +36,11 @@ if (isset($_POST['update'])) {
 
     // Verificar si se ha subido una nueva imagen
     if ($_FILES['nuevaFoto']['size'] > 0) {
+
+        if (file_exists($file_path)) {
+            unlink($file_path); // Elimina la imagen anterior si existe
+        }
+
         // Obtener información de la imagen
         $image_tmp_name = $_FILES['nuevaFoto']['tmp_name'];
         $image_info = getimagesize($image_tmp_name);
@@ -79,11 +84,6 @@ if (isset($_POST['update'])) {
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $idcodigo = $_SESSION['codigo'];
-        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito un usuario, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol, estatus: $estatus', hora='$hora_actual', fecha='$fecha_actual'";
-        $query_rundos = mysqli_query($con, $querydos);
         $_SESSION['message'] = "Usuario editado exitosamente";
         header("Location: usuarios.php");
         exit(0);
@@ -100,22 +100,22 @@ if (isset($_POST['nominaupdate'])) {
     $nomina = mysqli_real_escape_string($con, $_POST['nomina']);
     // Obtener la nueva imagen cargada
     $query = "UPDATE `usuarios` SET `nomina` = '$nomina' WHERE `usuarios`.`id` = '$id'";
-        $query_run = mysqli_query($con, $query);
+    $query_run = mysqli_query($con, $query);
 
-        if ($query_run) {
-            $idcodigo = $_SESSION['codigo'];
-            $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
-            $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
-            $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito la nómina, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol, estatus: $estatus', hora='$hora_actual', fecha='$fecha_actual'";
-            $query_rundos = mysqli_query($con, $querydos);
-            $_SESSION['message'] = "Nómina editado exitosamente";
-            header("Location: nomina.php");
-            exit(0);
-        } else {
-            $_SESSION['message'] = "Error al editar la nómina, contacte a soporte";
-            header("Location: nomina.php");
-            exit(0);
-        }
+    if ($query_run) {
+        $idcodigo = $_SESSION['codigo'];
+        $fecha_actual = date("Y-m-d"); // Obtener fecha actual en formato Año-Mes-Día
+        $hora_actual = date("H:i"); // Obtener hora actual en formato Hora:Minutos:Segundos
+        $querydos = "INSERT INTO historial SET idcodigo='$idcodigo', detalles='Edito la nómina, nombre: $nombre $apellidop $apellidom, codigo: $codigo, rol: $rol, estatus: $estatus', hora='$hora_actual', fecha='$fecha_actual'";
+        $query_rundos = mysqli_query($con, $querydos);
+        $_SESSION['message'] = "Nómina editado exitosamente";
+        header("Location: nomina.php");
+        exit(0);
+    } else {
+        $_SESSION['message'] = "Error al editar la nómina, contacte a soporte";
+        header("Location: nomina.php");
+        exit(0);
+    }
 }
 
 
@@ -125,7 +125,7 @@ if (isset($_POST['save'])) {
     $apellidom = mysqli_real_escape_string($con, $_POST['apellidom']);
     $codigo = mysqli_real_escape_string($con, $_POST['codigo']);
     $rol = mysqli_real_escape_string($con, $_POST['rol']);
-    
+
     // Verificar si el código ya existe en la tabla
     $query_check = "SELECT * FROM usuarios WHERE codigo='$codigo'";
     $result_check = mysqli_query($con, $query_check);
@@ -158,7 +158,7 @@ if (isset($_POST['save'])) {
                 if ($imagen) {
                     imagejpeg($imagen, $imagen_destino, 100); // Guardar como JPG con calidad 100
                     imagedestroy($imagen);
-                    
+
                     // Establecer la ruta de la imagen
                     $ruta_imagen = $imagen_destino;
                 }
@@ -204,4 +204,3 @@ if (isset($_POST['emailsave'])) {
         exit();
     }
 }
-?>

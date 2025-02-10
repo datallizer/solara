@@ -51,21 +51,21 @@ if (isset($_SESSION['codigo'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Usuarios | Solara</title>
+    <title>Editar usuarios | Solara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ics.png" />
-    <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container mt-5">
@@ -81,7 +81,7 @@ if (isset($_SESSION['codigo'])) {
                             <div class="card-body">
 
                                 <?php
-                                
+
                                 if (isset($_GET['id'])) {
                                     $registro_id = mysqli_real_escape_string($con, $_GET['id']);
                                     $query = "SELECT * FROM usuarios WHERE id='$registro_id' ";
@@ -93,25 +93,25 @@ if (isset($_SESSION['codigo'])) {
                                         $estatus_actual = $registro['estatus'];
 
                                 ?>
-                                
+
                                         <form action="codeusuarios.php" method="POST" enctype="multipart/form-data">
                                             <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row mt-1">
-                                            <div class="form-group mt-3 col-11 mb-3">
-                                                <label for="nuevaFoto">Seleccionar nueva foto:</label>
-                                                <input type="file" class="form-control" id="nuevaFoto" name="nuevaFoto">
-                                            </div>
-                                            <div class="form-group mb-3 col-1 text-center">
-                                                <?php
-                                                // Mostrar la imagen actual si existe
-                                                if (!empty($registro['medio'])) {
-                                                    echo '<img src="' . $registro['medio'] . '" alt="Foto actual" style="width:100%;">';
-                                                } else {
-                                                    echo 'No hay foto actual.';
-                                                }
-                                                ?>
-                                            </div>
+                                                <div class="form-group mt-3 col-11 mb-3">
+                                                    <label for="nuevaFoto">Seleccionar nueva foto:</label>
+                                                    <input type="file" class="form-control" id="nuevaFoto" name="nuevaFoto">
+                                                </div>
+                                                <div class="form-group mb-3 col-1 text-center">
+                                                    <?php
+                                                    // Mostrar la imagen actual si existe
+                                                    if (!empty($registro['medio'])) {
+                                                        echo '<img src="' . $registro['medio'] . '" alt="Foto actual" style="width:100%;">';
+                                                    } else {
+                                                        echo 'No hay foto actual.';
+                                                    }
+                                                    ?>
+                                                </div>
 
                                                 <div class="form-floating col-12">
                                                     <input type="text" class="form-control" name="nombre" id="nombre" value="<?= $registro['nombre']; ?>">
@@ -134,28 +134,28 @@ if (isset($_SESSION['codigo'])) {
                                                 </div>
 
                                                 <div class="form-floating col-12 col-md-7 mt-3">
-                                                <select class="form-select" name="estatus" id="estatus">
-                                                    <option disabled>Seleccione un estatus</option>
-                                                    <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Inactivo</option>
-                                                    <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Activo</option>
-                                                </select>
+                                                    <select class="form-select" name="estatus" id="estatus">
+                                                        <option disabled>Seleccione un estatus</option>
+                                                        <option value="0" <?= ($estatus_actual == 0) ? 'selected' : ''; ?>>Inactivo</option>
+                                                        <option value="1" <?= ($estatus_actual == 1) ? 'selected' : ''; ?>>Activo</option>
+                                                    </select>
                                                     <label for="estatus">Estatus</label>
                                                 </div>
 
                                                 <div class="form-floating col-12 col-md-5 mt-3">
-                                                <select class="form-select" name="rol" id="rol">
-                                                    <option disabled>Seleccione un rol</option>
-                                                    <option value="1" <?= ($rol_actual == 1) ? 'selected' : ''; ?>>Administrador</option>
-                                                    <option value="2" <?= ($rol_actual == 2) ? 'selected' : ''; ?>>Gerencia</option>
-                                                    <option value="4" <?= ($rol_actual == 4) ? 'selected' : ''; ?>>Tecnico controles</option>
-                                                    <option value="5" <?= ($rol_actual == 5) ? 'selected' : ''; ?>>Ing- Diseño</option>
-                                                    <option value="6" <?= ($rol_actual == 6) ? 'selected' : ''; ?>>Compras</option>
-                                                    <option value="7" <?= ($rol_actual == 7) ? 'selected' : ''; ?>>Almacenista</option>
-                                                    <option value="8" <?= ($rol_actual == 8) ? 'selected' : ''; ?>>Tecnico mecanico</option>
-                                                    <option value="9" <?= ($rol_actual == 9) ? 'selected' : ''; ?>>Ing.Control</option>
-                                                    <option value="10" <?= ($rol_actual == 10) ? 'selected' : ''; ?>>Recursos humanos</option>
-                                                    <option value="13" <?= ($rol_actual == 13) ? 'selected' : ''; ?>>Ing. Laser</option>
-                                                </select>
+                                                    <select class="form-select" name="rol" id="rol">
+                                                        <option disabled>Seleccione un rol</option>
+                                                        <option value="1" <?= ($rol_actual == 1) ? 'selected' : ''; ?>>Administrador</option>
+                                                        <option value="2" <?= ($rol_actual == 2) ? 'selected' : ''; ?>>Gerencia</option>
+                                                        <option value="4" <?= ($rol_actual == 4) ? 'selected' : ''; ?>>Tecnico controles</option>
+                                                        <option value="5" <?= ($rol_actual == 5) ? 'selected' : ''; ?>>Ing- Diseño</option>
+                                                        <option value="6" <?= ($rol_actual == 6) ? 'selected' : ''; ?>>Compras</option>
+                                                        <option value="7" <?= ($rol_actual == 7) ? 'selected' : ''; ?>>Almacenista</option>
+                                                        <option value="8" <?= ($rol_actual == 8) ? 'selected' : ''; ?>>Tecnico mecanico</option>
+                                                        <option value="9" <?= ($rol_actual == 9) ? 'selected' : ''; ?>>Ing.Control</option>
+                                                        <option value="10" <?= ($rol_actual == 10) ? 'selected' : ''; ?>>Recursos humanos</option>
+                                                        <option value="13" <?= ($rol_actual == 13) ? 'selected' : ''; ?>>Ing. Laser</option>
+                                                    </select>
                                                     <label for="rol">Rol</label>
                                                 </div>
 
