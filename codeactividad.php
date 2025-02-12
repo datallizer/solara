@@ -203,13 +203,52 @@ if (isset($_POST['finish'])) {
     if ($query_run) {
         $querydos = "UPDATE `plano` SET `estatusplano` = '0' WHERE `plano`.`id` = '$id'";
         $querydos_run = mysqli_query($con, $querydos);
+        // Mover la fila de `plano` a `archivoplano`
+        $query_archivar_plano = "INSERT INTO archivoplano SELECT * FROM plano WHERE id = '$id'";
+        $query_archivar_plano_run = mysqli_query($con, $query_archivar_plano);
 
-        if ($querydos_run) {
-            $_SESSION['message'] = "Maquinado terminado exitosamente";
-            header("Location: maquinados.php");
-            exit(0);
+        if ($query_archivar_plano_run) {
+            // Eliminar la fila de `plano`
+            $query_eliminar_plano = "DELETE FROM plano WHERE id = '$id'";
+            $query_eliminar_plano_run = mysqli_query($con, $query_eliminar_plano);
+
+            if ($query_eliminar_plano_run) {
+                // Mover la fila de `historialoperadores` a `archivohistorialoperadores`
+                $query_archivar_historial = "INSERT INTO archivohistorialoperadores SELECT * FROM historialoperadores WHERE idplano = '$id'";
+                $query_archivar_historial_run = mysqli_query($con, $query_archivar_historial);
+
+                if ($query_archivar_historial_run) {
+                    // Eliminar la fila de `historialoperadores`
+                    $query_eliminar_historial = "DELETE FROM historialoperadores WHERE idplano = '$id'";
+                    $query_eliminar_historial_run = mysqli_query($con, $query_eliminar_historial);
+
+                    $query_archivo_plano = "INSERT INTO archivoasignacionplano SELECT * FROM asignacionplano WHERE idplano IN (SELECT id FROM archivoplano)";
+                    $query_archivo_plano_run = mysqli_query($con, $query_archivo_plano);
+
+                    $query_delete_asignacion = "DELETE FROM asignacionplano WHERE idplano IN (SELECT id FROM archivoplano)";
+                    $query_delete_asignacion_run = mysqli_query($con, $query_delete_asignacion);
+
+                    if ($query_eliminar_historial_run) {
+                        $_SESSION['message'] = "Maquinado terminado y archivado exitosamente";
+                        header("Location: maquinados.php");
+                        exit(0);
+                    } else {
+                        $_SESSION['message'] = "Error al eliminar historial de operadores, contacte a soporte";
+                        header("Location: inicioactividades.php?id=$id");
+                        exit(0);
+                    }
+                } else {
+                    $_SESSION['message'] = "Error al archivar historial de operadores, contacte a soporte";
+                    header("Location: inicioactividades.php?id=$id");
+                    exit(0);
+                }
+            } else {
+                $_SESSION['message'] = "Error al eliminar el plano, contacte a soporte";
+                header("Location: inicioactividades.php?id=$id");
+                exit(0);
+            }
         } else {
-            $_SESSION['message'] = "Error al finalizar el maquinado, contacte a soporte";
+            $_SESSION['message'] = "Error al archivar el plano, contacte a soporte";
             header("Location: inicioactividades.php?id=$id");
             exit(0);
         }

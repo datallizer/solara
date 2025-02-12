@@ -66,7 +66,7 @@ if (isset($_SESSION['codigo'])) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -87,67 +87,84 @@ if (isset($_SESSION['codigo'])) {
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Material</th>
-                                            <th>Cantidad</th>
-                                            <th>Clasificacion</th>
-                                            <th>Tipo</th>
-                                            <th>Proveedor</th>
-                                            <th>Parte</th>
-                                            <th>Descripcion</th>
-                                            <th>Marca</th>
-                                            <th>Condicion</th>
-                                            <th>Rack</th>
-                                            <th>Bin</th>
-                                            <th>Caja</th>
-                                            <th>Número</th>
-                                            <th>Costo unitario</th>
-                                            <th>Accion</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $query = "SELECT * FROM inventario ORDER BY id DESC";
-                                        $query_run = mysqli_query($con, $query);
-                                        if (mysqli_num_rows($query_run) > 0) {
-                                            foreach ($query_run as $registro) {
-                                        ?>
-                                                <tr>
-                                                    <td><?= $registro['id']; ?></td>
-                                                    <td><?= $registro['nombre']; ?></td>
-                                                    <td><?= $registro['cantidad']; ?></td>
-                                                    <td><?= $registro['clasificacion']; ?></td>
-                                                    <td><?= $registro['tipo']; ?></td>
-                                                    <td><?= $registro['proveedor']; ?></td>
-                                                    <td><?= $registro['parte']; ?></td>
-                                                    <td><?= $registro['descripcion']; ?></td>
-                                                    <td><?= $registro['marca']; ?></td>
-                                                    <td><?= $registro['condicion']; ?></td>
-                                                    <td><?= $registro['rack']; ?></td>
-                                                    <td><?= $registro['bin']; ?></td>
-                                                    <td><?= $registro['caja']; ?></td>
-                                                    <td><?= $registro['numero']; ?></td>
-                                                    <td>$<?= $registro['costo']; ?></td>
-                                                    <td>
-                                                        <a href="editarinventario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-
-                                                        <form action="codeinventario.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
-                                                        </form>
-
-                                                    </td>
-                                                </tr>
-                                        <?php
-                                            }
-                                        } else {
-                                            echo "<tr><td colspan='16'><p>No se encontró ningún registro</p></td></tr>";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
+                            <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Material</th>
+            <th>Cantidad</th>
+            <th>Parte</th>
+            <th>Clasificación</th>
+            <th>Tipo</th>
+            <th>Proveedor</th>
+            <th>Descripción</th>
+            <th>Marca</th>
+            <th>Condición</th>
+            <th>Rack</th>
+            <th>Bin</th>
+            <th>Caja</th>
+            <th>Número</th>
+            <th>Costo unitario</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $query = "SELECT * FROM inventario ORDER BY id DESC";
+        $query_run = mysqli_query($con, $query);
+        if (mysqli_num_rows($query_run) > 0) {
+            $material_partes = [];  // Para almacenar combinaciones de 'nombre', 'parte' y otros campos
+            while ($registro = mysqli_fetch_assoc($query_run)) {
+                // Combinación de nombre, parte y otros campos
+                $clave = implode('|', [
+                    $registro['nombre'], 
+                    $registro['parte'], 
+                    $registro['marca'], 
+                    $registro['condicion'], 
+                    $registro['clasificacion'], 
+                    $registro['bin'], 
+                    $registro['tipo'], 
+                    $registro['proveedor']
+                ]);
+                
+                // Si ya existe la combinación, marcar como duplicado
+                if (isset($material_partes[$clave])) {
+                    $material_partes[$clave][] = $registro; // Añadir el registro duplicado completo
+                } else {
+                    $material_partes[$clave] = [$registro]; // Crear nueva entrada con el registro
+                }
+        ?>
+                <tr>
+                    <td><?= $registro['id']; ?></td>
+                    <td><?= $registro['nombre']; ?></td>
+                    <td><?= $registro['cantidad']; ?></td>
+                    <td><?= $registro['parte']; ?></td>
+                    <td><?= $registro['clasificacion']; ?></td>
+                    <td><?= $registro['tipo']; ?></td>
+                    <td><?= $registro['proveedor']; ?></td>
+                    <td><?= $registro['descripcion']; ?></td>
+                    <td><?= $registro['marca']; ?></td>
+                    <td><?= $registro['condicion']; ?></td>
+                    <td><?= $registro['rack']; ?></td>
+                    <td><?= $registro['bin']; ?></td>
+                    <td><?= $registro['caja']; ?></td>
+                    <td><?= $registro['numero']; ?></td>
+                    <td>$<?= $registro['costo']; ?></td>
+                    <td>
+                        <a href="editarinventario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                        <form action="codeinventario.php" method="POST" class="d-inline">
+                            <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                        </form>
+                    </td>
+                </tr>
+        <?php
+            }
+        } else {
+            echo "<tr><td colspan='16'><p>No se encontró ningún registro</p></td></tr>";
+        }
+        ?>
+    </tbody>
+</table>
                             </div>
                         </div>
                     </div>
@@ -374,29 +391,129 @@ if (isset($_SESSION['codigo'])) {
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        const tipoSelect = document.getElementById('tipo');
-        const maximoContainer = document.getElementById('maximoContainer');
-        const minimoContainer = document.getElementById('minimoContainer');
+            const tipoSelect = document.getElementById('tipo');
+            const maximoContainer = document.getElementById('maximoContainer');
+            const minimoContainer = document.getElementById('minimoContainer');
 
-        tipoSelect.addEventListener('change', function() {
-            const selectedOption = tipoSelect.value;
+            tipoSelect.addEventListener('change', function() {
+                const selectedOption = tipoSelect.value;
 
-            if (selectedOption === 'Consumible') {
-                maximoContainer.style.display = 'block';
-                minimoContainer.style.display = 'block';
-            } else {
-                maximoContainer.style.display = 'none';
-                minimoContainer.style.display = 'none';
-            }
+                if (selectedOption === 'Consumible') {
+                    maximoContainer.style.display = 'block';
+                    minimoContainer.style.display = 'block';
+                } else {
+                    maximoContainer.style.display = 'none';
+                    minimoContainer.style.display = 'none';
+                }
+            });
         });
-    });
         $(document).ready(function() {
             $('#miTabla, #miTablaDos').DataTable({
                 "order": [
                     [0, "asc"]
-                ] // Ordenar la primera columna (índice 0) en orden descendente
+                ],
+                "pageLength": 100
             });
         });
+
+// Definir la variable duplicadosList a partir de los datos PHP
+const duplicados = <?php echo json_encode($material_partes); ?>;
+
+// Filtrar solo duplicados (más de una ocurrencia)
+const duplicadosList = [];
+for (const key in duplicados) {
+    if (duplicados[key].length > 1) {
+        duplicadosList.push(duplicados[key]);
+    }
+}
+
+let currentIndex = 0;
+
+
+function mostrarDuplicados(index) {
+    if (index < duplicadosList.length) {
+        const duplicado = duplicadosList[index];
+
+        let duplicadoHTML = '<div class="duplicado-container">';
+        let sumaCantidad = 0;
+        duplicado.forEach(item => {
+            sumaCantidad += parseInt(item.cantidad);
+            duplicadoHTML += `
+                <div class="duplicado-item">
+                    <input type="radio" name="selectedId" value="${item.id}" id="item-${item.id}">
+                    <label for="item-${item.id}">${item.id} - ${item.nombre} - ${item.cantidad}</label><br>
+                </div>
+            `;
+        });
+        duplicadoHTML += '</div>';
+
+        duplicadoHTML += `<input type="number" id="cantidadInput" value="${sumaCantidad}" min="1" class="swal2-input">`;
+
+        Swal.fire({
+            title: '¡Alerta de Duplicados!',
+            html: duplicadoHTML,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Siguiente',
+            cancelButtonText: 'Cancelar',
+            didOpen: () => { // <-- Función que se ejecuta después de abrir el modal
+                const radioButtons = document.querySelectorAll('input[name="selectedId"]');
+                const cantidadInput = document.getElementById('cantidadInput');
+
+                radioButtons.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        if (radio.checked) {
+                            const selectedItem = duplicado.find(item => item.id === radio.value);
+                            cantidadInput.value = selectedItem.cantidad; // Actualizar con la cantidad del ID seleccionado
+                        } else {
+                            cantidadInput.value = sumaCantidad; //Restablecer la suma si se deselecciona
+                        }
+                    });
+                });
+            },
+            preConfirm: () => {
+                return true;
+            },
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const selectedRadio = document.querySelector('input[name="selectedId"]:checked');
+                const cantidad = document.getElementById('cantidadInput').value;
+
+                if (selectedRadio) {
+                    // Caso 1: Se seleccionó un ID
+                    const selectedId = selectedRadio.value;
+                    const idsToDelete = duplicado.filter(item => item.id !== selectedId).map(item => item.id);
+                    const url = `codeinventario.php?updateId=${selectedId}&cantidad=${cantidad}&deleteIds=${idsToDelete.join(',')}`; // Usar updateId
+                    window.location.href = url;
+                } else {
+                    // Caso 2: No se seleccionó un ID (usar el primer ID)
+                    const firstId = duplicado[0].id;
+                    const idsToDelete = duplicado.slice(1).map(item => item.id); // Eliminar todos menos el primero
+                    const url = `codeinventario.php?updateId=${firstId}&cantidad=${cantidad}&deleteIds=${idsToDelete.join(',')}`; // Usar updateId
+                    window.location.href = url;
+                }
+            } else {
+                console.log("Proceso detenido por el usuario.");
+                currentIndex = duplicadosList.length;
+            }
+
+            if (currentIndex < duplicadosList.length && result.isConfirmed) {
+                currentIndex++;
+                mostrarDuplicados(currentIndex);
+            }
+        });
+    } else {
+        console.log("No hay más duplicados para mostrar.");
+        currentIndex = 0;
+    }
+}
+
+if (duplicadosList.length > 0) {
+    mostrarDuplicados(currentIndex);
+} else {
+    console.log("No hay duplicados para mostrar.");
+}
     </script>
 </body>
 

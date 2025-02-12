@@ -90,19 +90,44 @@ if (isset($_POST['save'])) {
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numBuy = $usuarioData['numBuy'];
 
-                // Proyectos desactualizados
-                $queryProyectoContador = "SELECT COUNT(DISTINCT proyecto.id) AS numProyectos
-                FROM proyecto
-                LEFT JOIN plano ON proyecto.id = plano.idproyecto
-                LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
-                WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) 
-                AND estatus = 1
-                AND proyecto.etapa < 13
-                AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados');";
+                $codigoOperador = $_SESSION['codigo'];
+                $rolUsuario = $_SESSION['rol'];
 
+                // Verificar si el rol es 1 o 2, o si el usuario es encargado de algún proyecto
+                if (in_array($rolUsuario, [1, 2])) {
+                    // Si el rol es 1 o 2, contar todos los proyectos que cumplan las condiciones
+                    $queryProyectoContador = "SELECT COUNT(DISTINCT proyecto.id) AS numProyectos
+                              FROM proyecto
+                              LEFT JOIN plano ON proyecto.id = plano.idproyecto
+                              LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
+                              WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) 
+                              AND estatus = 1
+                              AND proyecto.etapa < 13
+                              AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados');";
+                } else {
+                    // Si no es rol 1 o 2, contar solo los proyectos en los que el operador sea encargado
+                    $queryProyectoContador = "SELECT COUNT(DISTINCT proyecto.id) AS numProyectos
+                              FROM proyecto
+                              LEFT JOIN plano ON proyecto.id = plano.idproyecto
+                              LEFT JOIN diagrama ON proyecto.id = diagrama.idproyecto
+                              LEFT JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idProyecto
+                              WHERE (plano.idproyecto IS NOT NULL OR diagrama.idproyecto IS NOT NULL) 
+                              AND estatus = 1
+                              AND proyecto.etapa < 13
+                              AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados')
+                              AND encargadoproyecto.codigooperador = '$codigoOperador';";
+                }
+
+                // Ejecutar la consulta para contar los proyectos
                 $resultadoContador = mysqli_query($con, $queryProyectoContador);
-                $proyectoData = mysqli_fetch_assoc($resultadoContador);
-                $numProyectos = $proyectoData['numProyectos'];
+
+                // Verificar si la consulta fue exitosa
+                if ($resultadoContador) {
+                    $proyectoData = mysqli_fetch_assoc($resultadoContador);
+                    $numProyectos = $proyectoData['numProyectos'];
+                } else {
+                    echo "Error al obtener el número de proyectos: " . mysqli_error($con);
+                }
 
                 // Consulta para obtener los nombres de los proyectos desactualizados
                 $queryProyectoNombres = "SELECT DISTINCT proyecto.nombre, proyecto.id
@@ -117,14 +142,30 @@ if (isset($_POST['save'])) {
                 $resultadoNombres = mysqli_query($con, $queryProyectoNombres);
                 $proyectosDesactualizados = mysqli_fetch_all($resultadoNombres, MYSQLI_ASSOC);
 
-                $queryIniciales = "SELECT p.id, p.nombre 
-                                    FROM proyecto p 
-                                    WHERE p.etapa = 13
-                                    AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
-                                    AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
-                                    GROUP BY p.id, p.nombre";
-
+                if (in_array($rolUsuario, [1, 2])) {
+                    // Si el rol es 1 o 2, contar todos los proyectos que cumplan las condiciones
+                    $queryIniciales = "SELECT p.id, p.nombre 
+                                       FROM proyecto p 
+                                       WHERE p.etapa = 13
+                                       AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                                       AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                                       GROUP BY p.id, p.nombre";
+                } else {
+                    // Si no es rol 1 o 2, solo contar proyectos donde el operador sea encargado
+                    $queryIniciales = "SELECT p.id, p.nombre 
+                                       FROM proyecto p
+                                       LEFT JOIN encargadoproyecto ep ON p.id = ep.idProyecto
+                                       WHERE p.etapa = 13
+                                       AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                                       AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                                       AND ep.codigooperador = '$codigoOperador'
+                                       GROUP BY p.id, p.nombre";
+                }
+                
+                // Ejecutar la consulta
                 $resultado = $con->query($queryIniciales);
+                
+                // Obtener el número de proyectos
                 $numIniciales = $resultado->num_rows;
                 ?>
 
@@ -328,48 +369,11 @@ if (isset($_POST['save'])) {
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13]) && count($proyectosDesactualizados) > 0) {
                         foreach ($proyectosDesactualizados as $proyecto) {
-                    ?>
-                            <li style="width: 400px;padding:0px 15px;">
-                                <a href="dashboard.php?proyecto_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
-                                        </div>
-                                        <div class="col-9">
-                                            <small style="text-transform:uppercase;font-size:11px;">
-                                                <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
-                                            </small>
-                                            <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Construcción del equipo."</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                            <hr style="color: #fcfcfc;" class="dropdown-divider" />
-                    <?php
-                        }
-                    }
-                    ?>
-
-                    <!-- Validar si construccion etapa ya se completo -->
-                    <?php
-                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
-                        // Consulta para verificar que todos los registros del proyecto tienen estatusplano = 0 tanto en plano como en diagrama
-
-                        $queryIniciales = "SELECT p.id, p.nombre 
-                        FROM proyecto p 
-                        WHERE p.etapa = 13
-                        AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
-                        AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
-                        GROUP BY p.id, p.nombre";
-
-                        $resultado = $con->query($queryIniciales);
-                        // Verifica si hay resultados
-                        if ($resultado->num_rows > 0) {
-                            // Recorre los proyectos que cumplen con la condición
-                            while ($proyecto = $resultado->fetch_assoc()) {
+                            // Si el rol es 1 o 2, siempre mostrar el <li>
+                            if (in_array($_SESSION['rol'], [1, 2])) {
                     ?>
                                 <li style="width: 400px;padding:0px 15px;">
-                                    <a href="dashboard.php?internas_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
+                                    <a href="dashboard.php?proyecto_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
                                         <div class="row">
                                             <div class="col-3">
                                                 <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
@@ -378,17 +382,116 @@ if (isset($_POST['save'])) {
                                                 <small style="text-transform:uppercase;font-size:11px;">
                                                     <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
                                                 </small>
-                                                <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Pruebas internas iniciales"</p>
+                                                <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Construcción del equipo."</p>
                                             </div>
                                         </div>
                                     </a>
                                 </li>
                                 <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                                <?php
+                            } else {
+                                // Obtener el código de operador de la sesión
+                                $codigoOperador = $_SESSION['codigo'];
+
+                                // Consulta para verificar si el usuario es encargado del proyecto
+                                $queryEncargado = "SELECT COUNT(*) as isEncargado FROM encargadoproyecto 
+                               WHERE idProyecto = " . $proyecto['id'] . " 
+                               AND codigooperador = '$codigoOperador'";
+
+                                // Ejecutar la consulta
+                                $resultEncargado = mysqli_query($con, $queryEncargado);
+
+                                // Verificar si la consulta fue exitosa
+                                if ($resultEncargado) {
+                                    $dataEncargado = mysqli_fetch_assoc($resultEncargado);
+
+                                    // Si el usuario es encargado, mostrar el <li>
+                                    if ($dataEncargado['isEncargado'] > 0) {
+                                ?>
+                                        <li style="width: 400px;padding:0px 15px;">
+                                            <a href="dashboard.php?proyecto_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                                                    </div>
+                                                    <div class="col-9">
+                                                        <small style="text-transform:uppercase;font-size:11px;">
+                                                            <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                                                        </small>
+                                                        <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Construcción del equipo."</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <hr style="color: #fcfcfc;" class="dropdown-divider" />
                     <?php
+                                    }
+                                } else {
+                                    echo "Error al verificar si es encargado: " . mysqli_error($con);
+                                }
                             }
                         }
                     }
                     ?>
+
+
+<?php
+if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+    // Obtener el código del operador desde la sesión
+    $codigoOperador = $_SESSION['codigo']; 
+    $rolUsuario = $_SESSION['rol']; 
+
+    // Consulta para roles 1 y 2, o si el usuario es encargado
+    if (in_array($rolUsuario, [1, 2])) {
+        // Si el rol es 1 o 2, contar todos los proyectos que cumplan las condiciones
+        $queryIniciales = "SELECT p.id, p.nombre 
+                           FROM proyecto p 
+                           WHERE p.etapa = 13
+                           AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                           AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                           GROUP BY p.id, p.nombre";
+    } else {
+        // Si no es rol 1 o 2, solo proyectos donde el operador sea encargado
+        $queryIniciales = "SELECT p.id, p.nombre 
+                           FROM proyecto p
+                           LEFT JOIN encargadoproyecto ep ON p.id = ep.idProyecto
+                           WHERE p.etapa = 13
+                           AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                           AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
+                           AND ep.codigooperador = '$codigoOperador'
+                           GROUP BY p.id, p.nombre";
+    }
+
+    // Ejecutar la consulta
+    $resultado = $con->query($queryIniciales);
+
+    // Verificar si hay resultados
+    if ($resultado->num_rows > 0) {
+        // Recorre los proyectos que cumplen con la condición
+        while ($proyecto = $resultado->fetch_assoc()) {
+?>
+            <li style="width: 400px;padding:0px 15px;">
+                <a href="dashboard.php?internas_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
+                    <div class="row">
+                        <div class="col-3">
+                            <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                        </div>
+                        <div class="col-9">
+                            <small style="text-transform:uppercase;font-size:11px;">
+                                <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                            </small>
+                            <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Pruebas internas iniciales"</p>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            <hr style="color: #fcfcfc;" class="dropdown-divider" />
+<?php
+        }
+    }
+}
+?>
+
 
                 </ul>
 

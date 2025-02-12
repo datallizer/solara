@@ -86,9 +86,9 @@ if (isset($_SESSION['codigo'])) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT proyecto.*, plano.*, plano.id AS idplano
-                                        FROM plano 
-                                        JOIN proyecto ON plano.idproyecto = proyecto.id
+                                        $query = "SELECT proyecto.*, archivoplano.*, archivoplano.id AS idplano
+                                        FROM archivoplano 
+                                        JOIN proyecto ON archivoplano.idproyecto = proyecto.id
                                         WHERE estatusplano = 0 
                                         ORDER BY idplano DESC";
                                         $query_run = mysqli_query($con, $query);
@@ -115,10 +115,10 @@ if (isset($_SESSION['codigo'])) {
                                                     <td class="text-center"><?= $registro['piezas']; ?></td>
                                                     <td>
                                                         <?php
-                                                        $queryAsignacion = "SELECT asignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
-                                                            FROM asignacionplano
-                                                            JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
-                                                            WHERE asignacionplano.idplano = " . $registro['id'];
+                                                        $queryAsignacion = "SELECT archivoasignacionplano.*, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
+                                                            FROM archivoasignacionplano
+                                                            JOIN usuarios ON archivoasignacionplano.codigooperador = usuarios.codigo
+                                                            WHERE archivoasignacionplano.idplano = " . $registro['id'];
                                                         $query_run_asignacion = mysqli_query($con, $queryAsignacion);
 
                                                         if (mysqli_num_rows($query_run_asignacion) > 0) {
@@ -175,7 +175,8 @@ if (isset($_SESSION['codigo'])) {
             $('#miTablaDos').DataTable({
                 "order": [
                     [0, "desc"]
-                ]
+                ],
+                "pageLength": 100
             });
         });
     </script>

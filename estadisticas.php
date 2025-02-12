@@ -248,75 +248,54 @@ if (isset($_SESSION['codigo'])) {
                                                     <p class="text-center"><?= $registro['nombre']; ?></p>
                                                 </td>
                                                 <?php
-                                                if ($registro['prioridad'] == 1) {
-                                                    echo "<td style='background-color: #ff0000;color:#fff;'>" . $registro['prioridad'] . "</td>"; // Rojo oscuro
-                                                } elseif ($registro['prioridad'] == 2) {
-                                                    echo "<td style='background-color: #ff1a1a;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 3) {
-                                                    echo "<td style='background-color: #ff3333;'>" . $registro['prioridad'] . "</td>"; // Rojo medio
-                                                } elseif ($registro['prioridad'] == 4) {
-                                                    echo "<td style='background-color: #ff4d4d;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 5) {
-                                                    echo "<td style='background-color: #ff6666;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 6) {
-                                                    echo "<td style='background-color: #ff8080;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 7) {
-                                                    echo "<td style='background-color: #ff9999;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 8) {
-                                                    echo "<td style='background-color: #ffb2b2;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 9) {
-                                                    echo "<td style='background-color: #ffcccc;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 10) {
-                                                    echo "<td style='background-color: #ffe5e5;'>" . $registro['prioridad'] . "</td>"; // Rojo claro
-                                                } elseif ($registro['prioridad'] == 11) {
-                                                    echo "<td style='background-color: #ffffb3;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 12) {
-                                                    echo "<td style='background-color: #ffff99;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 13) {
-                                                    echo "<td style='background-color: #ffff80;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 14) {
-                                                    echo "<td style='background-color: #ffff66;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 15) {
-                                                    echo "<td style='background-color: #ffff4d;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 16) {
-                                                    echo "<td style='background-color: #ffff33;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 17) {
-                                                    echo "<td style='background-color: #ffff1a;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 18) {
-                                                    echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 19) {
-                                                    echo "<td style='background-color: #ffff00;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 20) {
-                                                    echo "<td style='background-color: #e5e500;'>" . $registro['prioridad'] . "</td>"; // Amarillo claro
-                                                } elseif ($registro['prioridad'] == 21) {
-                                                    echo "<td style='background-color: #c6e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 22) {
-                                                    echo "<td style='background-color: #a8e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 23) {
-                                                    echo "<td style='background-color: #89e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 24) {
-                                                    echo "<td style='background-color: #67e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 25) {
-                                                    echo "<td style='background-color: #58e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 26) {
-                                                    echo "<td style='background-color: #39e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 27) {
-                                                    echo "<td style='background-color: #26e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 28) {
-                                                    echo "<td style='background-color: #00e500;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 29) {
-                                                    echo "<td style='background-color: #00e51b;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } elseif ($registro['prioridad'] == 30) {
-                                                    echo "<td style='background-color: #00e539;'>" . $registro['prioridad'] . "</td>"; // Verde claro
-                                                } else {
-                                                    echo "<td>" . $registro['prioridad'] . "</td>"; // Valor fuera del rango
-                                                }
+                                                // Color de la prioridad
+                                                $prioridadColor = [
+                                                    1 => "#ff0000",
+                                                    2 => "#ff1a1a",
+                                                    3 => "#ff3333",
+                                                    4 => "#ff4d4d",
+                                                    5 => "#ff6666",
+                                                    6 => "#ff8080",
+                                                    7 => "#ff9999",
+                                                    8 => "#ffb2b2",
+                                                    9 => "#ffcccc",
+                                                    10 => "#ffe5e5",
+                                                    11 => "#ffffb3",
+                                                    12 => "#ffff99",
+                                                    13 => "#ffff80",
+                                                    14 => "#ffff66",
+                                                    15 => "#ffff4d",
+                                                    16 => "#ffff33",
+                                                    17 => "#ffff1a",
+                                                    18 => "#ffff00",
+                                                    19 => "#ffff00",
+                                                    20 => "#e5e500",
+                                                    21 => "#c6e500",
+                                                    22 => "#a8e500",
+                                                    23 => "#89e500",
+                                                    24 => "#67e500",
+                                                    25 => "#58e500",
+                                                    26 => "#39e500",
+                                                    27 => "#26e500",
+                                                    28 => "#00e500",
+                                                    29 => "#00e51b",
+                                                    30 => "#00e539"
+                                                ];
+                                                $prioridadColor = $prioridadColor[$registro['prioridad']] ?? '#ffffff';
+                                                echo "<td style='background-color: $prioridadColor;color:#fff;'>" . $registro['prioridad'] . "</td>";
                                                 ?>
 
                                                 <td>
                                                     <?php
+                                                    // Piezas Totales: Consulta para obtener piezas de planos y archivoplanos
                                                     $idProyecto = $registro['id'];
-                                                    $querySumaPiezas = "SELECT SUM(piezas) AS suma_piezas FROM plano WHERE idproyecto = $idProyecto";
+                                                    $querySumaPiezas = "
+                            SELECT SUM(piezas) AS suma_piezas 
+                            FROM (
+                                SELECT piezas FROM plano WHERE idproyecto = $idProyecto
+                                UNION ALL
+                                SELECT piezas FROM archivoplano WHERE idproyecto = $idProyecto
+                            ) AS total_piezas";
                                                     $querySumaPiezasResult = mysqli_query($con, $querySumaPiezas);
 
                                                     if ($querySumaPiezasResult) {
@@ -327,10 +306,10 @@ if (isset($_SESSION['codigo'])) {
                                                     }
                                                     ?>
                                                 </td>
+
                                                 <td>
                                                     <?php
-                                                    $idProyecto = $registro['id'];
-                                                    // Consulta para obtener la suma de piezas asignadas (considerando solo valores únicos de idplano)
+                                                    // Piezas Asignadas: Sumar piezas asignadas desde la tabla asignacionplano
                                                     $querySumaAsignadas = "SELECT SUM(p.piezas) AS suma_asignadas
                                               FROM plano p
                                               INNER JOIN (
@@ -348,19 +327,28 @@ if (isset($_SESSION['codigo'])) {
                                                     }
                                                     ?>
                                                 </td>
-                                                </td>
-                                                <?php
-                                                $idProyecto = $registro['id'];
-                                                $querySumaPiezas = "SELECT SUM(piezas) AS suma_piezas FROM plano WHERE idproyecto = $idProyecto AND estatusplano = 0";
-                                                $querySumaPiezasResult = mysqli_query($con, $querySumaPiezas);
 
-                                                if ($querySumaPiezasResult) {
-                                                    $sumaPiezas = mysqli_fetch_assoc($querySumaPiezasResult)['suma_piezas'];
-                                                    echo "<td>$sumaPiezas</td>";
-                                                } else {
-                                                    echo "<td>Error al obtener la suma de piezas, contacte a soporte</td>";
-                                                }
-                                                ?>
+                                                <td>
+                                                    <?php
+                                                    // Piezas Terminadas: Sumar piezas con estatus de terminado (estatusplano = 0)
+                                                    $querySumaTerminadas = "SELECT SUM(piezas) AS suma_piezas 
+                                                FROM archivoplano 
+                                                WHERE idproyecto = $idProyecto AND estatusplano = 0
+                                                UNION ALL
+                                                SELECT SUM(piezas) AS suma_piezas 
+                                                FROM archivoplano 
+                                                WHERE idproyecto = $idProyecto AND estatusplano = 0";
+                                                    $querySumaTerminadasResult = mysqli_query($con, $querySumaTerminadas);
+
+                                                    if ($querySumaTerminadasResult) {
+                                                        $sumaTerminadas = mysqli_fetch_assoc($querySumaTerminadasResult)['suma_piezas'];
+                                                        echo $sumaTerminadas;
+                                                    } else {
+                                                        echo "Error al obtener la suma de piezas terminadas, contacte a soporte";
+                                                    }
+                                                    ?>
+                                                </td>
+
                                                 <td>
                                                     <div class="progreso text-center" style="border: 1px solid #828282;"></div>
                                                 </td>
@@ -368,11 +356,12 @@ if (isset($_SESSION['codigo'])) {
                                     <?php
                                         }
                                     } else {
-                                        echo "<td colspan='7'><p>No se encontro ningun registro</p></td>";
+                                        echo "<td colspan='7'><p>No se encontró ningún registro</p></td>";
                                     }
                                     ?>
                                 </tbody>
                             </table>
+
                         </div>
                     </div>
 
@@ -381,78 +370,98 @@ if (isset($_SESSION['codigo'])) {
                             <h4>MAQUINADOS</h4>
                         </div>
                         <div class="card-body">
-                            <table id="miTablaDos" class="table table-bordered table-striped" style="width: 100%;">
+                            <table id="miTablaDos" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>Usuario</th>
-                                        <th>Maquinados finalizados</th>
-                                        <th>Maquinados pendientes</th>
+                                        <th class="text-center">Maquinados Finalizados</th>
+                                        <th class="text-center">Maquinados Pendientes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    // Consulta para obtener usuarios con rol = 8 y contar los maquinados finalizados y pendientes
-                                    $query = "SELECT 
-                                                u.codigo,
-                                                u.nombre,
-                                                u.apellidop,
-                                                u.apellidom,
-                                                u.estatus,
-                                                COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS maquinados_finalizados,
-                                                COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS maquinados_pendientes
-                                            FROM 
-                                                usuarios u
-                                            LEFT JOIN 
-                                                asignacionplano a ON u.codigo = a.codigooperador
-                                            LEFT JOIN 
-                                                plano p ON a.idplano = p.id
-                                            WHERE 
-                                                (u.rol = 8 OR u.rol = 13) AND u.estatus = 1
-                                            GROUP BY 
-                                                u.codigo
-                                            ";
-
-                                    $query_run = mysqli_query($con, $query);
-
+                                    // Inicializar arrays para evitar errores si la consulta no devuelve resultados
                                     $finalizados = [];
                                     $pendientes = [];
                                     $usuarios = [];
+                                    $colors = [];
+
+                                    // Consulta para obtener usuarios con rol = 8 o 13 y contar los maquinados pendientes
+                                    $query = "SELECT 
+            u.codigo,
+            u.nombre,
+            u.apellidop,
+            u.apellidom,
+            u.estatus,
+            COUNT(CASE WHEN p.estatusplano IN (1, 2, 3) THEN 1 END) AS maquinados_pendientes
+        FROM 
+            usuarios u
+        LEFT JOIN 
+            asignacionplano a ON u.codigo = a.codigooperador
+        LEFT JOIN 
+            plano p ON a.idplano = p.id
+        WHERE 
+            (u.rol = 8 OR u.rol = 13) AND u.estatus = 1
+        GROUP BY 
+            u.codigo";
+
+                                    $query_finalizados = "SELECT 
+            u.codigo,
+            COUNT(CASE WHEN p.estatusplano = 0 THEN 1 END) AS maquinados_finalizados
+        FROM 
+            usuarios u
+        LEFT JOIN 
+            archivoasignacionplano a ON u.codigo = a.codigooperador
+        LEFT JOIN 
+            archivoplano p ON a.idplano = p.id
+        WHERE 
+            (u.rol = 8 OR u.rol = 13) AND u.estatus = 1
+        GROUP BY 
+            u.codigo";
+
+                                    // Ejecutar las consultas
+                                    $query_run = mysqli_query($con, $query);
+                                    $query_finalizados_run = mysqli_query($con, $query_finalizados);
+
+                                    // Guardar maquinados finalizados en un array asociativo
+                                    $finalizados_data = [];
+                                    while ($row_finalizados = mysqli_fetch_assoc($query_finalizados_run)) {
+                                        $finalizados_data[$row_finalizados['codigo']] = $row_finalizados['maquinados_finalizados'];
+                                    }
+
                                     $total_finalizados = 0;
                                     $total_pendientes = 0;
 
+                                    // Procesar la consulta de maquinados pendientes
                                     if (mysqli_num_rows($query_run) > 0) {
-                                        foreach ($query_run as $registro) {
-                                            $finalizados[] = $registro['maquinados_finalizados'];
-                                            $pendientes[] = $registro['maquinados_pendientes'];
-                                            $usuarios[] = $registro['nombre'] . ' ' . $registro['apellidop'] . ' ' . $registro['apellidom'];
-                                            $total_finalizados += $registro['maquinados_finalizados'];
-                                            $total_pendientes += $registro['maquinados_pendientes'];
-                                    ?>
-                                            <tr>
-                                                <td><?= $registro['nombre']; ?> <?= $registro['apellidop']; ?> <?= $registro['apellidom']; ?></td>
-                                                <td class="text-center"><?= $registro['maquinados_finalizados']; ?></td>
-                                                <td class="text-center"><?= $registro['maquinados_pendientes']; ?></td>
-                                            </tr>
-                                    <?php
+                                        while ($registro = mysqli_fetch_assoc($query_run)) {
+                                            $codigo = $registro['codigo'];
+                                            $maquinados_finalizados = isset($finalizados_data[$codigo]) ? $finalizados_data[$codigo] : 0;
+                                            $maquinados_pendientes = $registro['maquinados_pendientes'];
+
+                                            $usuarios[] = $registro['nombre'] . " " . $registro['apellidop'] . " " . $registro['apellidom'];
+                                            $finalizados[] = $maquinados_finalizados;
+                                            $pendientes[] = $maquinados_pendientes;
+
+                                            $total_finalizados += $maquinados_finalizados;
+                                            $total_pendientes += $maquinados_pendientes;
+
+                                            // Generar un color aleatorio para cada usuario
+                                            $colors[] = 'rgba(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ', 0.6)';
+                                        }
+                                    }
+
+                                    if (!empty($usuarios)) {
+                                        for ($i = 0; $i < count($usuarios); $i++) {
+                                            echo "<tr>
+                                                <td>{$usuarios[$i]}</td>
+                                                <td class='text-center'>{$finalizados[$i]}</td>
+                                                <td class='text-center'>{$pendientes[$i]}</td>
+                                              </tr>";
                                         }
                                     } else {
-                                        echo "<td colspan='4'><p>No se encontró ningún usuario</p></td>";
+                                        echo "<tr><td colspan='3' class='text-center'><p>No se encontró ningún usuario</p></td></tr>";
                                     }
-
-                                    // Calcular porcentajes
-                                    $porcentajes_finalizados = array_map(function ($value) use ($total_finalizados) {
-                                        return $total_finalizados > 0 ? round(($value / $total_finalizados) * 100, 2) : 0;
-                                    }, $finalizados);
-
-                                    $porcentajes_pendientes = array_map(function ($value) use ($total_pendientes) {
-                                        return $total_pendientes > 0 ? round(($value / $total_pendientes) * 100, 2) : 0;
-                                    }, $pendientes);
-
-                                    $colors = [];
-                                    for ($i = 0; $i < count($usuarios); $i++) {
-                                        $colors[] = 'rgba(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ', 0.6)';
-                                    }
-
                                     ?>
                                 </tbody>
                             </table>
@@ -631,40 +640,29 @@ if (isset($_SESSION['codigo'])) {
             });
         });
 
-        // Obtener los datos desde PHP
         var finalizados = <?= json_encode($finalizados); ?>;
-        var pendientes = <?= json_encode($pendientes); ?>;
         var usuarios = <?= json_encode($usuarios); ?>;
         var colors = <?= json_encode($colors); ?>;
 
         var ctx = document.getElementById('miGrafica').getContext('2d');
 
-        // Crear la gráfica multi-series pie chart
         var miGrafica = new Chart(ctx, {
             type: 'pie',
             data: {
                 labels: usuarios,
                 datasets: [{
-                        label: 'Maquinados Finalizados',
-                        data: finalizados,
-                        backgroundColor: colors, // Colores generados dinámicamente
-                        borderColor: colors.map(color => color.replace('0.6', '1')),
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Maquinados Pendientes',
-                        data: pendientes,
-                        backgroundColor: colors, // Mismos colores para pendientes
-                        borderColor: colors.map(color => color.replace('0.6', '1')),
-                        borderWidth: 1
-                    }
-                ]
+                    label: 'Maquinados Finalizados',
+                    data: finalizados,
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color.replace('0.6', '1')), // Bordes con opacidad al 100%
+                    borderWidth: 1
+                }]
             },
             options: {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top',
+                        position: 'top'
                     },
                     tooltip: {
                         callbacks: {

@@ -156,7 +156,7 @@ if (isset($_SESSION['codigo'])) {
                                     <div class="card-body" style="min-height: 91vh;">
                                         <?php include 'message.php'; ?>
                                         <form id="actividadForm" action="codeactividad.php" method="POST">
-                                            <input type="text" name="id" value="<?= $registro['id']; ?>" readonly>
+                                            <input type="hidden" name="id" value="<?= $registro['id']; ?>">
 
                                             <div class="row justify-content-between mt-1 p-2">
                                                 <div class="col-12 text-center p-3" style="background-color: #e7e7e7;border-radius:10px;">

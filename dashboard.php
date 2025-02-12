@@ -350,30 +350,30 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                 <div class="row">
                                     <div class="col-9">
                                         <h4 style="text-transform: uppercase;font-weight:600;">
-                                        <?php
-// Suponiendo que el usuario autenticado tiene su código en $_SESSION['codigo']
-$codigoUsuario = $_SESSION['codigo'];
+                                            <?php
+                                            // Suponiendo que el usuario autenticado tiene su código en $_SESSION['codigo']
+                                            $codigoUsuario = $_SESSION['codigo'];
 
-// Consulta para obtener todos los codigooperador del proyecto
-$queryAsignacion = "SELECT usuarios.codigo AS codigooperador 
+                                            // Consulta para obtener todos los codigooperador del proyecto
+                                            $queryAsignacion = "SELECT usuarios.codigo AS codigooperador 
                     FROM encargadoproyecto
                     JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo 
                     WHERE encargadoproyecto.idproyecto = " . $registro['id'];
 
-$resultAsignacion = mysqli_query($con, $queryAsignacion);
+                                            $resultAsignacion = mysqli_query($con, $queryAsignacion);
 
-// Crear un array para almacenar los códigos de operadores del proyecto
-$codigoOperadores = [];
+                                            // Crear un array para almacenar los códigos de operadores del proyecto
+                                            $codigoOperadores = [];
 
-while ($asignacion = mysqli_fetch_assoc($resultAsignacion)) {
-    $codigoOperadores[] = $asignacion['codigooperador'];
-}
+                                            while ($asignacion = mysqli_fetch_assoc($resultAsignacion)) {
+                                                $codigoOperadores[] = $asignacion['codigooperador'];
+                                            }
 
-// Verificar si el usuario autenticado está en la lista de operadores
-if (in_array($codigoUsuario, $codigoOperadores)) :
-?>
-    <button type="button" class="btn btn-dark btn-sm float-end" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Etapas</button>
-<?php endif; ?>
+                                            // Verificar si el usuario autenticado está en la lista de operadores
+                                            if (in_array($codigoUsuario, $codigoOperadores) || $_SESSION['rol'] == 1) :
+                                            ?>
+                                                <button type="button" class="btn btn-dark btn-sm float-end" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>">Etapas</button>
+                                            <?php endif; ?>
 
 
                                             <div style="max-height: 95vh;" class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
@@ -413,7 +413,7 @@ if (in_array($codigoUsuario, $codigoOperadores)) :
 
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <button type="submit" name="etapas" class="btn btn-warning">Actualizar</button>
+                                                                <button type="submit" name="etapas" class="btn btn-warning mb-3">Actualizar</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -443,12 +443,20 @@ if (in_array($codigoUsuario, $codigoOperadores)) :
 
                                             // Consulta para seleccionar todos los planos con el idproyecto dado y con estatusplano igual a 0
                                             $query = "SELECT 
-                                                            COUNT(CASE WHEN estatusplano = 0 THEN 1 END) as totalPlanosEstatus0,
-                                                            SUM(CASE WHEN estatusplano = 0 THEN piezas ELSE 0 END) as sumaPiezasEstatus0,
-                                                            COUNT(CASE WHEN estatusplano IN (0, 1, 2, 3) THEN 1 END) as totalPlanosEstatus123,
-                                                            SUM(CASE WHEN estatusplano IN (0, 1, 2, 3) THEN piezas ELSE 0 END) as sumaPiezasEstatus123
-                                                        FROM plano 
-                                                        WHERE idproyecto = $idProyectoR";
+                COUNT(CASE WHEN estatusplano = 0 THEN 1 END) as totalPlanosEstatus0,
+                SUM(CASE WHEN estatusplano = 0 THEN piezas ELSE 0 END) as sumaPiezasEstatus0,
+                COUNT(CASE WHEN estatusplano IN (1, 2, 3) THEN 1 END) as totalPlanosEstatus123,
+                SUM(CASE WHEN estatusplano IN (1, 2, 3) THEN piezas ELSE 0 END) as sumaPiezasEstatus123
+            FROM (
+                SELECT estatusplano, piezas 
+                FROM archivoplano 
+                WHERE idproyecto = $idProyectoR AND estatusplano = 0
+                UNION ALL
+                SELECT estatusplano, piezas 
+                FROM plano 
+                WHERE idproyecto = $idProyectoR AND estatusplano IN (1, 2, 3)
+            ) AS planos";
+
 
                                             $result = mysqli_query($con, $query);
 
@@ -459,6 +467,9 @@ if (in_array($codigoUsuario, $codigoOperadores)) :
                                                 $sumaPiezasEstatus0 = $data['sumaPiezasEstatus0'];
                                                 $totalPlanosEstatus123 = $data['totalPlanosEstatus123'];
                                                 $sumaPiezasEstatus123 = $data['sumaPiezasEstatus123'];
+
+                                                $totalplanos0123 = $totalPlanosEstatus0 + $totalPlanosEstatus123;
+                                                $sumaPiezasEstatus0123 = $sumaPiezasEstatus123 + $sumaPiezasEstatus0;
                                             } else {
                                                 echo "Error en la consulta: " . mysqli_error($con);
                                             }
@@ -491,12 +502,12 @@ if (in_array($codigoUsuario, $codigoOperadores)) :
                                                 <p class="small"><b>Subtareas:</b></p>
                                                 <?php
                                                 // Comparar las variables y mostrar el contenido correspondiente
-                                                if ($totalPlanosEstatus0 == $totalPlanosEstatus123) {
-                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Planos/actividades finalizados (Total: ' . $totalPlanosEstatus0 . ' de ' . $totalPlanosEstatus123 . ')</p>';
-                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Se maquinaron todas las piezas (Total: ' . $sumaPiezasEstatus0 . ' de ' . $sumaPiezasEstatus123 . ')</p>';
+                                                if ($totalPlanosEstatus0 == $totalplanos0123) {
+                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Planos/actividades finalizados (Total: ' . $totalPlanosEstatus0 . ' de ' . $totalplanos0123 . ')</p>';
+                                                    echo '<p><i style="color:#15bf45;" class="bi bi-check-circle-fill"></i> Se maquinaron todas las piezas (Total: ' . $sumaPiezasEstatus0 . ' de ' . $sumaPiezasEstatus0123 . ')</p>';
                                                 } else {
-                                                    echo '<p><i class="bi bi-check-circle"></i> Planos/actividades finalizados (Total: ' . $totalPlanosEstatus0 . ' de ' . $totalPlanosEstatus123 . ')</p>';
-                                                    echo '<p><i class="bi bi-check-circle"></i> Se maquinaron todas las piezas (Total: ' . $sumaPiezasEstatus0 . ' de ' . $sumaPiezasEstatus123 . ')</p>';
+                                                    echo '<p><i class="bi bi-check-circle"></i> Planos/actividades finalizados (Total: ' . $totalPlanosEstatus0 . ' de ' . $totalplanos0123 . ')</p>';
+                                                    echo '<p><i class="bi bi-check-circle"></i> Se maquinaron todas las piezas (Total: ' . $sumaPiezasEstatus0 . ' de ' . $sumaPiezasEstatus0123 . ')</p>';
                                                 }
 
                                                 if ($totalEnsamblesEstatus0 == $totalEnsamblesEstatus123) {

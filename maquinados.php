@@ -320,13 +320,13 @@ if (isset($_SESSION['codigo'])) {
                                                                     $nivel = $registro['nivel'];
 
                                                                     if ($habilitarBoton && ($prevPrioridad === null || ($prioridad == $prevPrioridad && $nivel == $prevNivel))) {
-                                                                        $botonTexto = '' . $id . '<i class="bi bi-play-fill"></i> Iniciar';
+                                                                        $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
                                                                         $botonClase = 'btn-success';
                                                                         $botonEstado = '';
                                                                         $prevPrioridad = $prioridad;
                                                                         $prevNivel = $nivel;
                                                                     } else {
-                                                                        $botonTexto = '' . $id . '<i class="bi bi-play-fill"></i> Iniciar';
+                                                                        $botonTexto = '<i class="bi bi-play-fill"></i> Iniciar';
                                                                         $botonClase = 'btn-outline-success';
                                                                         $botonEstado = 'disabled';
                                                                     }

@@ -132,16 +132,16 @@ if (isset($_SESSION['codigo'])) {
                     <?php
                     $planosSeleccionados = isset($_POST['planos']) ? $_POST['planos'] : [];
 
-                    $query = "SELECT historialoperadores.*, plano.nombreplano 
-                                                  FROM historialoperadores 
-                                                  INNER JOIN plano ON historialoperadores.idplano = plano.id 
-                                                  WHERE historialoperadores.idcodigo = '$codigouser' 
-                                                  AND plano.estatusplano = 0
+                    $query = "SELECT archivohistorialoperadores.*, archivoplano.nombreplano 
+                                                  FROM archivohistorialoperadores 
+                                                  INNER JOIN archivoplano ON archivohistorialoperadores.idplano = archivoplano.id 
+                                                  WHERE archivohistorialoperadores.idcodigo = '$codigouser' 
+                                                  AND archivoplano.estatusplano = 0
                                                   AND motivoactividad <> 'Inicio' 
                                                   AND motivoactividad <> 'Fin de jornada laboral' 
                                                   AND motivoactividad <> 'Atención a otra prioridad'
                                                   AND motivoactividad <> 'Lunch'
-                                                  AND plano.estatusplano = 0";
+                                                  AND archivoplano.estatusplano = 0";
                     $query_run = mysqli_query($con, $query);
 
                     // Array para acumular el tiempo total por motivoactividad
@@ -199,7 +199,7 @@ if (isset($_SESSION['codigo'])) {
                                             DATE_FORMAT(fecha, '%M') AS mes,
                                             COUNT(DISTINCT idplano) AS finalizados
                                         FROM 
-                                            historialoperadores 
+                                            archivohistorialoperadores 
                                         WHERE 
                                             idcodigo = $codigouser AND 
                                             YEAR(fecha) = '$year'

@@ -21,6 +21,34 @@ if (isset($_POST['delete'])) {
     }
 }
 
+if (isset($_GET['updateId']) && isset($_GET['cantidad']) && isset($_GET['deleteIds'])) {
+    $updateId = $_GET['updateId'];
+    $cantidad = $_GET['cantidad'];
+    $deleteIds = explode(',', $_GET['deleteIds']);
+
+    // Actualizar la cantidad del ID seleccionado
+    $sql = "UPDATE inventario SET cantidad = $cantidad WHERE id = $updateId";
+    if ($con->query($sql) === FALSE) {
+        echo "Error al actualizar cantidad: " . $con->error;
+    }
+
+    // Eliminar los otros IDs
+    foreach ($deleteIds as $id) {
+        $sql = "DELETE FROM inventario WHERE id = $id";
+        if ($con->query($sql) === FALSE) {
+            echo "Error al eliminar ID $id: " . $con->error;
+        }
+    }
+
+    $con->close();
+
+    
+    header("Location: inventario.php");
+    exit(0);
+} else {
+    echo "Faltan parámetros.";
+}
+
 if (isset($_POST['update'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
     $clasificacion = mysqli_real_escape_string($con, $_POST['clasificacion']);
@@ -39,7 +67,7 @@ if (isset($_POST['update'])) {
     $numero = mysqli_real_escape_string($con, $_POST['numero']);
     $maximo = mysqli_real_escape_string($con, $_POST['maximo']);
     $minimo = mysqli_real_escape_string($con, $_POST['minimo']);
-    
+
 
     $query = "UPDATE `inventario` SET `clasificacion` = '$clasificacion', `tipo` = '$tipo', `proveedor` = '$proveedor', `parte` = '$parte', `descripcion` = '$descripcion', `marca` = '$marca', `condicion` = '$condicion', `cantidad` = '$cantidad', `rack` = '$rack', `bin` = '$bin', `caja` = '$caja', `costo` = '$costo', `nombre` = '$nombre', `numero` = '$numero', `maximo` = '$maximo', `minimo` = '$minimo' WHERE `inventario`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
@@ -59,7 +87,7 @@ if (isset($_POST['reorden'])) {
     $id = mysqli_real_escape_string($con, $_POST['id']);
     $maximo = mysqli_real_escape_string($con, $_POST['maximo']);
     $minimo = mysqli_real_escape_string($con, $_POST['minimo']);
-    
+
     $query = "UPDATE `inventario` SET `maximo` = '$maximo', `minimo` = '$minimo' WHERE `inventario`.`id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
@@ -77,7 +105,7 @@ if (isset($_POST['reorden'])) {
 if (isset($_POST['sumar'])) {
     $id = $_POST['id'];
     $entrada = $_POST['entrada'];
-    
+
     // Consultar la cantidad actual y el nombre del inventario
     $query_actual = "SELECT cantidad, nombre FROM inventario WHERE id = $id";
     $result_actual = mysqli_query($con, $query_actual);
@@ -124,7 +152,7 @@ if (isset($_POST['sumar'])) {
 if (isset($_POST['restar'])) {
     $id = $_POST['id'];
     $salida = $_POST['salida'];
-    
+
     // Consultar la cantidad actual y el nombre del inventario
     $query_actual = "SELECT cantidad, nombre FROM inventario WHERE id = $id";
     $result_actual = mysqli_query($con, $query_actual);
