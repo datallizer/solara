@@ -161,10 +161,10 @@ if (isset($_POST['save'])) {
                                        AND ep.codigooperador = '$codigoOperador'
                                        GROUP BY p.id, p.nombre";
                 }
-                
+
                 // Ejecutar la consulta
                 $resultado = $con->query($queryIniciales);
-                
+
                 // Obtener el número de proyectos
                 $numIniciales = $resultado->num_rows;
                 ?>
@@ -172,8 +172,8 @@ if (isset($_POST['save'])) {
                 <?php
                 $mostrarEnlace = false;
 
-                if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5])) || $numIniciales > 0 && in_array($_SESSION['rol'], [1, 2, 5]) ||
-                    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9])) || ($numQuotes > 0 && in_array($_SESSION['rol'], [1, 2])) || ($numBuy > 0 && in_array($_SESSION['rol'], [1, 2, 6, 7]))
+                if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5, 13])) || $numIniciales > 0 && in_array($_SESSION['rol'], [1, 2, 5, 13]) ||
+                    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9, 13])) || ($numQuotes > 0 && in_array($_SESSION['rol'], [1, 2])) || ($numBuy > 0 && in_array($_SESSION['rol'], [1, 2, 6, 7, 13]))
                 ) {
                     $mostrarEnlace = true;
                 }
@@ -189,6 +189,8 @@ if (isset($_POST['save'])) {
                                 echo $numUsuarios + $numProyectos + $numIniciales;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])) {
                                 echo $numEnsambles + $numProyectos + $numIniciales;
+                            } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [13])) {
+                                echo $numEnsambles + $numProyectos + $numIniciales + $numUsuarios;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [6, 7])) {
                                 echo $numBuy;
                             }
@@ -259,7 +261,7 @@ if (isset($_POST['save'])) {
                 ?>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="max-height:500px; overflow-y:auto;">
                     <?php
-                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5])) {
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 13])) {
                     ?>
                         <?php
                         while ($usuario = mysqli_fetch_assoc($resultado)) : ?>
@@ -435,24 +437,24 @@ if (isset($_POST['save'])) {
                     ?>
 
 
-<?php
-if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
-    // Obtener el código del operador desde la sesión
-    $codigoOperador = $_SESSION['codigo']; 
-    $rolUsuario = $_SESSION['rol']; 
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
+                        // Obtener el código del operador desde la sesión
+                        $codigoOperador = $_SESSION['codigo'];
+                        $rolUsuario = $_SESSION['rol'];
 
-    // Consulta para roles 1 y 2, o si el usuario es encargado
-    if (in_array($rolUsuario, [1, 2])) {
-        // Si el rol es 1 o 2, contar todos los proyectos que cumplan las condiciones
-        $queryIniciales = "SELECT p.id, p.nombre 
+                        // Consulta para roles 1 y 2, o si el usuario es encargado
+                        if (in_array($rolUsuario, [1, 2])) {
+                            // Si el rol es 1 o 2, contar todos los proyectos que cumplan las condiciones
+                            $queryIniciales = "SELECT p.id, p.nombre 
                            FROM proyecto p 
                            WHERE p.etapa = 13
                            AND (SELECT COUNT(*) FROM plano WHERE idproyecto = p.id AND estatusplano != 0) = 0
                            AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
                            GROUP BY p.id, p.nombre";
-    } else {
-        // Si no es rol 1 o 2, solo proyectos donde el operador sea encargado
-        $queryIniciales = "SELECT p.id, p.nombre 
+                        } else {
+                            // Si no es rol 1 o 2, solo proyectos donde el operador sea encargado
+                            $queryIniciales = "SELECT p.id, p.nombre 
                            FROM proyecto p
                            LEFT JOIN encargadoproyecto ep ON p.id = ep.idProyecto
                            WHERE p.etapa = 13
@@ -460,37 +462,37 @@ if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
                            AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
                            AND ep.codigooperador = '$codigoOperador'
                            GROUP BY p.id, p.nombre";
-    }
+                        }
 
-    // Ejecutar la consulta
-    $resultado = $con->query($queryIniciales);
+                        // Ejecutar la consulta
+                        $resultado = $con->query($queryIniciales);
 
-    // Verificar si hay resultados
-    if ($resultado->num_rows > 0) {
-        // Recorre los proyectos que cumplen con la condición
-        while ($proyecto = $resultado->fetch_assoc()) {
-?>
-            <li style="width: 400px;padding:0px 15px;">
-                <a href="dashboard.php?internas_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
-                    <div class="row">
-                        <div class="col-3">
-                            <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
-                        </div>
-                        <div class="col-9">
-                            <small style="text-transform:uppercase;font-size:11px;">
-                                <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
-                            </small>
-                            <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Pruebas internas iniciales"</p>
-                        </div>
-                    </div>
-                </a>
-            </li>
-            <hr style="color: #fcfcfc;" class="dropdown-divider" />
-<?php
-        }
-    }
-}
-?>
+                        // Verificar si hay resultados
+                        if ($resultado->num_rows > 0) {
+                            // Recorre los proyectos que cumplen con la condición
+                            while ($proyecto = $resultado->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="dashboard.php?internas_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                                            </div>
+                                            <div class="col-9">
+                                                <small style="text-transform:uppercase;font-size:11px;">
+                                                    <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                                                </small>
+                                                <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Pruebas internas iniciales"</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
 
 
                 </ul>
