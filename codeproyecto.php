@@ -66,26 +66,57 @@ if (isset($_POST['archivar'])) {
 }
 
 if (isset($_POST['aprobar'])) {
-    $id = mysqli_real_escape_string($con, $_POST['aprobar']);
+    $id = mysqli_real_escape_string($con, $_POST['id']);
     $estatus = 1;
     $etapa = 6;
 
-    $query = "UPDATE `proyecto` SET `estatus` = '$estatus', `etapa` = '$etapa' WHERE `proyecto`.`id` = '$id'";
+    $query_nombre = "SELECT nombre FROM proyecto WHERE id = '$id' LIMIT 1";
+    $result_nombre = mysqli_query($con, $query_nombre);
+
+    if ($result_nombre && mysqli_num_rows($result_nombre) > 0) {
+        $row = mysqli_fetch_assoc($result_nombre);
+        $nombre = $row['nombre']; // Guardar el nombre del proyecto
+    }
+
+    // Actualizar la etapa del proyecto
+    $query = "UPDATE `proyecto` SET `estatus` = '$estatus', `etapa` = '$etapa' WHERE `id` = '$id'";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
+        $fecha_actual = date("Y-m-d");
+        $hora_actual = date("H:i");
+        $mensaje = 'Se te asigno un nuevo proyecto: ' . $nombre;
+        $emisor = '999';
+        $estatus = '1';
+
+        // Obtener todos los `codigooperador` asociados al `idproyecto`
+        $query_codigos = "SELECT DISTINCT codigooperador FROM encargadoproyecto WHERE idproyecto = '$id'";
+        $result_codigos = mysqli_query($con, $query_codigos);
+
+        if (mysqli_num_rows($result_codigos) > 0) {
+            while ($row = mysqli_fetch_assoc($result_codigos)) {
+                $idcodigo = $row['codigooperador']; // ID al que se enviará el mensaje
+
+                // Insertar mensaje para cada código encontrado
+                $querymensajes = "INSERT INTO mensajes (mensaje, idcodigo, emisor, fecha, hora, estatus) 
+                                  VALUES ('$mensaje', '$idcodigo', '$emisor', '$fecha_actual', '$hora_actual', '$estatus')";
+                mysqli_query($con, $querymensajes);
+            }
+        }
+
         $_SESSION['message'] = "Proyecto aprobado exitosamente";
         header("Location: editarproyecto.php?id=$id");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al editar el proyecto, contácte a soporte";
+        $_SESSION['message'] = "Error al editar el proyecto, contacte a soporte";
         header("Location: anteproyectos.php");
         exit(0);
     }
 }
 
+
 if (isset($_POST['archivaranteproyecto'])) {
-    $id = mysqli_real_escape_string($con, $_POST['archivaranteproyecto']);
+    $id = mysqli_real_escape_string($con, $_POST['id']);
     $estatus = 3;
 
     $query = "UPDATE `proyecto` SET `estatus` = '$estatus' WHERE `proyecto`.`id` = '$id'";
@@ -356,6 +387,8 @@ if (isset($_POST['documento'])) {
         $tipo = 'Diseño';
     } elseif ($_SESSION['rol'] == 9) {
         $tipo = 'Diagrama';
+    } elseif ($_SESSION['rol'] == 13) {
+        $tipo = 'Diseño-Diagrama';
     }
 
     $query = "INSERT INTO proyectomedios SET idproyecto='$idproyecto', etapa='$etapa', estatus='$estatus', idcodigo='$idcodigo', tipo='$tipo'";
@@ -372,6 +405,8 @@ if (isset($_POST['documento'])) {
                 $upload_dir = './disenoBloques/';
             } elseif ($_SESSION['rol'] == 9) {
                 $upload_dir = './diagramaBloques/';
+            } elseif ($_SESSION['rol'] == 13) {
+                $upload_dir = './lazerBloques/';
             }
 
             $file_path = $upload_dir . $file_name;
@@ -461,7 +496,10 @@ if (isset($_POST['bom'])) {
         $tipo = 'Diseño';
     } elseif ($_SESSION['rol'] == 9) {
         $tipo = 'Control';
+    } elseif ($_SESSION['rol'] == 13) {
+        $tipo = 'Diseño-Control';
     }
+
 
     $query = "INSERT INTO proyectoboms SET idproyecto='$idproyecto', etapa='$etapa', monto='$monto', estatus='$estatus', idcodigo='$idcodigo', tipo='$tipo'";
     $query_run = mysqli_query($con, $query);
@@ -477,6 +515,12 @@ if (isset($_POST['bom'])) {
                 $upload_dir = './bomDiseño/';
             } elseif ($_SESSION['rol'] == 9) {
                 $upload_dir = './bomControl/';
+            } elseif ($_SESSION['rol'] == 13) {
+                $upload_dir = './bomLazer/';
+            }
+
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);  // Crea la carpeta si no existe
             }
 
             $file_path = $upload_dir . $file_name;
@@ -486,7 +530,7 @@ if (isset($_POST['bom'])) {
                 mysqli_query($con, $update_query);
                 $_SESSION['message'] = "Archivo subido y datos enviados exitosamente";
             } else {
-                $_SESSION['message'] = "Error al subir el archivo PDF, contacte a soporte";
+                $_SESSION['message'] = "Error al subir el archivo PDF, contacte a soporte id pdf $pdf_id $file_path";
             }
         } else {
             $_SESSION['message'] = "No se ha subido ningún archivo PDF";

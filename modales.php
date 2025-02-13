@@ -377,7 +377,7 @@ if (mysqli_num_rows($resultdocumento) > 0) {
             </div>
             <div class="modal-body">
                 <form action="codeproyecto.php" method="POST" class="row" enctype="multipart/form-data">
-                    <input type="hidden" name="idproyecto" value="<?= $idregistrodocumento; ?>">
+                    <input type="text" name="idproyecto" value="<?= $idregistrodocumento; ?>">
                     <input type="hidden" name="etapa" value="<?= $etapadocumento; ?>">
                     <div class="col-12">
                         <p class="small">Te encuentras en la etapa <?= $etapadocumento == 4 ? "4, ''Generación de BOM''" : ($etapadocumento == 11 ? "11, 'Actualización de BOM'" : "Error"); ?>

@@ -111,7 +111,7 @@ if (isset($_SESSION['codigo'])) {
                                     }
                                     ?>
                                 </h4>
-                                <a href="proyectosfinalizados.php" class="btn btn-primary btn-sm" id="floatingButton">
+                                <a href="anteproyectosfinalizados.php" class="btn btn-primary btn-sm" id="floatingButton">
                                     Anteproyectos<br>finalizados
                                 </a>
                             </div>
@@ -137,10 +137,12 @@ if (isset($_SESSION['codigo'])) {
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
+
+                                                $proyecto_id = $registro['id'];
                                         ?>
                                                 <tr>
                                                     <td>
-                                                        <p class="text-center"><?= $registro['id']; ?></p>
+                                                        <p class="text-center"><?= $proyecto_id ?></p>
                                                     </td>
                                                     <td>
                                                         <p class="text-center"><?= $registro['nombre']; ?></p>
@@ -157,7 +159,7 @@ if (isset($_SESSION['codigo'])) {
                                                             <p>Visita levantamiento con cliente</p>
                                                             <?php
                                                             if (in_array($_SESSION['rol'], [1, 2, 5])) {
-                                                                $query = "SELECT * FROM agendaproyectos WHERE estatus = 1 AND idproyecto = '" . $registro['id'] . "'";
+                                                                $query = "SELECT * FROM agendaproyectos WHERE estatus = 1 AND idproyecto = '" . $proyecto_id . "'";
                                                                 $query_run = mysqli_query($con, $query);
                                                                 if (mysqli_num_rows($query_run) > 0) {
                                                                     foreach ($query_run as $registro) {
@@ -176,50 +178,51 @@ if (isset($_SESSION['codigo'])) {
                                                             <div class="row">
                                                                 <div class="col-12">
                                                                     <?php
-                                                                    $query = "SELECT * FROM proyectomedios WHERE (estatus = 1 OR estatus = 2 OR estatus = 3)  AND idproyecto = '" . $registro['id'] . "'";
+                                                                    $query = "SELECT * FROM proyectomedios WHERE (estatus = 1 OR estatus = 2 OR estatus = 3)  AND idproyecto = '" . $proyecto_id . "'";
                                                                     $query_run = mysqli_query($con, $query);
                                                                     if (mysqli_num_rows($query_run) > 0) {
-                                                                        foreach ($query_run as $registro) {
-                                                                            $idmodal = $registro['id'];
+                                                                        foreach ($query_run as $medio) {
+                                                                            $idmodal = $medio['id'];
                                                                     ?>
                                                                             <?php
-                                                                            if ($registro['estatus'] == 1) {
+                                                                            if ($medio['estatus'] == 1) {
                                                                             ?>
-                                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><?= $registro['tipo']; ?> a bloques</button>
+                                                                                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $medio['id']; ?>"><?= $medio['tipo']; ?> a bloques</button>
                                                                             <?php
-                                                                            } elseif ($registro['estatus'] == 2) {
+                                                                            } elseif ($medio['estatus'] == 2) {
                                                                             ?>
-                                                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id']; ?>"><?= $registro['tipo']; ?> a bloques rechazado</button>
+                                                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $medio['id']; ?>"><?= $medio['tipo']; ?> a bloques rechazado</button>
                                                                             <?php
-                                                                            } elseif ($registro['estatus'] == 3) {
+                                                                            } elseif ($medio['estatus'] == 3) {
                                                                             ?>
-                                                                                <button class="btn btn-success btn-sm" disabled><?= $registro['tipo']; ?> aprobado</button>
+                                                                                <button class="btn btn-success btn-sm" disabled><?= $medio['tipo']; ?> aprobado</button>
                                                                             <?php
                                                                             }
                                                                             ?>
 
-                                                                            <div class="modal fade" id="pdfModal<?= $registro['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                                            <div class="modal fade" id="pdfModal<?= $medio['id']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
                                                                                 <div class="modal-dialog modal-lg">
                                                                                     <div class="modal-content">
                                                                                         <div class="modal-header">
-                                                                                            <h5 style="text-transform: uppercase;" class="modal-title" id="pdfModalLabel"><?= $registro['tipo']; ?> a bloques pdfModal<?= $registro['id']; ?></h5>
+                                                                                            <h5 style="text-transform: uppercase;" class="modal-title" id="pdfModalLabel"><?= $medio['tipo']; ?> a bloques pdfModal<?= $medio['id']; ?></h5>
                                                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                         </div>
                                                                                         <div class="modal-body">
-                                                                                            <iframe src="<?= $registro['medio']; ?>" width="100%" height="400px"></iframe>
+                                                                                            <iframe src="<?= $medio['medio']; ?>" width="100%" height="400px"></iframe>
                                                                                         </div>
                                                                                         <?php
                                                                                         if (in_array($_SESSION['rol'], [1, 2])) {
-                                                                                            if ($registro['estatus'] == 1) {
+                                                                                            if ($medio['estatus'] == 1) {
                                                                                         ?>
                                                                                                 <div class="modal-footer mb-3">
                                                                                                     <form action="codeproyecto.php" method="post" id="formularioBloque">
-                                                                                                        <input type="hidden" name="id" value="<?= $registro['id']; ?>">
-                                                                                                        <input type="hidden" name="idproyecto" value="<?= $registro['idproyecto']; ?>">
+                                                                                                        <input type="hidden" name="id" value="<?= $medio['id']; ?>">
+                                                                                                        <input type="hidden" name="idproyecto" value="<?= $medio['idproyecto']; ?>">
                                                                                                         <!-- Se rechaza con estatus 2 -->
-                                                                                                        <button type="button" class="btn btn-danger" id="rechazarbloque">Rechazar</button>
+                                                                                                        <button type="button" class="btn btn-danger rechazarbloque" data-modal-id="pdfModal<?= $medio['id']; ?>">Rechazar</button>
+
                                                                                                         <!-- Se aprueba con estatus 3 -->
-                                                                                                        <button type="submit" class="btn btn-success" name="aprobarbloque">Aprobar <?= $registro['tipo']; ?></button>
+                                                                                                        <button type="submit" class="btn btn-success" name="aprobarbloque">Aprobar <?= $medio['tipo']; ?></button>
                                                                                                     </form>
                                                                                                 </div>
                                                                                         <?php
@@ -243,7 +246,7 @@ if (isset($_SESSION['codigo'])) {
                                                             <div class="row">
                                                                 <div class="col-12">
                                                                     <?php
-                                                                    $query = "SELECT * FROM proyectoboms WHERE (estatus = 1 OR estatus = 2 OR estatus = 3)  AND idproyecto = '" . $registro['id'] . "'";
+                                                                    $query = "SELECT * FROM proyectoboms WHERE (estatus = 1 OR estatus = 2 OR estatus = 3)  AND idproyecto = '" . $proyecto_id . "'";
                                                                     $query_run = mysqli_query($con, $query);
                                                                     if (mysqli_num_rows($query_run) > 0) {
                                                                         foreach ($query_run as $registroBom) {
@@ -284,7 +287,7 @@ if (isset($_SESSION['codigo'])) {
                                                                                                         <input type="hidden" name="id" value="<?= $registroBom['id']; ?>">
                                                                                                         <input type="hidden" name="idproyecto" value="<?= $registroBom['idproyecto']; ?>">
                                                                                                         <!-- Se rechaza con estatus 2 -->
-                                                                                                        <button type="button" class="btn btn-danger" id="rechazarBom">Rechazar</button>
+                                                                                                        <button type="button" class="btn btn-danger rechazarBom" data-modal-id="pdfModal<?= $registroBom['id']; ?>">Rechazar</button>
                                                                                                         <!-- Se aprueba con estatus 3 -->
                                                                                                         <button type="submit" class="btn btn-success" name="aprobarBom">Aprobar <?= $registroBom['tipo']; ?></button>
                                                                                                     </form>
@@ -308,7 +311,7 @@ if (isset($_SESSION['codigo'])) {
                                                             <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 5 de 5</p>
                                                             <p>Cotización</p>
                                                             <?php
-                                                            $query = "SELECT * FROM proyectoboms WHERE estatus = 3 AND idproyecto = '" . $registro['id'] . "'";
+                                                            $query = "SELECT * FROM proyectoboms WHERE estatus = 3 AND idproyecto = '" . $proyecto_id . "'";
                                                             $query_run = mysqli_query($con, $query);
                                                             if (mysqli_num_rows($query_run) > 0) {
                                                                 foreach ($query_run as $registroMonto) {
@@ -330,11 +333,12 @@ if (isset($_SESSION['codigo'])) {
                                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                     ?>
                                                         <td>
+                                                            <?= $proyecto_id; ?>
                                                             <?php
                                                             $queryAsignacion = "SELECT encargadoproyecto.*, encargadoproyecto.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                         FROM encargadoproyecto
                                                         JOIN usuarios ON encargadoproyecto.codigooperador = usuarios.codigo 
-                                                        WHERE encargadoproyecto.idproyecto = " . $registro['id'];
+                                                        WHERE encargadoproyecto.idproyecto = " . $proyecto_id;
                                                             $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                             if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                                 foreach ($query_run_asignacion as $asignacion) {
@@ -343,6 +347,7 @@ if (isset($_SESSION['codigo'])) {
                                                                     <form class="deleteForm" action="codencargados.php" method="post">
                                                                         <div style="display: flex; align-items: center;">
                                                                             <p style="margin: 0;"><?= $asignacion['nombre']; ?> <?= $asignacion['apellidop']; ?> <?= $asignacion['apellidom']; ?></p>
+                                                                            <input type="hidden" name="antelocation" value="1">
                                                                             <button type="button" class="deleteButton" name="deleteproyecto" style="border: none;" class="btn btn-sm" data-id="<?= $asignacion['id']; ?>">
                                                                                 <i style="color: #d41111;" class="bi bi-x-lg"></i>
                                                                             </button>
@@ -359,16 +364,18 @@ if (isset($_SESSION['codigo'])) {
                                                     }
                                                     ?>
                                                     <td>
-                                                        <a style="color:#fff;" href="editarproyecto.php?id=<?= $registro['id']; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                        <a style="color:#fff;" href="editarproyecto.php?id=<?= $proyecto_id; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                             if ($registro['etapa'] == 5) {
                                                                 echo '<form action="codeproyecto.php" method="POST" class="d-inline">
-                                                                        <button type="submit" name="aprobar" value="' . $registro['id'] . '" class="btn btn-success btn-sm m-1"><i class="bi bi-check2-circle"></i></button>
+                                                                <input type="hidden" name="id" value="' . $proyecto_id . '">
+                                                                        <button type="submit" name="aprobar" class="btn btn-success btn-sm m-1"><i class="bi bi-check2-circle"></i></button>
                                                                     </form>';
                                                             }
                                                             echo '<form action="codeproyecto.php" method="POST" class="d-inline">
-                                                                        <button type="submit" name="archivaranteproyecto" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1"><i class="bi bi-x-circle"></i></button>
+                                                                <input type="hidden" name="id" value="' . $proyecto_id . '">
+                                                                        <button type="submit" name="archivaranteproyecto" class="btn btn-danger btn-sm m-1"><i class="bi bi-x-circle"></i></button>
                                                                     </form>';
                                                         }
                                                         ?>
@@ -492,7 +499,7 @@ if (isset($_SESSION['codigo'])) {
                                         // Obtener el ID del usuario
                                         $idProyecto = $proyecto['id'];
                                         // Mostrar la opción con el valor igual al ID del proyecto
-                                        echo "<option value='$idProyecto' " . ($registro['id'] == $idProyecto ?: '') . ">$opcion</option>";
+                                        echo "<option value='$idProyecto' " . ($proyecto_id == $idProyecto ?: '') . ">$opcion</option>";
                                     }
                                 }
                                 ?>
@@ -526,6 +533,7 @@ if (isset($_SESSION['codigo'])) {
                             }
                             ?>
                         </div>
+                        <input type="hidden" name="antelocation" value="1">
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -621,52 +629,97 @@ if (isset($_SESSION['codigo'])) {
             }
         });
 
-        document.getElementById('rechazarbloque').addEventListener('click', function() {
-            // Cierra el modal específico antes de abrir SweetAlert
-            var modalId = 'pdfModal<?= $idmodal; ?>'; // Usa el ID correcto aquí
-            var modalElement = document.getElementById(modalId); // Obtiene el elemento del modal
-            // Cierra el modal 
-            var modalInstance = bootstrap.Modal.getInstance(modalElement); // Obtiene la instancia del modal
-            if (modalInstance) {
-                modalInstance.hide(); // Cerrar el modal
-            }
+        document.querySelectorAll('.rechazarbloque').forEach(button => {
+            button.addEventListener('click', function() {
+                let modalId = this.getAttribute('data-modal-id'); // Obtener ID del modal desde data-attribute
+                let modalElement = document.getElementById(modalId);
 
-
-
-            Swal.fire({
-                title: 'Detalles de corrección',
-                input: 'textarea',
-                inputPlaceholder: 'Escribe los detalles para la corrección...',
-                showCancelButton: true,
-                confirmButtonText: 'Enviar',
-                cancelButtonText: 'Cancelar',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '¡Por favor ingresa los detalles!';
+                if (modalElement) {
+                    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
                     }
                 }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.getElementById('formularioBloque');
 
-                    // Agregar input oculto para rechazarbloque
-                    const rechazarInput = document.createElement('input');
-                    rechazarInput.type = 'hidden';
-                    rechazarInput.name = 'rechazarbloque'; // Nombre del botón
-                    rechazarInput.value = '1'; // Puede ser cualquier valor; simplemente lo usamos para identificar el rechazo
-                    form.appendChild(rechazarInput);
+                Swal.fire({
+                    title: 'Detalles de corrección',
+                    input: 'textarea',
+                    inputPlaceholder: 'Escribe los detalles para la corrección...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Enviar',
+                    cancelButtonText: 'Cancelar',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '¡Por favor ingresa los detalles!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let form = this.closest('form'); // Encuentra el formulario más cercano al botón
 
-                    // Agregar input oculto para detalles
-                    const detallesInput = document.createElement('input');
-                    detallesInput.type = 'hidden';
-                    detallesInput.name = 'detalles';
-                    detallesInput.value = result.value; // Obtener el valor del textarea
-                    form.appendChild(detallesInput);
+                        let rechazarInput = document.createElement('input');
+                        rechazarInput.type = 'hidden';
+                        rechazarInput.name = 'rechazarbloque';
+                        rechazarInput.value = '1';
+                        form.appendChild(rechazarInput);
 
-                    form.submit(); // Enviar el formulario
-                }
+                        let detallesInput = document.createElement('input');
+                        detallesInput.type = 'hidden';
+                        detallesInput.name = 'detalles';
+                        detallesInput.value = result.value;
+                        form.appendChild(detallesInput);
+
+                        form.submit();
+                    }
+                });
             });
+        });
 
+        document.querySelectorAll('.rechazarBom').forEach(button => {
+            button.addEventListener('click', function() {
+                let modalId = this.getAttribute('data-modal-id'); // Obtener ID del modal desde data-attribute
+                let modalElement = document.getElementById(modalId);
+
+                if (modalElement) {
+                    let modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                }
+
+
+                Swal.fire({
+                    title: 'Detalles de corrección',
+                    input: 'textarea',
+                    inputPlaceholder: 'Escribe los detalles para la corrección...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Enviar',
+                    cancelButtonText: 'Cancelar',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '¡Por favor ingresa los detalles!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let form = this.closest('form'); // Encuentra el formulario más cercano al botón
+
+                        let rechazarInput = document.createElement('input');
+                        rechazarInput.type = 'hidden';
+                        rechazarInput.name = 'rechazarBom';
+                        rechazarInput.value = '1';
+                        form.appendChild(rechazarInput);
+
+                        let detallesInput = document.createElement('input');
+                        detallesInput.type = 'hidden';
+                        detallesInput.name = 'detalles';
+                        detallesInput.value = result.value;
+                        form.appendChild(detallesInput);
+
+                        form.submit();
+                    }
+                });
+            });
         });
     </script>
 </body>

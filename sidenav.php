@@ -730,43 +730,77 @@ if (isset($_POST['save'])) {
 
 <!-- Modal Mensajes -->
 <div class="modal fade" id="exampleModalMensaje" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">ENVIAR MENSAJE</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form action="" method="POST" class="row">
-                    <div class="form-floating col-12">
-                        <textarea type="text" class="form-control" placeholder="Mensaje" id="actividad" name="mensaje" style="min-height: 100px"></textarea>
-                        <label for="actividad">Mensaje</label>
+
+            <form action="" method="POST" class="row">
+                <div class="modal-body">
+                    <div class="row justify-content-center">
+                        <div class="col-5">
+                            <div class="form-floating col-12">
+                                <textarea type="text" class="form-control" placeholder="Mensaje" id="actividad" name="mensaje" style="min-height: 100px"></textarea>
+                                <label for="actividad">Mensaje</label>
+                            </div>
+
+                            <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
+                                <?php
+                                $query = "SELECT usuarios.codigo, usuarios.rol, usuarios.estatus, usuarios.nombre, usuarios.apellidop, usuarios.apellidom FROM usuarios WHERE codigo <> $codigo AND rol <> 12 AND estatus = 1";
+                                $result = mysqli_query($con, $query);
+
+                                if (mysqli_num_rows($result) > 0) {
+                                    while ($usuario = mysqli_fetch_assoc($result)) {
+                                        $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
+                                        $idUsuario = $usuario['codigo'];
+
+                                        echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
+                                        echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
+                                    }
+                                }
+                                ?>
+
+                            </div>
+                        </div>
+                        <div class="col-6" style="max-height: 500px;overflow-y:scroll;">
+                            <?php
+                             $query = "SELECT m.mensaje, m.fecha, m.hora, u.nombre, u.apellidop 
+                             FROM mensajes m
+                             INNER JOIN usuarios u ON m.idcodigo = u.codigo
+                             WHERE m.emisor = '$codigo'
+                             ORDER BY m.fecha DESC, m.hora DESC LIMIT 20";
+                     
+                         // Ejecutar la consulta
+                         $query_run = mysqli_query($con, $query);
+                     
+                         if (mysqli_num_rows($query_run) > 0) {
+                             // Mostrar cada mensaje con el nombre del receptor
+                             while ($row = mysqli_fetch_assoc($query_run)) {
+                                 $mensaje = $row['mensaje'];
+                                 $nombre_receptor = $row['nombre'];
+                                 $apellido_receptor = $row['apellidop'];
+                                 $fecha = $row['fecha'];
+                                 $hora = $row['hora'];
+                     
+                                 // Mostrar mensaje en un <p> junto con el nombre y apellido del receptor
+                                 echo "<p><strong>Enviado a:</strong> $nombre_receptor $apellido_receptor <br><strong>Mensaje:</strong> $mensaje <br><strong>Fecha:</strong> $fecha <br><strong>Hora:</strong> $hora</p><hr>";
+                             }
+                         } else {
+                             echo "<p>No tienes mensajes.</p>";
+                         }
+                            ?>
+
+                        </div>
                     </div>
 
-                    <div class="form-check col-12 mt-3 m-3" id="usuariosContainer">
-                        <?php
-                        $query = "SELECT usuarios.codigo, usuarios.rol, usuarios.estatus, usuarios.nombre, usuarios.apellidop, usuarios.apellidom FROM usuarios WHERE codigo <> $codigo AND rol <> 12 AND estatus = 1";
-                        $result = mysqli_query($con, $query);
-
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($usuario = mysqli_fetch_assoc($result)) {
-                                $nombreCompleto = $usuario['nombre'] . " " . $usuario['apellidop'] . " " . $usuario['apellidom'];
-                                $idUsuario = $usuario['codigo'];
-
-                                echo "<input class='form-check-input' type='checkbox' id='codigooperador_$idUsuario' name='codigooperador[]' value='$idUsuario'>";
-                                echo "<label class='form-check-label' for='codigooperador_$idUsuario'>$nombreCompleto</label><br>";
-                            }
-                        }
-                        ?>
-
-                    </div>
-
-                    <div class="modal-footer">
+                    <div class="modal-footer mt-3">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" class="btn btn-primary" name="save">Guardar</button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

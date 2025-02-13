@@ -24,18 +24,29 @@ if (isset($_POST['deletecontrol'])) {
 
 if (isset($_POST['deleteproyecto'])) {
     $id_encargado = mysqli_real_escape_string($con, $_POST['deleteproyecto']);
+    $antelocation = mysqli_real_escape_string($con, $_POST['antelocation']);
 
     $query = "DELETE FROM encargadoproyecto WHERE id='$id_encargado' ";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
         $_SESSION['message'] = "Encargado de proyecto eliminado exitosamente";
-        header("Location: proyectos.php");
-        exit(0);
+        if ($antelocation == 1) {
+            header("Location: anteproyectos.php");
+            exit(0);
+        } else {
+            header("Location: proyectos.php");
+            exit(0);
+        }
     } else {
         $_SESSION['message'] = "Error al eliminar al encargado de proyecto, contácte a soporte";
-        header("Location: proyectos.php");
-        exit(0);
+        if ($antelocation == 1) {
+            header("Location: anteproyectos.php");
+            exit(0);
+        } else {
+            header("Location: proyectos.php");
+            exit(0);
+        }
     }
 }
 
