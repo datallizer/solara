@@ -333,7 +333,6 @@ if (isset($_SESSION['codigo'])) {
                                                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                     ?>
                                                         <td>
-                                                            <?= $proyecto_id; ?>
                                                             <?php
                                                             $queryAsignacion = "SELECT encargadoproyecto.*, encargadoproyecto.id AS id_encargado, usuarios.nombre, usuarios.apellidop, usuarios.apellidom, usuarios.codigo
                                                         FROM encargadoproyecto
@@ -611,29 +610,23 @@ if (isset($_SESSION['codigo'])) {
         });
 
         document.getElementById('miFormulario').addEventListener('submit', function(event) {
-            // Obtener todos los checkboxes con name 'codigooperador[]'
             const checkboxes = document.querySelectorAll('input[name="codigooperador[]"]');
-
-            // Verificar si al menos uno está marcado
             let alMenosUnoMarcado = false;
             checkboxes.forEach(function(checkbox) {
                 if (checkbox.checked) {
                     alMenosUnoMarcado = true;
                 }
             });
-
-            // Si ningún checkbox está marcado, evita el envío del formulario
             if (!alMenosUnoMarcado) {
                 alert('Por favor, seleccione al menos un usuario encargado.');
-                event.preventDefault(); // Evita que el formulario se envíe
+                event.preventDefault(); 
             }
         });
 
         document.querySelectorAll('.rechazarbloque').forEach(button => {
             button.addEventListener('click', function() {
-                let modalId = this.getAttribute('data-modal-id'); // Obtener ID del modal desde data-attribute
+                let modalId = this.getAttribute('data-modal-id');
                 let modalElement = document.getElementById(modalId);
-
                 if (modalElement) {
                     let modalInstance = bootstrap.Modal.getInstance(modalElement);
                     if (modalInstance) {

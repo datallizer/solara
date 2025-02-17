@@ -240,7 +240,6 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
     <?php include 'mensajes.php'; ?>
-    <?php include 'modales.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
