@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
 
@@ -492,6 +493,7 @@ if (isset($_POST['bom'])) {
     $estatus = 1;
     $idcodigo = $_SESSION['codigo'];
 
+    // Determinar el tipo según el rol del usuario
     if ($_SESSION['rol'] == 5) {
         $tipo = 'Diseño';
     } elseif ($_SESSION['rol'] == 9) {
@@ -500,17 +502,19 @@ if (isset($_POST['bom'])) {
         $tipo = 'Diseño-Control';
     }
 
-
+    // Insertar los datos en la base de datos
     $query = "INSERT INTO proyectoboms SET idproyecto='$idproyecto', etapa='$etapa', monto='$monto', estatus='$estatus', idcodigo='$idcodigo', tipo='$tipo'";
     $query_run = mysqli_query($con, $query);
 
     if ($query_run) {
-        $pdf_id = mysqli_insert_id($con);
+        $file_id = mysqli_insert_id($con); // Obtener el ID insertado
 
         if (isset($_FILES['medio']) && $_FILES['medio']['error'] === UPLOAD_ERR_OK) {
             $file_tmp_name = $_FILES['medio']['tmp_name'];
-            $file_name = $tipo . $pdf_id . '.pdf';
+            $file_extension = pathinfo($_FILES['medio']['name'], PATHINFO_EXTENSION); // Obtener extensión del archivo
+            $file_name = $tipo . $file_id . '.' . $file_extension; // Nuevo nombre del archivo
 
+            // Determinar la carpeta donde se guardará el archivo
             if ($_SESSION['rol'] == 5) {
                 $upload_dir = './bomDiseño/';
             } elseif ($_SESSION['rol'] == 9) {
@@ -520,25 +524,28 @@ if (isset($_POST['bom'])) {
             }
 
             if (!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0777, true);  // Crea la carpeta si no existe
+                mkdir($upload_dir, 0777, true); // Crear la carpeta si no existe
             }
 
             $file_path = $upload_dir . $file_name;
 
+            // Mover el archivo a la carpeta con el nuevo nombre
             if (move_uploaded_file($file_tmp_name, $file_path)) {
-                $update_query = "UPDATE proyectoboms SET medio='$file_path' WHERE id='$pdf_id'";
+                // Actualizar la base de datos con la ruta del archivo
+                $update_query = "UPDATE proyectoboms SET medio='$file_path' WHERE id='$file_id'";
                 mysqli_query($con, $update_query);
-                $_SESSION['message'] = "Archivo subido y datos enviados exitosamente";
+
+                $_SESSION['message'] = "Archivo subido exitosamente con el nuevo nombre.";
             } else {
-                $_SESSION['message'] = "Error al subir el archivo PDF, contacte a soporte id pdf $pdf_id $file_path";
+                $_SESSION['message'] = "Error al mover el archivo, contacte a soporte.";
             }
         } else {
-            $_SESSION['message'] = "No se ha subido ningún archivo PDF";
+            $_SESSION['message'] = "No se ha subido ningún archivo.";
         }
         header("Location: anteproyectos.php");
         exit(0);
     } else {
-        $_SESSION['message'] = "Error al crear el quote, contacte a soporte";
+        $_SESSION['message'] = "Error al crear el registro, contacte a soporte.";
         header("Location: anteproyectos.php");
         exit(0);
     }

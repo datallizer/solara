@@ -275,8 +275,10 @@ if (isset($_SESSION['codigo'])) {
                                                                                             <h5 style="text-transform: uppercase;" class="modal-title" id="pdfModalLabel"><?= $registroBom['tipo']; ?> a bloques pdfModal<?= $registroBom['id']; ?></h5>
                                                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                         </div>
-                                                                                        <div class="modal-body">
-                                                                                            <iframe src="<?= $registroBom['medio']; ?>" width="100%" height="400px"></iframe>
+                                                                                        <div class="modal-body text-center">
+                                                                                        <a href="<?= $registroBom['medio'] ?>" download="<?= $registroBom['medio'] ?>" class="btn btn-primary"><i style="font-size: 100px;" class="bi bi-filetype-xlsx"></i><p>Descargar Excel</p></a>
+                                                                                        
+                                                                                        <p class="mt-3">Despues de visualizar el excel deberás regresar para aprobarlo o rechazarlo manualmete</p>
                                                                                         </div>
                                                                                         <?php
                                                                                         if (in_array($_SESSION['rol'], [1, 2])) {
@@ -619,7 +621,7 @@ if (isset($_SESSION['codigo'])) {
             });
             if (!alMenosUnoMarcado) {
                 alert('Por favor, seleccione al menos un usuario encargado.');
-                event.preventDefault(); 
+                event.preventDefault();
             }
         });
 
