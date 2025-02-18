@@ -81,12 +81,11 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Hora de inicio</th>
                                             <th>Fecha de fin</th>
                                             <th>Hora de fin</th>
-                                            <th>Accion</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $query = "SELECT * FROM archivohistorialoperadores ORDER BY id DESC";
+                                        $query = "SELECT * FROM archivohistorialoperadores WHERE motivoactividad <> 'Fin de jornada laboral' ORDER BY id DESC";
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
@@ -98,19 +97,6 @@ if (isset($_SESSION['codigo'])) {
                                                     <td><?= $registro['hora']; ?></td>
                                                     <td><?= $registro['fechareinicio']; ?></td>
                                                     <td><?= $registro['horareinicio']; ?></td>
-                                                    <td>
-                                                        <a href="editarusuario.php?id=<?= $registro['id']; ?>" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
-
-                                                        <?php
-                                                        if ($registro['id'] != 1) {
-                                                            echo '
-                                                            <form action="codeusuarios.php" method="POST" class="d-inline">
-                                                                <button type="submit" name="delete" value="' . $registro['id'] . '" class="btn btn-danger btn-sm m-1 deletebtn"><i class="bi bi-trash-fill"></i></button>
-                                                            </form>';
-                                                        }
-                                                        ?>
-
-                                                    </td>
                                                 </tr>
                                         <?php
                                             }
