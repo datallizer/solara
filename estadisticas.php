@@ -367,7 +367,7 @@ if (isset($_SESSION['codigo'])) {
 
                     <div class="col-8 mt-5">
                         <div class="card-header">
-                            <h4>MAQUINADOS</h4>
+                            <h4><a class="btn btn-sm btn-primary float-end" href="estadisticasplano.php">Historia planos</a> MAQUINADOS</h4>
                         </div>
                         <div class="card-body">
                             <table id="miTablaDos" class="table table-bordered table-striped">
