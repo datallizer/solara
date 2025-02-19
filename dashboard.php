@@ -420,7 +420,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                             </div>
                                             <?= $registro['nombre']; ?>
                                         </h4>
-                                        <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 700;"><i class="bi bi-calendar-week" style='color:#858585;'></i> Fin del proyecto en:</span> <?= $diasRestantes; ?> Días</p>
+                                        <p style="margin-bottom:0px;margin-top:15px;"><span style="font-weight: 700;"><i class="bi bi-calendar-week" style='color:#858585;'></i> Fin del proyecto en:</span> <?= $diasRestantes == 0 ? '<a href="editarproyecto.php?id='. $registro['id'] .'"><span style="color:#000;border-radius:10px;padding:2px 10px;font-weight:bold;" class="bg-warning"><i class="bi bi-exclamation-triangle-fill"></i> '. $diasRestantes .' Días</span></a>' : $diasRestantes . ' Días'; ?></p>
 
                                         <!-- Barra de progreso de días restantes -->
                                         <div class="mt-1" style="width: 100%; background-color: #f3f3f3; border: 1px solid #ccc;">
