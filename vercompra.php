@@ -34,7 +34,7 @@ if (isset($_GET['id'])) {
     $plano_id = $_GET['id'];
 
     // Consulta para obtener el PDF según el ID del plano
-    $query = "SELECT * FROM quotes WHERE id = $plano_id";
+    $query = "SELECT * FROM archivoquotes WHERE id = $plano_id";
     $result = mysqli_query($con, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
