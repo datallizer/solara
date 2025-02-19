@@ -84,7 +84,6 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Proyecto</th>
                                             <th>PDF</th>
                                             <th>Notas</th>
-                                            <th>Estatus</th>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>
@@ -147,15 +146,6 @@ if (isset($_SESSION['codigo'])) {
                                                         </div>
                                                     </td>
                                                     <td><?= $registro['notas']; ?></td>
-                                                    <td><?php
-                                                        if ($registro['estatusq'] === '0') {
-                                                            echo "Aprobado";
-                                                        } else if ($registro['estatusq'] === '1') {
-                                                            echo "Pendiente";
-                                                        } else {
-                                                            echo "Error, contacte a soporte";
-                                                        }
-                                                        ?></td>
                                                     <td>
                                                         <form action="codequotes.php" method="POST" class="d-inline">
                                                             <?php

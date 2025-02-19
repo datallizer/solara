@@ -56,15 +56,15 @@ if (isset($_SESSION['codigo'])) {
 
 <body class="sb-nav-fixed">
     <?php include 'sidenav.php'; ?>
-<?php include 'mensajes.php'; ?>
+    <?php include 'mensajes.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
                 <div class="row mb-5 mt-5">
-                    <div class="col-md-12 mt-3">
-                    <a href="comprasfinalizadas.php" class="btn btn-primary btn-sm" id="floatingButton">
-                                Compras<br>finalizadas
-                            </a>
+                    <div class="col-md-12">
+                        <a href="comprasfinalizadas.php" class="btn btn-primary btn-sm" id="floatingButton">
+                            Compras<br>finalizadas
+                        </a>
                         <div class="card">
                             <div class="card-header">
                                 <h4>COMPRAS PENDIENTES</h4>
@@ -93,7 +93,7 @@ if (isset($_SESSION['codigo'])) {
                                         $query = "SELECT quotes.*, proyecto.*, quotes.id AS id_quote
                                             FROM quotes 
                                             JOIN proyecto ON quotes.proyecto = proyecto.id
-                                            WHERE estatusq = 0 OR estatusq = 7
+                                            WHERE estatusq = 0
                                             ORDER BY quotes.id ASC";
 
 
@@ -131,7 +131,20 @@ if (isset($_SESSION['codigo'])) {
                                                     </td>
                                                     <td><?= $registro['nombre']; ?></td>
                                                     <td>
-                                                        <a href="vercompra.php?id=<?= $registro['id_quote']; ?>" class="btn btn-outline-dark btn-sm">Cotizacion <?= $registro['cotizacion']; ?></a>
+                                                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#pdfModal<?= $registro['id_quote']; ?>">Cotizacion <?= $registro['cotizacion']; ?></button>
+                                                        <div class="modal fade" id="pdfModal<?= $registro['id_quote']; ?>" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 style="text-transform: uppercase;" class="modal-title" id="pdfModalLabel">Compra <?= $registro['cotizacion']; ?></h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <iframe src="<?= $registro['medio']; ?>" width="100%" height="500px"></iframe>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td><?= $registro['notas']; ?></td>
                                                     <td><?php
@@ -202,21 +215,24 @@ if (isset($_SESSION['codigo'])) {
 
         function completarCompra(idQuote) {
             Swal.fire({
-                title: '¿La compra fue total o parcial?',
-                showDenyButton: true,
+                title: '¿La compra fue finalizada?',
+                icon: 'success',
+                showDenyButton: false,
                 showCancelButton: true,
-                confirmButtonText: 'Total',
+                confirmButtonText: 'Si',
                 denyButtonText: 'Parcial',
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        title: 'Ingrese la cantidad total',
+                        title: 'Ingrese el costo total de la compra',
+                        text: 'Una vez finalizada la compra será archivada',
                         input: 'text',
+                        width: '600px',
                         inputAttributes: {
                             min: 0
                         },
                         showCancelButton: true,
-                        confirmButtonText: 'Enviar'
+                        confirmButtonText: 'Finalizar'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             document.getElementById('monto' + idQuote).value = result.value;

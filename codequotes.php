@@ -208,19 +208,31 @@ if (isset($_POST['aprobar'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['completar']);
     $monto = mysqli_real_escape_string($con, $_POST['monto']);
     $estatus = mysqli_real_escape_string($con, $_POST['estatus']);
-
-    $query = "UPDATE `quotes` SET `monto` = '$monto', `estatusq` = '$estatus' WHERE `quotes`.`id` = '$registro_id'";
-    $query_run = mysqli_query($con, $query);
-
+    
+    // 1. Actualizar el monto y estatus en quotes
+    $query_update = "UPDATE quotes SET monto = '$monto', estatusq = '$estatus' WHERE id = '$registro_id'";
+    $query_run = mysqli_query($con, $query_update);
+    
     if ($query_run) {
-        $_SESSION['message'] = "Compra actualizada exitosamente";
-        header("Location: compras.php");
-        exit(0);
+        // 2. Mover el registro a archivoquotes y eliminarlo de quotes
+        $query_transfer = "
+            INSERT INTO archivoquotes SELECT * FROM quotes WHERE id = '$registro_id';
+            DELETE FROM quotes WHERE id = '$registro_id';
+        ";
+    
+        if (mysqli_multi_query($con, $query_transfer)) {
+            $_SESSION['message'] = "Registro completado y archivado exitosamente.";
+        } else {
+            $_SESSION['message'] = "Error al mover el registro a archivoquotes.";
+        }
     } else {
-        $_SESSION['message'] = "Error al actualizar el quote, contacte a soporte";
-        header("Location: compras.php");
-        exit(0);
+        $_SESSION['message'] = "Error al actualizar el quote.";
     }
+    
+    // Redirigir de vuelta a compras.php
+    header("Location: compras.php");
+    exit();
+    
 }
 
 if (isset($_POST['save'])) {

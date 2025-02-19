@@ -61,7 +61,7 @@ if (isset($_SESSION['codigo'])) {
         <div id="layoutSidenav_content">
             <div class="container-fluid">
                 <div class="row mb-5 mt-5">
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12">
                         <a href="compras.php" class="btn btn-primary btn-sm" id="floatingButton">
                             Compras<br>pendientes
                         </a>

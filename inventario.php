@@ -175,7 +175,7 @@ if (isset($_SESSION['codigo'])) {
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">NUEVO MATERIAL</h1>
@@ -183,12 +183,12 @@ if (isset($_SESSION['codigo'])) {
                 </div>
                 <div class="modal-body">
                     <form action="codeinventario.php" method="POST" class="row">
-                        <div class="form-floating col-12 mt-1">
+                        <div class="form-floating col-9">
                             <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" autocomplete="off" required>
                             <label for="nombre">Nombre</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3">
+                        <div class="form-floating col-3">
                             <select class="form-select" name="clasificacion" id="clasificacion" autocomplete="off" required>
                                 <option selected disabled>Seleccione una opcion</option>
                                 <option value="Controles">Controles</option>
@@ -199,7 +199,7 @@ if (isset($_SESSION['codigo'])) {
                             <label for="clasificacion">Clasificación</label>
                         </div>
 
-                        <div class="form-floating col-6 mt-3">
+                        <div class="form-floating col-4 mt-3">
                             <select class="form-select" name="tipo" id="tipo" autocomplete="off" required>
                                 <option selected disabled>Seleccione una opcion</option>
                                 <option value="Componente">Componente</option>
@@ -208,7 +208,7 @@ if (isset($_SESSION['codigo'])) {
                             <label for="tipo">Tipo</label>
                         </div>
 
-                        <div class="form-floating col-6 mt-3">
+                        <div class="form-floating col-4 mt-3">
                             <select class="form-select" name="condicion" id="condicion" autocomplete="off" required>
                                 <option selected disabled>Seleccione una opcion</option>
                                 <option value="Nuevo">Nuevo</option>
@@ -217,7 +217,7 @@ if (isset($_SESSION['codigo'])) {
                             <label for="condicion">Condición</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3">
+                        <div class="form-floating col-4 mt-3">
                             <input type="text" class="form-control" name="proveedor" id="proveedor" placeholder="Proveedor" autocomplete="off" required>
                             <label for="proveedor">Propietario</label>
                         </div>
@@ -227,22 +227,22 @@ if (isset($_SESSION['codigo'])) {
                             <label for="parte">Parte</label>
                         </div>
 
-                        <div class="form-floating col-6 mt-3">
+                        <div class="form-floating col-4 mt-3">
                             <input type="text" class="form-control" name="marca" id="marca" placeholder="Marca" autocomplete="off" required>
                             <label for="marca">Marca</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3">
+                        <div class="form-floating col-2 mt-3">
                             <input type="text" class="form-control" name="rack" id="rack" placeholder="Rack" autocomplete="off" required>
                             <label for="rack">Rack</label>
                         </div>
 
-                        <div class="form-floating col-8 mt-3">
+                        <div class="form-floating col-2 mt-3">
                             <input type="text" class="form-control" name="bin" id="bin" placeholder="Bin" autocomplete="off" required>
                             <label for="bin">Bin</label>
                         </div>
 
-                        <div class="form-floating col-4 mt-3">
+                        <div class="form-floating col-3 mt-3">
                             <input type="number" class="form-control" name="cantidad" id="cantidad" placeholder="Cantidad" autocomplete="off" required>
                             <label for="cantidad">Cantidad</label>
                         </div>
@@ -257,23 +257,23 @@ if (isset($_SESSION['codigo'])) {
                             <label for="minimo">Minimo (Reorden)</label>
                         </div>
 
-                        <div class="form-floating col-6 mt-3">
+                        <div class="form-floating col-2 mt-3">
                             <input type="text" class="form-control" name="caja" id="caja" placeholder="Caja" autocomplete="off" required>
                             <label for="caja">Caja</label>
                         </div>
 
-                        <div class="form-floating col-6 mt-3">
+                        <div class="form-floating col-2 mt-3">
                             <input type="text" class="form-control" name="numero" id="numero" placeholder="Numero" autocomplete="off" required>
                             <label for="numero">Número</label>
                         </div>
 
-                        <div class="form-floating col-12 mt-3">
+                        <div class="form-floating col-3 mt-3">
                             <input type="number" class="form-control" name="costo" id="costo" placeholder="Costo" autocomplete="off" required>
                             <label for="costo">Costo</label>
                         </div>
 
                         <div class="form-floating mb-3 mt-3">
-                            <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Descripción" style="min-height: 150px;"></textarea>
+                            <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Descripción" style="min-height: 120px;"></textarea>
                             <label for="descripcion" class="form-label">Descripción</label>
                         </div>
 
@@ -289,7 +289,7 @@ if (isset($_SESSION['codigo'])) {
 
     <!-- Modal 2-->
     <div class="modal fade" id="exampleModalDos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">REGISTRAR SALIDA</h1>
@@ -297,7 +297,7 @@ if (isset($_SESSION['codigo'])) {
                 </div>
                 <div class="modal-body">
                     <form action="codeinventario.php" method="POST" class="row">
-                        <div class="form-floating col-12 mt-3">
+                        <div class="form-floating col-9 mt-3">
                             <select class="form-select" name="id" id="id">
                                 <option disabled selected>Seleccione un material</option>
                                 <?php
@@ -322,7 +322,7 @@ if (isset($_SESSION['codigo'])) {
                             <label for="id">Material saliente</label>
                         </div>
 
-                        <div class="form-floating col-md-12 mt-3 mb-3">
+                        <div class="form-floating col-md-3 mt-3 mb-3">
                             <input type="int" class="form-control" name="salida" id="salida" placeholder="Cantidad saliente" autocomplete="off" required>
                             <label for="salida">Cantidad saliente</label>
                         </div>
@@ -339,7 +339,7 @@ if (isset($_SESSION['codigo'])) {
 
     <!-- Modal 3-->
     <div class="modal fade" id="exampleModalTres" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">REGISTRAR ENTRADA</h1>
@@ -347,7 +347,7 @@ if (isset($_SESSION['codigo'])) {
                 </div>
                 <div class="modal-body">
                     <form action="codeinventario.php" method="POST" class="row">
-                        <div class="form-floating col-12 mt-3">
+                        <div class="form-floating col-9 mt-3">
                             <select class="form-select" name="id" id="id">
                                 <option disabled selected>Seleccione un material</option>
                                 <?php
@@ -361,10 +361,11 @@ if (isset($_SESSION['codigo'])) {
                                         // Construir el texto de la opción con nombre del material
                                         $opcion = $material['nombre'];
                                         $cantidadact = $material['cantidad'];
+                                        $parte = $material['parte'];
                                         // Obtener el ID del usuario
                                         $idMaterial = $material['id'];
                                         // Mostrar la opción con el valor igual al ID del material
-                                        echo "<option value='$idMaterial' " . ($registro['id'] == $idMaterial ?: '') . ">#$idMaterial $opcion - $cantidadact</option>";
+                                        echo "<option value='$idMaterial' " . ($registro['id'] == $idMaterial ?: '') . ">#$idMaterial $opcion - $parte - $cantidadact</option>";
                                     }
                                 }
                                 ?>
@@ -372,7 +373,7 @@ if (isset($_SESSION['codigo'])) {
                             <label for="id">Material entrante</label>
                         </div>
 
-                        <div class="form-floating col-md-12 mt-3 mb-3">
+                        <div class="form-floating col-md-3 mt-3 mb-3">
                             <input type="int" class="form-control" name="entrada" id="entrada" placeholder="Cantidad saliente" autocomplete="off" required>
                             <label for="entrada">Cantidad entrante</label>
                         </div>
@@ -434,7 +435,7 @@ function mostrarDuplicados(index) {
     if (index < duplicadosList.length) {
         const duplicado = duplicadosList[index];
 
-        let duplicadoHTML = '<div class="duplicado-container">';
+        let duplicadoHTML = '<p>Selecciona el material que deseas mantener (Se borrara la cantidad de los demas materiales), o fusionalos para sumar la cantidad de todos los materiales duplicados</p><div class="duplicado-container">';
         let sumaCantidad = 0;
         duplicado.forEach(item => {
             sumaCantidad += parseInt(item.cantidad);
@@ -453,10 +454,12 @@ function mostrarDuplicados(index) {
             title: '¡Alerta de Duplicados!',
             html: duplicadoHTML,
             icon: 'warning',
+            width: '1000px',
             showCancelButton: true,
-            confirmButtonText: 'Siguiente',
+            confirmButtonText: 'Fusionar',
             cancelButtonText: 'Cancelar',
             didOpen: () => { // <-- Función que se ejecuta después de abrir el modal
+
                 const radioButtons = document.querySelectorAll('input[name="selectedId"]');
                 const cantidadInput = document.getElementById('cantidadInput');
 

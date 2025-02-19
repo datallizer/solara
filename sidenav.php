@@ -70,7 +70,7 @@ if (isset($_POST['save'])) {
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numEnsambles = $usuarioData['numEnsambles'];
 
-                // Cotizaciones nuevas
+                // Numero de cotizaciones nuevas
                 $queryAprobar = "SELECT COUNT(*) as numQuotes
                                     FROM (
                                     SELECT estatusq FROM quotes WHERE estatusq = 1
@@ -80,7 +80,7 @@ if (isset($_POST['save'])) {
                 $usuarioData = mysqli_fetch_assoc($resultado);
                 $numQuotes = $usuarioData['numQuotes'];
 
-                // Compras nuevas
+                // Numero de compras nuevas
                 $queryBuy = "SELECT COUNT(*) as numBuy
                                 FROM (
                                 SELECT estatusq FROM quotes WHERE estatusq = 0
@@ -93,9 +93,8 @@ if (isset($_POST['save'])) {
                 $codigoOperador = $_SESSION['codigo'];
                 $rolUsuario = $_SESSION['rol'];
 
-                // Verificar si el rol es 1 o 2, o si el usuario es encargado de algún proyecto
+                // Numero de proyectos desactualizados
                 if (in_array($rolUsuario, [1, 2])) {
-                    // Si el rol es 1 o 2, contar todos los proyectos que cumplan las condiciones
                     $queryProyectoContador = "SELECT COUNT(DISTINCT proyecto.id) AS numProyectos
                               FROM proyecto
                               LEFT JOIN plano ON proyecto.id = plano.idproyecto
@@ -105,7 +104,6 @@ if (isset($_POST['save'])) {
                               AND proyecto.etapa < 13
                               AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados');";
                 } else {
-                    // Si no es rol 1 o 2, contar solo los proyectos en los que el operador sea encargado
                     $queryProyectoContador = "SELECT COUNT(DISTINCT proyecto.id) AS numProyectos
                               FROM proyecto
                               LEFT JOIN plano ON proyecto.id = plano.idproyecto
@@ -117,11 +115,7 @@ if (isset($_POST['save'])) {
                               AND proyecto.nombre NOT IN ('Cotizaciones y Pruebas', 'Maquinados')
                               AND encargadoproyecto.codigooperador = '$codigoOperador';";
                 }
-
-                // Ejecutar la consulta para contar los proyectos
                 $resultadoContador = mysqli_query($con, $queryProyectoContador);
-
-                // Verificar si la consulta fue exitosa
                 if ($resultadoContador) {
                     $proyectoData = mysqli_fetch_assoc($resultadoContador);
                     $numProyectos = $proyectoData['numProyectos'];
@@ -129,7 +123,7 @@ if (isset($_POST['save'])) {
                     echo "Error al obtener el número de proyectos: " . mysqli_error($con);
                 }
 
-                // Consulta para obtener los nombres de los proyectos desactualizados
+                // Nombres de los proyectos desactualizados
                 $queryProyectoNombres = "SELECT DISTINCT proyecto.nombre, proyecto.id
                        FROM proyecto
                        LEFT JOIN plano ON proyecto.id = plano.idproyecto
@@ -143,7 +137,6 @@ if (isset($_POST['save'])) {
                 $proyectosDesactualizados = mysqli_fetch_all($resultadoNombres, MYSQLI_ASSOC);
 
                 if (in_array($rolUsuario, [1, 2])) {
-                    // Si el rol es 1 o 2, contar todos los proyectos que cumplan las condiciones
                     $queryIniciales = "SELECT p.id, p.nombre 
                                        FROM proyecto p 
                                        WHERE p.etapa = 13
@@ -151,7 +144,6 @@ if (isset($_POST['save'])) {
                                        AND (SELECT COUNT(*) FROM diagrama WHERE idproyecto = p.id AND estatusplano != 0) = 0
                                        GROUP BY p.id, p.nombre";
                 } else {
-                    // Si no es rol 1 o 2, solo contar proyectos donde el operador sea encargado
                     $queryIniciales = "SELECT p.id, p.nombre 
                                        FROM proyecto p
                                        LEFT JOIN encargadoproyecto ep ON p.id = ep.idProyecto
@@ -161,19 +153,108 @@ if (isset($_POST['save'])) {
                                        AND ep.codigooperador = '$codigoOperador'
                                        GROUP BY p.id, p.nombre";
                 }
-
-                // Ejecutar la consulta
                 $resultado = $con->query($queryIniciales);
-
-                // Obtener el número de proyectos
                 $numIniciales = $resultado->num_rows;
-                ?>
 
-                <?php
+                //Numero de actividades ingenieria
+                $query_ingenieria = "SELECT COUNT(*) AS numIngenieria
+                                    FROM ingenieria 
+                                    JOIN proyecto ON ingenieria.idproyecto = proyecto.id 
+                                    JOIN asignacioningenieria ON asignacioningenieria.idplano = ingenieria.id 
+                                    JOIN usuarios ON asignacioningenieria.codigooperador = usuarios.codigo
+                                    WHERE asignacioningenieria.codigooperador = $codigoOperador 
+                                    AND ingenieria.estatusplano = 1";
+
+                $resultado_ingenieria = $con->query($query_ingenieria);
+
+                $numIngenieria = 0;
+                if ($resultado_ingenieria) {
+                    $fila = $resultado_ingenieria->fetch_assoc();
+                    $numIngenieria = $fila['numIngenieria'];
+                }
+
+                //Numero de diseño / diagrama a bloques
+                $query_bloques = "SELECT COUNT(*) AS numBloques FROM proyectomedios WHERE estatus = '1'";
+
+                $resultado_bloques = $con->query($query_bloques);
+
+                $numBloques = 0;
+                if ($resultado_bloques) {
+                    $fila = $resultado_bloques->fetch_assoc();
+                    $numBloques = $fila['numBloques'];
+                }
+
+                //Numero de boms diseño / control
+                $query_boms = "SELECT COUNT(*) AS numBoms FROM proyectoboms WHERE estatus = '1'";
+
+                $resultado_boms = $con->query($query_boms);
+
+                $numBoms = 0;
+                if ($resultado_boms) {
+                    $fila = $resultado_boms->fetch_assoc();
+                    $numBoms = $fila['numBoms'];
+                }
+
+                //Numero de anteproyecto con estatus visita
+                $sqlagenda = "SELECT COUNT(*) AS numAgendado
+                FROM proyecto p
+                JOIN encargadoproyecto ep ON p.id = ep.idproyecto
+                LEFT JOIN agendaproyectos a ON p.id = a.idproyecto AND a.estatus = 1
+                WHERE (p.etapa IN (2)) AND (p.estatus IN (1, 2))
+                AND ep.codigooperador = $codigoOperador
+                GROUP BY p.id;
+            ";
+
+                $resultagenda = mysqli_query($con, $sqlagenda);
+
+                $numAgendado = 0; // Valor predeterminado en caso de que no haya registros
+
+                if ($resultagenda && $registro = mysqli_fetch_assoc($resultagenda)) {
+                    $numAgendado = $registro['numAgendado']; // Cuenta de proyectos agendados
+                }
+
+                //Numero de anteproyecto con estatus carga diagrama diseño bloques ingeniero
+                $sqlmediosing = "SELECT COUNT(DISTINCT p.id) AS numMediosing
+                                FROM proyecto p
+                                JOIN encargadoproyecto ep ON p.id = ep.idproyecto
+                                LEFT JOIN proyectomedios a ON p.id = a.idproyecto
+                                WHERE p.etapa = 3 
+                                AND p.estatus IN (1, 2)
+                                AND ep.codigooperador = $codigoOperador
+                                AND a.idproyecto IS NULL;
+                                ";
+
+                $resultmediosing = mysqli_query($con, $sqlmediosing);
+
+                $numMediosing = 0; // Valor predeterminado en caso de que no haya registros
+
+                if ($resultmediosing && $mediosing = mysqli_fetch_assoc($resultmediosing)) {
+                    $numMediosing = $mediosing['numMediosing']; // Cuenta de proyectos agendados
+                }
+
+                //Numero de anteproyecto con estatus carga BOM diseño/control ingeniero
+                $sqlbomingNum = "SELECT COUNT(DISTINCT p.id) AS numbomingNum
+                                FROM proyecto p
+                                JOIN encargadoproyecto ep ON p.id = ep.idproyecto
+                                LEFT JOIN proyectoboms a ON p.id = a.idproyecto
+                                WHERE p.etapa = 4 
+                                AND p.estatus IN (1, 2)
+                                AND ep.codigooperador = $codigoOperador
+                                AND a.idproyecto IS NULL;
+                                ";
+
+                $resultbomingNum = mysqli_query($con, $sqlbomingNum);
+
+                $numbomingNum = 0; // Valor predeterminado en caso de que no haya registros
+
+                if ($resultbomingNum && $bomingNum = mysqli_fetch_assoc($resultbomingNum)) {
+                    $numbomingNum = $bomingNum['numbomingNum']; // Cuenta de proyectos agendados
+                }
+
                 $mostrarEnlace = false;
 
                 if (($numUsuarios > 0 && in_array($_SESSION['rol'], [1, 2, 5, 13])) || $numIniciales > 0 && in_array($_SESSION['rol'], [1, 2, 5, 13]) ||
-                    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9, 13])) || ($numQuotes > 0 && in_array($_SESSION['rol'], [1, 2])) || ($numBuy > 0 && in_array($_SESSION['rol'], [1, 2, 6, 7, 13]))
+                    ($numEnsambles > 0 && in_array($_SESSION['rol'], [1, 2, 9, 13])) || ($numQuotes > 0 && in_array($_SESSION['rol'], [1, 2])) || ($numBuy > 0 && in_array($_SESSION['rol'], [1, 2, 6, 7, 13])) || $numIngenieria > 0 && in_array($_SESSION['rol'], [5, 9, 13]) || $numBloques > 0 && in_array($_SESSION['rol'], [1, 2]) || $numBoms > 0 && in_array($_SESSION['rol'], [1, 2]) || $numAgendado > 0 && in_array($_SESSION['rol'], [5, 9, 13]) || $numMediosing > 0 && in_array($_SESSION['rol'], [5, 9, 13]) || $numbomingNum > 0 && in_array($_SESSION['rol'], [5, 9, 13])
                 ) {
                     $mostrarEnlace = true;
                 }
@@ -184,13 +265,13 @@ if (isset($_POST['save'])) {
                         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
                             <?php
                             if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
-                                echo $numUsuarios + $numEnsambles + $numQuotes + $numBuy + $numProyectos + $numIniciales;
+                                echo $numUsuarios + $numEnsambles + $numQuotes + $numBuy + $numProyectos + $numIniciales + $numBloques + $numBoms;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5])) {
-                                echo $numUsuarios + $numProyectos + $numIniciales;
+                                echo $numUsuarios + $numProyectos + $numIniciales + $numIngenieria + $numAgendado + $numMediosing + $numbomingNum;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [9])) {
-                                echo $numEnsambles + $numProyectos + $numIniciales;
+                                echo $numEnsambles + $numProyectos + $numIniciales + $numIngenieria + $numAgendado + $numMediosing + $numbomingNum;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [13])) {
-                                echo $numEnsambles + $numProyectos + $numIniciales + $numUsuarios;
+                                echo $numEnsambles + $numProyectos + $numIniciales + $numUsuarios + $numIngenieria + $numAgendado + $numMediosing + $numbomingNum;
                             } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [6, 7])) {
                                 echo $numBuy;
                             }
@@ -259,7 +340,7 @@ if (isset($_POST['save'])) {
                 }
 
                 ?>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="max-height:500px; overflow-y:auto;">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="max-height:550px; overflow-y:auto;font-size:13px;overflow-x:hidden;">
                     <?php
                     if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 13])) {
                     ?>
@@ -270,14 +351,12 @@ if (isset($_POST['save'])) {
                                     <div class="row">
                                         <div class="col-3">
                                             <img
-                                                style="width: 100%; border-radius: 35px; height: 75px; object-fit: cover; object-position: top;"
+                                                style="width: 100%; border-radius: 5px; height: 75px; object-fit: cover; object-position: top;"
                                                 src="<?= htmlspecialchars($usuario['medio']); ?>"
                                                 alt="Foto perfil">
                                         </div>
                                         <div class="col-9">
-                                            <small style="text-transform: uppercase; font-size: 11px;">
-                                                <i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Maquinados
-                                            </small>
+                                            <small class="bg-primary mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;"> Aviso Maquinados</small>
                                             <p>
                                                 <?= htmlspecialchars($usuario['nombre']) . ' ' . htmlspecialchars($usuario['apellidop']) . ' ' . htmlspecialchars($usuario['apellidom']); ?>
                                                 <?= numeroATexto($usuario['cuenta'], $usuario['diasSinAsignacion']); ?>.
@@ -298,9 +377,9 @@ if (isset($_POST['save'])) {
                             <li style="width: 400px;padding:0px 15px;">
                                 <a href="ensamble.php" style="color:#000;">
                                     <div class="row">
-                                        <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $ensamble['medio']; ?>" alt="Foto perfil"></div>
+                                        <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?= $ensamble['medio']; ?>" alt="Foto perfil"></div>
                                         <div class="col-9">
-                                            <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634;" class="bi bi-exclamation-triangle-fill"></i> Aviso Ensambles</small>
+                                            <small class="bg-secondary mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;"> Aviso Ensambles</small>
                                             <p>
                                                 <?= htmlspecialchars($ensamble['nombre']) . ' ' . htmlspecialchars($ensamble['apellidop']) . ' ' . htmlspecialchars($ensamble['apellidom']); ?>
                                                 <?= numeroATexto($ensamble['cuenta'], $ensamble['diasEnsambleSinAsignacion']); ?>.
@@ -327,9 +406,9 @@ if (isset($_POST['save'])) {
                                 <li style="width: 400px;padding:0px 15px;">
                                     <a href="quotes.php" style="color:#000;">
                                         <div class="row">
-                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $cotizaciones['medio']; ?>" alt="Foto perfil"></div>
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?= $cotizaciones['medio']; ?>" alt="Foto perfil"></div>
                                             <div class="col-9">
-                                                <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso quotes</small>
+                                                <small class="bg-success mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;"> Aviso quotes</small>
                                                 <p><?php echo $cotizaciones['solicitante']; ?> registro una nueva cotización.</p>
                                             </div>
                                         </div>
@@ -353,10 +432,85 @@ if (isset($_POST['save'])) {
                                 <li style="width: 400px;padding:0px 15px;">
                                     <a href="compras.php" style="color:#000;">
                                         <div class="row">
-                                            <div class="col-3"><img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="<?= $compras['medio']; ?>" alt="Foto perfil"></div>
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?= $compras['medio']; ?>" alt="Foto perfil"></div>
                                             <div class="col-9">
-                                                <small style="text-transform:uppercase;font-size:11px;"><i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso compras</small>
+                                                <small class="bg-danger mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso compras</small>
                                                 <p>Hay una nueva compra pendiente: <?php echo $compras['cotizacion']; ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
+
+
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+
+
+                        $query_proyectomedios = "SELECT proyectomedios.*, usuarios.medio, proyecto.nombre 
+                                                    FROM proyectomedios
+                                                    LEFT JOIN usuarios ON usuarios.codigo = proyectomedios.idcodigo
+                                                    LEFT JOIN proyecto ON proyecto.id = proyectomedios.idproyecto
+                                                    WHERE proyectomedios.estatus = 1
+                                                    ORDER BY proyectomedios.id ASC
+                                                    ";
+
+                        // Ejecutar la consulta
+                        $query_run_proyectomedios = $con->query($query_proyectomedios);
+
+                        // Verificar si hay actividades pendientes
+                        if ($query_run_proyectomedios && $query_run_proyectomedios->num_rows > 0) {
+                            while ($proyectomedios = $query_run_proyectomedios->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="anteproyectos.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?php echo $proyectomedios['medio']; ?>" alt="Foto solara"></div>
+                                            <div class="col-9">
+                                                <small class="bg-info mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso anteproyectos</small>
+                                                <p><?php echo $proyectomedios['tipo']; ?> a bloques pendiente de aprobar, anteproyecto: <?php echo $proyectomedios['nombre']; ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
+
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
+
+
+                        $query_proyectoboms = "SELECT proyectoboms.*, usuarios.medio, proyecto.nombre 
+                                                    FROM proyectoboms
+                                                    LEFT JOIN usuarios ON usuarios.codigo = proyectoboms.idcodigo
+                                                    LEFT JOIN proyecto ON proyecto.id = proyectoboms.idproyecto
+                                                    WHERE proyectoboms.estatus = 1
+                                                    ORDER BY proyectoboms.id ASC
+                                                    ";
+
+                        // Ejecutar la consulta
+                        $query_run_proyectoboms = $con->query($query_proyectoboms);
+
+                        // Verificar si hay actividades pendientes
+                        if ($query_run_proyectoboms && $query_run_proyectoboms->num_rows > 0) {
+                            while ($proyectoboms = $query_run_proyectoboms->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="anteproyectos.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?php echo $proyectoboms['medio']; ?>" alt="Foto solara"></div>
+                                            <div class="col-9">
+                                                <small class="mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;background-color:#921cd6;">Aviso anteproyectos</small>
+                                                <p>BOM <?php echo $proyectoboms['tipo']; ?> pendiente de aprobar, anteproyecto: <?php echo $proyectoboms['nombre']; ?></p>
                                             </div>
                                         </div>
                                     </a>
@@ -378,11 +532,10 @@ if (isset($_POST['save'])) {
                                     <a href="dashboard.php?proyecto_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
                                         <div class="row">
                                             <div class="col-3">
-                                                <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                                                <img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="images/ics.png" alt="Foto perfil">
                                             </div>
                                             <div class="col-9">
-                                                <small style="text-transform:uppercase;font-size:11px;">
-                                                    <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                                                <small class="bg-warning mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso proyectos
                                                 </small>
                                                 <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Construcción del equipo."</p>
                                             </div>
@@ -414,11 +567,10 @@ if (isset($_POST['save'])) {
                                             <a href="dashboard.php?proyecto_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
                                                 <div class="row">
                                                     <div class="col-3">
-                                                        <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                                                        <img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="images/ics.png" alt="Foto perfil">
                                                     </div>
                                                     <div class="col-9">
-                                                        <small style="text-transform:uppercase;font-size:11px;">
-                                                            <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                                                        <small class="bg-warning mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso proyectos
                                                         </small>
                                                         <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Construcción del equipo."</p>
                                                     </div>
@@ -476,11 +628,10 @@ if (isset($_POST['save'])) {
                                     <a href="dashboard.php?internas_id=<?php echo htmlspecialchars($proyecto['id']); ?>" style="color:#000;">
                                         <div class="row">
                                             <div class="col-3">
-                                                <img style="width: 100%;border-radius:35px;height:75px;object-fit: cover;object-position: top;" src="usuarios/27.jpg" alt="Foto perfil">
+                                                <img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="images/ics.png" alt="Foto perfil">
                                             </div>
                                             <div class="col-9">
-                                                <small style="text-transform:uppercase;font-size:11px;">
-                                                    <i style="color: #ebc634 !important;" class="bi bi-exclamation-triangle-fill"></i> Aviso proyectos
+                                                <small class="bg-warning mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso proyectos
                                                 </small>
                                                 <p>Etapa desactualizada en el proyecto: <?php echo htmlspecialchars($proyecto['nombre']); ?>, actualiza a "Pruebas internas iniciales"</p>
                                             </div>
@@ -494,6 +645,162 @@ if (isset($_POST['save'])) {
                     }
                     ?>
 
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9, 13])) {
+
+
+                        $query = "SELECT ingenieria.id, ingenieria.nombreplano, usuarios.medio
+                        FROM ingenieria
+                        JOIN proyecto ON ingenieria.idproyecto = proyecto.id
+                        JOIN asignacioningenieria ON asignacioningenieria.idplano = ingenieria.id
+                        JOIN usuarios ON asignacioningenieria.codigooperador = usuarios.codigo
+                        WHERE asignacioningenieria.codigooperador = $codigo
+                        AND ingenieria.estatusplano = 1
+                        ORDER BY ingenieria.prioridad ASC";
+
+                        // Ejecutar la consulta
+                        $query_run_ingenieria = $con->query($query);
+
+                        // Verificar si hay actividades pendientes
+                        if ($query_run_ingenieria && $query_run_ingenieria->num_rows > 0) {
+                            while ($ingenieria = $query_run_ingenieria->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="ingenieria.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?php echo $ingenieria['medio']; ?>" alt="Foto solara"></div>
+                                            <div class="col-9">
+                                                <small class="bg-dark mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso ingeniería</small>
+                                                <p>Actividad de ingeniería pendiente: <?php echo $ingenieria['nombreplano']; ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
+
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9, 13])) {
+
+
+                        $sqlagenda = "SELECT proyecto.id, proyecto.nombre, proyecto.etapa, proyecto.estatus, usuarios.medio
+                        FROM proyecto
+                        JOIN encargadoproyecto ON proyecto.id = encargadoproyecto.idproyecto
+                        LEFT JOIN usuarios ON usuarios.codigo = $codigo
+                        WHERE (proyecto.etapa = 2)
+                        AND (proyecto.estatus = 2 OR proyecto.estatus = 1)
+                        AND encargadoproyecto.codigooperador = $codigo;";
+                        $resultagenda = mysqli_query($con, $sqlagenda);
+
+                        // Verificar si hay actividades pendientes
+                        if ($resultagenda && $resultagenda->num_rows > 0) {
+                            while ($ingenieria = $resultagenda->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="anteproyectos.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?php echo $ingenieria['medio']; ?>" alt="Foto solara"></div>
+                                            <div class="col-9">
+                                                <small class="bg-info mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso anteproyectos</small>
+                                                <p>Agenda la visita para: <?php echo $ingenieria['nombre']; ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
+
+
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9, 13])) {
+
+
+                        //Numero de anteproyecto con estatus carga diagrama diseño bloques ingeniero
+                        $sqlmediosing = "SELECT p.id, p.nombre, p.etapa, p.estatus, u.medio 
+                                        FROM proyecto p
+                                        JOIN encargadoproyecto ep ON p.id = ep.idproyecto 
+                                        LEFT JOIN usuarios u ON u.codigo = $codigoOperador
+                                        WHERE p.etapa IN (3)
+                                        AND p.estatus IN (1, 2)
+                                        AND ep.codigooperador = $codigo
+                                        AND p.id NOT IN (
+                                            SELECT idproyecto 
+                                            FROM proyectomedios 
+                                            WHERE estatus IN (1, 3) AND idcodigo = $codigo
+                                        )";
+
+                        $resultmediosing = mysqli_query($con, $sqlmediosing);
+
+                        // Verificar si hay actividades pendientes
+                        if ($resultmediosing && $resultmediosing->num_rows > 0) {
+                            while ($ingenieria = $resultmediosing->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="anteproyectos.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?php echo $ingenieria['medio']; ?>" alt="Foto solara"></div>
+                                            <div class="col-9">
+                                                <small class="bg-info mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso anteproyectos</small>
+                                                <p>Carga el Diseño/Diagrama a bloques para el anteproyecto: <?php echo $ingenieria['nombre']; ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
+
+                    <?php
+                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [5, 9, 13])) {
+
+
+                        //Anteproyecto con estatus carga bom ingeniero
+                        $sqlboming = "SELECT p.id, p.nombre, p.etapa, p.estatus, u.medio 
+                                        FROM proyecto p
+                                        JOIN encargadoproyecto ep ON p.id = ep.idproyecto 
+                                        LEFT JOIN usuarios u ON u.codigo = $codigoOperador
+                                        WHERE p.etapa IN (4)
+                                        AND p.estatus IN (1, 2)
+                                        AND ep.codigooperador = $codigo
+                                        AND p.id NOT IN (
+                                            SELECT idproyecto 
+                                            FROM proyectoboms 
+                                            WHERE estatus IN (1, 3) AND idcodigo = $codigo
+                                        )";
+
+                        $resultboming = mysqli_query($con, $sqlboming);
+
+                        if ($resultboming && $resultboming->num_rows > 0) {
+                            while ($ingenieria = $resultboming->fetch_assoc()) {
+                    ?>
+                                <li style="width: 400px;padding:0px 15px;">
+                                    <a href="anteproyectos.php" style="color:#000;">
+                                        <div class="row">
+                                            <div class="col-3"><img style="width: 100%;border-radius:5px;height:75px;object-fit: cover;object-position: top;" src="<?php echo $ingenieria['medio']; ?>" alt="Foto solara"></div>
+                                            <div class="col-9">
+                                                <small class="bg-info mb-1" style="text-transform: uppercase; font-size: 10px;color:#ffffff;border-radius:5px;padding:2px 10px;">Aviso anteproyectos</small>
+                                                <p>Carga el BOM Diseño/Control para el anteproyecto: <?php echo $ingenieria['nombre']; ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <hr style="color: #fcfcfc;" class="dropdown-divider" />
+                    <?php
+                            }
+                        }
+                    }
+                    ?>
 
                 </ul>
 
@@ -766,30 +1073,30 @@ if (isset($_POST['save'])) {
                         </div>
                         <div class="col-6" style="max-height: 500px;overflow-y:scroll;">
                             <?php
-                             $query = "SELECT m.mensaje, m.fecha, m.hora, u.nombre, u.apellidop 
+                            $query = "SELECT m.mensaje, m.fecha, m.hora, u.nombre, u.apellidop 
                              FROM mensajes m
                              INNER JOIN usuarios u ON m.idcodigo = u.codigo
                              WHERE m.emisor = '$codigo'
                              ORDER BY m.fecha DESC, m.hora DESC LIMIT 20";
-                     
-                         // Ejecutar la consulta
-                         $query_run = mysqli_query($con, $query);
-                     
-                         if (mysqli_num_rows($query_run) > 0) {
-                             // Mostrar cada mensaje con el nombre del receptor
-                             while ($row = mysqli_fetch_assoc($query_run)) {
-                                 $mensaje = $row['mensaje'];
-                                 $nombre_receptor = $row['nombre'];
-                                 $apellido_receptor = $row['apellidop'];
-                                 $fecha = $row['fecha'];
-                                 $hora = $row['hora'];
-                     
-                                 // Mostrar mensaje en un <p> junto con el nombre y apellido del receptor
-                                 echo "<p><strong>Enviado a:</strong> $nombre_receptor $apellido_receptor <br><strong>Mensaje:</strong> $mensaje <br><strong>Fecha:</strong> $fecha <br><strong>Hora:</strong> $hora</p><hr>";
-                             }
-                         } else {
-                             echo "<p>No tienes mensajes.</p>";
-                         }
+
+                            // Ejecutar la consulta
+                            $query_run = mysqli_query($con, $query);
+
+                            if (mysqli_num_rows($query_run) > 0) {
+                                // Mostrar cada mensaje con el nombre del receptor
+                                while ($row = mysqli_fetch_assoc($query_run)) {
+                                    $mensaje = $row['mensaje'];
+                                    $nombre_receptor = $row['nombre'];
+                                    $apellido_receptor = $row['apellidop'];
+                                    $fecha = $row['fecha'];
+                                    $hora = $row['hora'];
+
+                                    // Mostrar mensaje en un <p> junto con el nombre y apellido del receptor
+                                    echo "<p><strong>Enviado a:</strong> $nombre_receptor $apellido_receptor <br><strong>Mensaje:</strong> $mensaje <br><strong>Fecha:</strong> $fecha <br><strong>Hora:</strong> $hora</p><hr>";
+                                }
+                            } else {
+                                echo "<p>No tienes mensajes.</p>";
+                            }
                             ?>
 
                         </div>
