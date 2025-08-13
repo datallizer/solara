@@ -546,7 +546,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                                                                 } elseif ($rol == 9) {
                                                                     echo "Ing. Control";
                                                                 } elseif ($rol == 13) {
-                                                                    echo "Ing. Lazer";
+                                                                    echo "Ing. Laser";
                                                                 } else {
                                                                     echo "Rol desconocido"; // O cualquier otro mensaje por defecto
                                                                 }

@@ -120,6 +120,8 @@ if (isset($_SESSION['codigo'])) {
                                         echo '<button type="button" class="btn btn-primary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Nuevo plano
                                 </button> 
+                                <a href="carga-multiple-planos.php" class="btn btn-info btn-sm m-1 float-end">
+                                Carga múltiple de planos</a>
                                 <button type="button" class="btn btn-secondary btn-sm float-end m-1" data-bs-toggle="modal" data-bs-target="#exampleModalAsignar">
                                     Asignar operador
                                 </button>

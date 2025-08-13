@@ -456,7 +456,7 @@ if (isset($_POST['save'])) {
                                                     FROM proyectomedios
                                                     LEFT JOIN usuarios ON usuarios.codigo = proyectomedios.idcodigo
                                                     LEFT JOIN proyecto ON proyecto.id = proyectomedios.idproyecto
-                                                    WHERE proyectomedios.estatus = 1
+                                                    WHERE proyectomedios.estatus = 1 AND proyecto.etapa = 3
                                                     ORDER BY proyectomedios.id ASC
                                                     ";
 

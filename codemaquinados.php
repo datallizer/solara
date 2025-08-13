@@ -209,3 +209,71 @@ if (isset($_POST['save'])) {
         }
     }
 }
+
+if (isset($_POST['savemulti'])) {
+
+    // Contar cuántas filas llegaron
+    $total = count($_POST['idproyecto']);
+
+    for ($i = 0; $i < $total; $i++) {
+        $idproyecto   = mysqli_real_escape_string($con, $_POST['idproyecto'][$i]);
+        $nombreplano  = mysqli_real_escape_string($con, $_POST['nombreplano'][$i]);
+        $nivel        = mysqli_real_escape_string($con, $_POST['nivel'][$i]);
+        $piezas       = mysqli_real_escape_string($con, $_POST['piezas'][$i]);
+        $actividad    = mysqli_real_escape_string($con, $_POST['actividad'][$i]);
+
+        // Si se subió un archivo para esta fila
+        if (isset($_FILES['medio']['name'][$i]) && $_FILES['medio']['error'][$i] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['medio']['tmp_name'][$i];
+            $fileName    = $_FILES['medio']['name'][$i];
+            $fileType    = $_FILES['medio']['type'][$i];
+
+            if ($fileType === 'application/pdf') {
+                // Inserta el registro
+                $query = "INSERT INTO plano (idproyecto, nombreplano, medio, nivel, piezas, actividad, estatusplano) 
+                          VALUES (?, ?, ?, ?, ?, ?, '1')";
+                $stmt = mysqli_prepare($con, $query);
+                $medio = ''; // se actualizará después
+
+                mysqli_stmt_bind_param($stmt, 'ssssis', $idproyecto, $nombreplano, $medio, $nivel, $piezas, $actividad);
+                mysqli_stmt_execute($stmt);
+
+                $idplano = mysqli_insert_id($con);
+
+                // Guardar el archivo
+                $uploadFileDir = './planos/';
+                $dest_path = $uploadFileDir . $idplano . '.pdf';
+                move_uploaded_file($fileTmpPath, $dest_path);
+
+                // Actualizar ruta
+                $queryUpdate = "UPDATE plano SET medio = ? WHERE id = ?";
+                $stmtUpdate = mysqli_prepare($con, $queryUpdate);
+                mysqli_stmt_bind_param($stmtUpdate, 'si', $dest_path, $idplano);
+                mysqli_stmt_execute($stmtUpdate);
+            }
+        } else {
+            // Inserta sin archivo
+            $query = "INSERT INTO plano (idproyecto, nombreplano, nivel, piezas, actividad, estatusplano) 
+                      VALUES (?, ?, ?, ?, ?, '1')";
+            $stmt = mysqli_prepare($con, $query);
+            mysqli_stmt_bind_param($stmt, 'sssis', $idproyecto, $nombreplano, $nivel, $piezas, $actividad);
+            mysqli_stmt_execute($stmt);
+
+            $idplano = mysqli_insert_id($con);
+        }
+
+        // Asignación de operadores
+        if (!empty($_POST['codigooperador'][$i]) && is_array($_POST['codigooperador'][$i])) {
+            foreach ($_POST['codigooperador'][$i] as $codigoOperador) {
+                $queryplano = "INSERT INTO asignacionplano (idplano, codigooperador) VALUES (?, ?)";
+                $stmtPlano = mysqli_prepare($con, $queryplano);
+                mysqli_stmt_bind_param($stmtPlano, 'ii', $idplano, $codigoOperador);
+                mysqli_stmt_execute($stmtPlano);
+            }
+        }
+    }
+
+    $_SESSION['message'] = "Maquinados creados exitosamente";
+    header("Location: maquinados.php");
+    exit(0);
+}
