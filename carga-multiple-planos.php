@@ -120,14 +120,14 @@ if (isset($_SESSION['codigo'])) {
                             multiple>
                     </div>
                     <form action="codemaquinados.php" method="POST" class="row mb-0" enctype="multipart/form-data">
-                        <div class="col-12 p-3 mt-3" id="filaPlano" style="background-color: #e6e6e6ff;border-radius:10px;">
+                        <div class="col-12 p-3 mt-3" id="filaPlano" style="background-color: #e6e6e6ff;border-radius:10px;display:none;">
                             <h1 class="modal-title fs-5" id="tituloPlano">NUEVO PLANO</h1>
                             <div class="row mb-0">
                                 <div class="col-7 mb-3">
                                     <div class="row">
-                                        <div class="form-floating col-4 mt-3">
-                                            <select class="form-select" name="idproyecto[]" id="idproyecto">
-                                                <option disabled selected>Seleccione un proyecto</option>
+                                        <div class="form-floating col-12 mt-3">
+                                            <select class="form-select" name="idproyecto[]" id="idproyecto" required>
+                                                <option value="">Seleccione un proyecto</option>
                                                 <?php
                                                 // Consulta a la base de datos para obtener los proyectos
                                                 $query = "SELECT * FROM proyecto WHERE estatus = 1";
@@ -149,7 +149,7 @@ if (isset($_SESSION['codigo'])) {
                                             <label for="idproyecto">Proyecto asociado</label>
                                         </div>
 
-                                        <div class="form-floating mt-3 col-8">
+                                        <div class="form-floating mt-3 col-12">
                                             <input type="text" class="form-control" name="nombreplano[]" id="nombreplano" placeholder="Nombre" autocomplete="off" required>
                                             <label for="nombreplano" id="nombrePlano">Nombre del plano</label>
                                         </div>
@@ -165,7 +165,7 @@ if (isset($_SESSION['codigo'])) {
                                         </div>
 
                                         <div class="form-floating mt-3 col-4">
-                                            <input type="text" class="form-control" name="piezas[]" id="piezas" placeholder="Piezas" autocomplete="off" required>
+                                            <input type="text" class="form-control" name="piezas[]" id="piezas" placeholder="Piezas" autocomplete="off" required value="1">
                                             <label for="piezas">Número de piezas</label>
                                         </div>
 
@@ -230,46 +230,47 @@ if (isset($_SESSION['codigo'])) {
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            // Índice para filas clonadas (la inicial es 0)
             let filaIndex = 0;
+            let proyectoSeleccionado = {
+                id: "",
+                nombre: ""
+            };
 
-            // Manejar cambio en el primer select de proyecto para preguntar si asignar a todos
+            // Detectar cambio en el primer select
             const primerSelectProyecto = document.querySelector("#filaPlano #idproyecto");
             if (primerSelectProyecto) {
                 primerSelectProyecto.addEventListener("change", function() {
                     const valorSeleccionado = this.value;
+                    const textoSeleccionado = this.options[this.selectedIndex].text;
 
-                    Swal.fire({
-                        title: '¿Asignar a todos?',
-                        text: "¿Deseas asignar este mismo proyecto a todos los planos?",
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sí, asignar a todos',
-                        cancelButtonText: 'No, solo este',
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Seleccionar todos los selects con name="idproyecto[]"
-                            document.querySelectorAll('select[name="idproyecto[]"]').forEach(select => {
-                                select.value = valorSeleccionado;
-                            });
-                            Swal.fire(
-                                'Asignado',
-                                'Se asignó el mismo proyecto a todos los planos.',
-                                'success'
-                            );
+                    proyectoSeleccionado.id = valorSeleccionado;
+                    proyectoSeleccionado.nombre = textoSeleccionado;
+
+                    // Actualizar input hidden en filas clonadas
+                    document.querySelectorAll('.fila-plano-extra').forEach(fila => {
+                        let hiddenProyecto = fila.querySelector('.proyecto-hidden');
+                        if (hiddenProyecto) {
+                            hiddenProyecto.value = valorSeleccionado;
                         }
                     });
                 });
             }
 
-            // Manejar selección de archivos PDF
+            // Manejar selección de archivos
             document.getElementById('pdfFiles').addEventListener('change', function() {
+                const spinner = document.querySelector('.spinner-overlay');
+
+                // Mostrar spinner
+                spinner.style.display = 'flex'; // o 'block' según tu CSS
+
+                document.getElementById('filaPlano').style.display = 'block';
+
+
                 const filaBase = document.getElementById('filaPlano');
                 const form = filaBase.closest('form');
                 const botonesDiv = form.querySelector('.col-12.p-5.text-center');
 
-                // Limpiar filas clonadas previas
+                // Limpiar filas anteriores
                 form.querySelectorAll('.fila-plano-extra').forEach(el => el.remove());
 
                 const files = Array.from(this.files);
@@ -286,11 +287,28 @@ if (isset($_SESSION['codigo'])) {
                         filaActual.classList.add('fila-plano-extra');
                         filaActual.id = `filaPlano_${filaIndex + 1}`;
 
-                        // Insertar antes de los botones
+                        // Reemplazar select de proyecto por input hidden
+                        let selectProyecto = filaActual.querySelector('select[name="idproyecto[]"]');
+                        if (selectProyecto) {
+                            const hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'idproyecto[]';
+                            hiddenInput.className = 'proyecto-hidden';
+                            hiddenInput.value = proyectoSeleccionado.id || '';
+                            selectProyecto.parentNode.replaceChild(hiddenInput, selectProyecto);
+                        }
+
+                        // Cambiar ancho del campo nombreplano a col-12
+                        let nombrePlanoDiv = filaActual.querySelector('#nombreplano').closest('.col-8');
+                        if (nombrePlanoDiv) {
+                            nombrePlanoDiv.classList.remove('col-8');
+                            nombrePlanoDiv.classList.add('col-12');
+                        }
+
                         form.insertBefore(filaActual, botonesDiv);
                     }
 
-                    // Asignar archivo al input file
+                    // Asignar archivo
                     let inputPDF = filaActual.querySelector('input[name="medio[]"]');
                     if (inputPDF) {
                         let dt = new DataTransfer();
@@ -298,53 +316,42 @@ if (isset($_SESSION['codigo'])) {
                         inputPDF.files = dt.files;
                     }
 
-                    // Nombre del archivo sin extensión en input nombreplano[]
+                    // Nombre del plano sin extensión
                     let nombrePlanoInput = filaActual.querySelector('input[name="nombreplano[]"]');
                     if (nombrePlanoInput) {
                         nombrePlanoInput.value = file.name.replace(/\.pdf$/i, '');
                     }
 
-                    // Actualizar todos los atributos name e id para que tengan el índice correcto
-
-                    // Select proyecto
-                    let selectProyecto = filaActual.querySelector('select[name="idproyecto[]"]');
-                    if (selectProyecto) {
-                        selectProyecto.id = `idproyecto_${filaIndex}`;
-                        // IMPORTANTÍSIMO: aquí asignamos valor vacío para que no quede "Seleccione un proyecto" seleccionado y no envíe valor
-                        selectProyecto.value = "";
-                        // Si quieres asignar otro valor por default, cambia la línea anterior a:
-                        // selectProyecto.value = "32"; // o cualquier id de proyecto válido
-                    }
-
-                    // Inputs nombreplano, actividad, piezas, nivel
+                    // Actualizar IDs
                     ['nombreplano', 'actividad', 'piezas', 'nivel'].forEach(campo => {
                         let input = filaActual.querySelector(`[name="${campo}[]"]`);
                         if (input) {
                             input.id = `${campo}_${filaIndex}`;
-                            // Si quieres limpiar los campos clonados (excepto nombreplano que ya tiene valor):
-                            if (campo !== 'nombreplano') input.value = "";
+                            if (campo === 'piezas') {
+                                input.value = "1";
+                            } else if (campo !== 'nombreplano') {
+                                input.value = "";
+                            }
                         }
                     });
 
-                    // Input file medio
                     if (inputPDF) {
                         inputPDF.id = `medio_${filaIndex}`;
                     }
 
-                    // Checkboxes operadores
+                    // Checkboxes
                     const checkboxes = filaActual.querySelectorAll('input[type="checkbox"][name^="codigooperador"]');
                     checkboxes.forEach(cb => {
-                        const parts = cb.id.split('_'); // ejemplo: codigooperador_123_0
+                        const parts = cb.id.split('_');
                         const idUsuario = parts[1];
                         cb.name = `codigooperador[${filaIndex}][]`;
                         cb.id = `codigooperador_${idUsuario}_${filaIndex}`;
-                        cb.checked = false; // limpiar selección
-                        // Actualizar label for
+                        cb.checked = false;
                         const label = filaActual.querySelector(`label[for="${parts.join('_')}"]`);
                         if (label) label.htmlFor = cb.id;
                     });
 
-                    // Agregar botón eliminar si no existe
+                    // Botón eliminar
                     if (!filaActual.querySelector('.btn-delete-fila')) {
                         const btnDelete = document.createElement('button');
                         btnDelete.type = 'button';
@@ -353,23 +360,22 @@ if (isset($_SESSION['codigo'])) {
                         filaActual.appendChild(btnDelete);
                     }
                 });
+
+                setTimeout(() => {
+                    spinner.style.display = 'none';
+                }, 300);
             });
 
-            // Delegación de eventos para botón eliminar fila
+            // Eliminar fila
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('btn-delete-fila')) {
                     const fila = e.target.closest('#filaPlano, .fila-plano-extra');
                     if (fila) {
                         if (fila.id === 'filaPlano') {
-                            // Limpiar fila base
                             fila.querySelectorAll('input, select').forEach(input => {
-                                if (input.type === 'file') {
-                                    input.value = null;
-                                } else if (input.type === 'checkbox') {
-                                    input.checked = false;
-                                } else {
-                                    input.value = '';
-                                }
+                                if (input.type === 'file') input.value = null;
+                                else if (input.type === 'checkbox') input.checked = false;
+                                else input.value = '';
                             });
                         } else {
                             fila.remove();
@@ -377,6 +383,27 @@ if (isset($_SESSION['codigo'])) {
                     }
                 }
             });
+
+            const form = document.querySelector('form'); // tu formulario
+            const btnGuardar = form.querySelector('button[name="savemulti"]');
+
+            btnGuardar.addEventListener('click', function(e) {
+                const selectProyecto = document.querySelector('#filaPlano select[name="idproyecto[]"]');
+
+                if (selectProyecto && (!selectProyecto.value || selectProyecto.value === "")) {
+                    e.preventDefault(); // evitar envío
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Proyecto no seleccionado',
+                        text: 'Debes seleccionar un proyecto antes de guardar.',
+                        confirmButtonText: 'Entendido',
+                    }).then(() => {
+                        selectProyecto.focus();
+                    });
+                }
+            });
+
 
         });
     </script>
