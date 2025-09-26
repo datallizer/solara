@@ -140,7 +140,7 @@ if (isset($_SESSION['codigo'])) {
                                             <th>Proyecto</th>
                                             <th>Plano / actividad asociados</th>
                                             <?php
-                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
+                                            if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9, 13])) {
                                                 echo '<th>Operadores asignados</th>';
                                             }
                                             ?>
@@ -161,7 +161,7 @@ if (isset($_SESSION['codigo'])) {
                                             JOIN usuarios ON asignacionplano.codigooperador = usuarios.codigo
                                             WHERE asignacionplano.codigooperador = $codigo 
                                             AND (plano.estatusplano = 1 OR plano.estatusplano = 2 OR plano.estatusplano = 3) ORDER BY proyecto.prioridad ASC, plano.nivel ASC";
-                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
+                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9, 13])) {
                                             $query = "SELECT proyecto.id, proyecto.prioridad, proyecto.nombre, plano.id, plano.idproyecto, plano.nivel, plano.piezas, plano.estatusplano, plano.actividad, plano.nombreplano, plano.medio
                                             FROM plano 
                                             JOIN proyecto ON plano.idproyecto = proyecto.id
@@ -208,7 +208,7 @@ if (isset($_SESSION['codigo'])) {
                                                         ?>
                                                     </td>
                                                     <?php
-                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
+                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9, 13])) {
                                                     ?>
                                                         <td>
                                                             <?php
@@ -219,7 +219,7 @@ if (isset($_SESSION['codigo'])) {
                                                             $query_run_asignacion = mysqli_query($con, $queryAsignacion);
                                                             if (mysqli_num_rows($query_run_asignacion) > 0) {
                                                                 foreach ($query_run_asignacion as $asignacion) {
-                                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9,13])) {
+                                                                    if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 5, 9, 13])) {
 
                                                                         if ($registro['estatusplano'] === '1') {
                                                             ?>
@@ -256,13 +256,25 @@ if (isset($_SESSION['codigo'])) {
                                                     <td class="text-center"><?= $registro['prioridad']; ?></td>
                                                     <?php
                                                     if ($registro['nivel'] === '1') {
-                                                        echo "<td style='background-color:#e50000 !important;color:#fff;'>Nivel 1</td>";
+                                                        echo "<td style='background-color: #e50000 !important;color:#fff;'>Nivel 1</td>";
                                                     } elseif ($registro['nivel'] === '2') {
-                                                        echo "<td style='background-color:#e56f00 !important;color:#fff;'>Nivel 2</td>";
+                                                        echo "<td style='background-color: #e50400ff !important;color:#fff;'>Nivel 2</td>";
                                                     } elseif ($registro['nivel'] === '3') {
-                                                        echo "<td style='background-color:#e5da00 !important'>Nivel 3</td>";
+                                                        echo "<td style='background-color: #e51f00ff !important;color:#fff;'>Nivel 3</td>";
                                                     } elseif ($registro['nivel'] === '4') {
-                                                        echo "<td style='background-color:#17e500 !important'>Nivel 4</td>";
+                                                        echo "<td style='background-color: #e54900ff !important;color:#fff;'>Nivel 4</td>";
+                                                    } elseif ($registro['nivel'] === '5') {
+                                                        echo "<td style='background-color: #e56f00 !important'>Nivel 5</td>";
+                                                    } elseif ($registro['nivel'] === '6') {
+                                                        echo "<td style='background-color: #e58600ff !important'>Nivel 6</td>";
+                                                    } elseif ($registro['nivel'] === '7') {
+                                                        echo "<td style='background-color: #e5d200ff !important'>Nivel 7</td>";
+                                                    } elseif ($registro['nivel'] === '8') {
+                                                        echo "<td style='background-color: #e5da00 !important'>Nivel 8</td>";
+                                                    } elseif ($registro['nivel'] === '9') {
+                                                        echo "<td style='background-color: #6fe500ff !important'>Nivel 9</td>";
+                                                    } elseif ($registro['nivel'] === '10') {
+                                                        echo "<td style='background-color: #00e567ff !important'>Nivel 10</td>";
                                                     } else {
                                                         echo "<td>Error, contacte a soporte</td>";
                                                     }
@@ -348,7 +360,7 @@ if (isset($_SESSION['codigo'])) {
                   </form>';
                                                                 }
                                                             }
-                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9,13])) {
+                                                        } elseif (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2, 3, 4, 5, 6, 7, 9, 13])) {
                                                             $id = $registro['id'];
                                                             echo '<a href="editarmaquinado.php?id=' . $id . '" class="btn btn-success btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
           <form action="codemaquinados.php" method="POST" class="d-inline">
@@ -448,6 +460,12 @@ if (isset($_SESSION['codigo'])) {
                                         <option value="2">Nivel 2</option>
                                         <option value="3">Nivel 3</option>
                                         <option value="4">Nivel 4</option>
+                                        <option value="5">Nivel 5</option>
+                                        <option value="6">Nivel 6</option>
+                                        <option value="7">Nivel 7</option>
+                                        <option value="8">Nivel 8</option>
+                                        <option value="9">Nivel 9</option>
+                                        <option value="10">Nivel 10</option>
                                     </select>
                                     <label for="nivel">Nivel de pieza</label>
                                 </div>
@@ -648,7 +666,8 @@ if (isset($_SESSION['codigo'])) {
                 "order": [
                     [4, "asc"],
                     [5, "asc"]
-                ] // Ordenar la primera columna (índice 0) en orden descendente
+                ],
+                "pageLength": 50
             });
 
             // Cambiar a usar clase en lugar de ID

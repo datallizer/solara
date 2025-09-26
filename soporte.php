@@ -73,9 +73,9 @@ if (isset($_SESSION['codigo'])) {
                         </a>
                     </div>
                     <div class="col-12 col-md-4">
-                        <a class="card text-center p-5" style="text-decoration: none;" href="tel:4494175357">
+                        <a class="card text-center p-5" style="text-decoration: none;" href="tel:4492117423">
                             <i class="bi bi-telephone-fill" style="font-size: 45px;color:#9c3530;"></i>
-                            <p style="color: #000000;">449 417 5357</p>
+                            <p style="color: #000000;">449 211 7423</p>
                         </a>
                     </div>
                 </div>

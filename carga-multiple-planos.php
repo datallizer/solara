@@ -176,6 +176,12 @@ if (isset($_SESSION['codigo'])) {
                                                 <option value="2">Nivel 2</option>
                                                 <option value="3">Nivel 3</option>
                                                 <option value="4">Nivel 4</option>
+                                                <option value="5">Nivel 5</option>
+                                                <option value="6">Nivel 6</option>
+                                                <option value="7">Nivel 7</option>
+                                                <option value="8">Nivel 8</option>
+                                                <option value="9">Nivel 9</option>
+                                                <option value="10">Nivel 10</option>
                                             </select>
                                             <label for="nivel">Nivel de pieza</label>
                                         </div>
