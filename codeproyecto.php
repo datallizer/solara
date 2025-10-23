@@ -301,7 +301,7 @@ require 'PHPMailer/src/Exception.php';
 $host = 'smtp.gmail.com';
 $port = 587;
 $username = 'solarasystemai@gmail.com';
-$password = 'owwd pbtr bpfh brff';
+$password = 'jqen bmjc nood dcfv';
 $security = 'tls';
 
 if (isset($_POST['minuta'])) {
@@ -344,12 +344,14 @@ if (isset($_POST['minuta'])) {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
             </head>
-            <body>
+            <body style="background-color: #e7e7e7;display: flex;justify-content: center;">
+            <div style="max-width: 500px;background-color: #ffffff;padding: 15px;">
             <img style="width:100%;" src="https://datallizer.com/images/solarasuperior.jpg" alt="">
             <h1 style="font-size:25px;margin-top:30px;text-align:left;margin-bottom:30px;"><b>Minuta</b></h1>
             <pre style="font-size:12px;">' . $detalles . '</pre>
 
             <p style="font-size:8px;">Este es un email enviado desde el canal de comunicación de Google del sistema de planificación de recursos empresariales SOLARA AI, siendo intermediario solarsystemai@gmail.com y con respuesta directa al email personal del emisor, la información previa a sido generada utilizando datos almacenados en la base de datos de SOLARA y el detalle manipulado manualmente por el usuario autor, es importante tener en cuenta que los detalles presentados podrían estar desactualizados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos.</p>
+            </div>
             </body>
             </html>
             ';

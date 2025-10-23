@@ -143,7 +143,7 @@ require 'PHPMailer/src/Exception.php';
 $host = 'smtp.gmail.com';
 $port = 587;
 $username = 'solarasystemai@gmail.com';
-$password = 'owwd pbtr bpfh brff';
+$password = 'jqen bmjc nood dcfv';
 $security = 'tls';
 
 $query = "SELECT * FROM inventario WHERE tipo = 'Consumible'";
@@ -177,7 +177,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
         // Configurar correo
         $mail->setFrom('solarasystemai@gmail.com', 'SOLARA AI');
         $mail->addAddress('storage@solara-industries.com');
-        $mail->Subject = 'Reorden: Inventario de ' . $registro['id'] . ' ' . $registro['nombre'] . ' bajo en stock';
+        $mail->Subject = 'Reorden: Inventario de ID ' . $registro['id'] . ' ' . $registro['nombre'] . ' bajo en stock';
         $mail->CharSet = 'UTF-8';
         $mail->isHTML(true);
         // Cuerpo del mensaje
@@ -188,7 +188,8 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
             </head>
-            <body>
+            <body style="background-color: #e7e7e7;display: flex;justify-content: center;">
+            <div style="max-width: 500px;background-color: #ffffff;padding: 15px;">
             <img style="width:100%;" src="https://datallizer.com/images/solarasuperior.jpg" alt="">
             <h1 style="font-size:25px;margin-top:30px;text-align:left;margin-bottom:30px;"><b>REORDEN</b></h1>
             <p>El producto id ' . $registro['id'] . ' ' . $registro['nombre'] . ' tiene un stock bajo.</p>
@@ -204,6 +205,7 @@ while ($registro = mysqli_fetch_assoc($query_run)) {
             <p><b>Costo:</b> $' . $registro['costo'] . '</p>
 
             <p style="font-size:10px;">Este es un email enviado automaticamente por el sistema de planificación de recursos empresariales SOLARA AI, la información previa a sido generada utilizando datos históricos almacenados en la base de datos de SOLARA, es importante tener en cuenta que las cantidades, materiales u otros detalles presentados en esta propuesta podrían estar desactualizados, descontinuados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos desde los submódulos "Inventario" y "Reorden".</p>
+            </div>
             </body>
             </html>
             ';

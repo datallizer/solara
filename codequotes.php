@@ -85,7 +85,7 @@ if (isset($_POST['aprobar'])) {
     $host = 'smtp.gmail.com';
     $port = 587;
     $username = 'solarasystemai@gmail.com';
-    $password = 'owwd pbtr bpfh brff';
+    $password = 'jqen bmjc nood dcfv';
     $security = 'tls';
     // Obtener los datos de la fila aprobada
     $query = "SELECT * FROM quotes WHERE id = '$registro_id'";
@@ -111,7 +111,8 @@ if (isset($_POST['aprobar'])) {
         padding: 8px;
     }
 </style>
-        <body>
+            <body style='background-color: #e7e7e7;display: flex;justify-content: center;'>
+            <div style='max-width: 500px;background-color: #ffffff;padding: 15px;'>
         <img style='width:100%;' src='https://datallizer.com/images/solarasuperior.jpg' alt=''>
             <h2>DETALLES DEL QUOTE APROBADO</h2>
             <table style='margin-top:30px; margin-bottom:80px;'>
@@ -149,13 +150,14 @@ if (isset($_POST['aprobar'])) {
                     }
                     $html_content .= "</td>
                     <td>{$registro_aprobado['cotizacion']}</td>
-                    <td><a href='http://192.168.1.36:81/solara/vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
+                    <td><a href='http://192.168.1.32:81/solara/vercotizacion.php?id={$registro_aprobado['id']}'>Ver PDF</a></td>
                     <td>{$registro_aprobado['notas']}</td>
                     <td>Aprobado</td>
                 </tr>
             </table>
 
             <p style='font-size:10px;'>Este es un email enviado automáticamente por el sistema de planificación de recursos empresariales SOLARA AI, la información previa ha sido generada utilizando datos históricos almacenados en la base de datos de SOLARA, es importante tener en cuenta que la información u otros detalles presentados en este email podrían estar desactualizados, descontinuados o contener errores. Le recomendamos verificar la precisión de la información presentada antes de tomar decisiones basadas en estos datos desde el submódulo 'Compras'</p>
+        </div>
         </body>
         </html>
     ";
@@ -179,7 +181,7 @@ if (isset($_POST['aprobar'])) {
     // Configurar correo
     $mail->setFrom('solarasystemai@gmail.com', 'SOLARA AI');
     $mail->addAddress('purchasing@solara-industries.com');
-    $mail->Subject = 'Compra aprobada id ' . $registro_aprobado['id'] . ' ' . $registro_aprobado['cotizacion'];
+    $mail->Subject = 'Compra aprobada ID ' . $registro_aprobado['id'] . ' ' . $registro_aprobado['cotizacion'];
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->Body = $html_content;
