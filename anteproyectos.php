@@ -175,12 +175,17 @@ if (isset($_SESSION['codigo'])) {
                                                         ?>
                                                             <p style="background-color: #ffeacc;padding:5px;border-radius:5px;">Etapa 3 de 5</p>
                                                             <p>Generacion de diseño / diagrama a bloques</p>
+
                                                             <div class="row">
                                                                 <div class="col-12">
                                                                     <?php
                                                                     $query = "SELECT * FROM proyectomedios WHERE (estatus = 1 OR estatus = 2 OR estatus = 3)  AND idproyecto = '" . $proyecto_id . "'";
                                                                     $query_run = mysqli_query($con, $query);
+                                                                    $existeMedio = false;
+
                                                                     if (mysqli_num_rows($query_run) > 0) {
+                                                                        $existeMedio = true;
+
                                                                         foreach ($query_run as $medio) {
                                                                             $idmodal = $medio['id'];
                                                                     ?>
@@ -232,8 +237,24 @@ if (isset($_SESSION['codigo'])) {
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                    <?php
+                                                                        <?php
                                                                         }
+                                                                    }
+
+                                                                    // ✅ SOLO SI NO EXISTE coincidencia
+                                                                    if (!$existeMedio && in_array($_SESSION['rol'], [5, 9, 13])) {
+                                                                        ?>
+                                                                        <form action="codeproyecto.php" method="POST" enctype="multipart/form-data">
+                                                                            <div class="mb-3 d-flex">
+                                                                                <input class="form-control form-control-sm" name="medio" type="file" accept="application/pdf" required>
+
+                                                                                <input name="idproyecto" type="hidden" value="<?= $proyecto_id; ?>">
+                                                                                <input name="etapa" type="hidden" value="3">
+                                                                                <button type="submit" name="documento" class="btn btn-dark btn-sm">Enviar</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    <?php
+
                                                                     }
                                                                     ?>
                                                                 </div>
@@ -276,9 +297,11 @@ if (isset($_SESSION['codigo'])) {
                                                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                         </div>
                                                                                         <div class="modal-body text-center">
-                                                                                        <a href="<?= $registroBom['medio'] ?>" download="<?= $registroBom['medio'] ?>" class="btn btn-primary"><i style="font-size: 100px;" class="bi bi-filetype-xlsx"></i><p>Descargar Excel</p></a>
-                                                                                        
-                                                                                        <p class="mt-3">Despues de visualizar el excel deberás regresar para aprobarlo o rechazarlo manualmete</p>
+                                                                                            <a href="<?= $registroBom['medio'] ?>" download="<?= $registroBom['medio'] ?>" class="btn btn-primary"><i style="font-size: 100px;" class="bi bi-filetype-xlsx"></i>
+                                                                                                <p>Descargar Excel</p>
+                                                                                            </a>
+
+                                                                                            <p class="mt-3">Despues de visualizar el excel deberás regresar para aprobarlo o rechazarlo manualmete</p>
                                                                                         </div>
                                                                                         <?php
                                                                                         if (in_array($_SESSION['rol'], [1, 2])) {
@@ -366,6 +389,7 @@ if (isset($_SESSION['codigo'])) {
                                                     ?>
                                                     <td>
                                                         <a style="color:#fff;" href="editarproyecto.php?id=<?= $proyecto_id; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+
                                                         <?php
                                                         if (isset($_SESSION['rol']) && in_array($_SESSION['rol'], [1, 2])) {
                                                             if ($registro['etapa'] == 5) {
